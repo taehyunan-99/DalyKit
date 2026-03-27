@@ -20,7 +20,8 @@ user_invocable: true
 | (없음) | 아래 도움말 출력 | 사용 가능한 스킬 목록 |
 | `eda` | `/eda` 스킬 호출 | 탐색적 데이터 분석 |
 | `clean` | `/data-clean` 스킬 호출 | 데이터 전처리 |
-| `stat` | `/stat-analysis` 스킬 호출 | 통계 분석 |
+| `stat` | `/stat-analysis` 스킬 호출 | 통계 분석 (대화형) |
+| `stat-deep` | `stat-analyst` 에이전트 호출 | 통계 분석 (자동 — 보고서 기반 분석 계획 + 변수 스캔 + 전체 노트북 생성) |
 | `viz` | `/da-viz` 스킬 호출 | 시각화 |
 | `profile` | `data-profiler` 에이전트 호출 | 종합 프로파일링 |
 | `report` | `visualize` 플러그인 위임 | 최종 HTML 보고서 |
@@ -35,7 +36,8 @@ user_invocable: true
 사용 가능한 명령어:
   /da eda [path]      탐색적 데이터 분석 (EDA)
   /da clean [path]    데이터 전처리
-  /da stat [질문]     통계 분석 · 가설 검정
+  /da stat [질문]     통계 분석 · 가설 검정 (대화형)
+  /da stat-deep [질문] 통계 분석 (에이전트 — 자동 실행)
   /da viz [path]      데이터 시각화
   /da profile [path]  종합 프로파일링 (에이전트)
   /da report          최종 보고서 (HTML 대시보드)
@@ -53,6 +55,11 @@ user_invocable: true
 **`/da profile`의 경우:**
 - Agent 도구로 `data-profiler` 서브에이전트를 호출한다
 - 서브에이전트가 노트북에 프로파일링 셀을 생성한다
+
+**`/da stat-deep`의 경우:**
+- Agent 도구로 `stat-analyst` 서브에이전트를 호출한다
+- 인자 없이 호출 시: EDA/전처리 보고서 기반 분석 계획 + 변수 자동 스캔 → 전체 노트북 생성
+- 인자(연구 질문)와 함께 호출 시: 해당 질문에 대한 단일 분석 수행
 
 **`/da report`의 경우:**
 - 현재 분석 결과를 요약한다

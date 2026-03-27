@@ -18,13 +18,31 @@ user_invocable: true
 /data-clean [데이터 경로]
 /data-clean              ← 현재 노트북의 df 변수 사용
 /data-clean data.csv     ← 특정 파일 지정
+/data-clean report       ← 전처리 보고서 생성 (셀 실행 후 사용)
 ```
+
+## 노트북 구조
+
+전처리는 EDA 노트북과 **별도 노트북**으로 분리한다.
+```
+project/
+├── 01_eda.ipynb            ← EDA 노트북
+├── 02_preprocessing.ipynb  ← 전처리 노트북 (이 스킬이 생성)
+├── 03_modeling.ipynb       ← (이후 단계)
+├── data/                   ← 원본 데이터
+├── data/cleaned/           ← 전처리 완료 데이터
+└── docs/                   ← EDA 보고서 등
+```
+
+- 파일명은 `NN_단계명.ipynb` 형태 (예: `02_preprocessing.ipynb`, `02_clean_apt.ipynb`)
+- 기존 EDA 노트북이 `eda_apt.ipynb`처럼 번호 없이 되어 있으면 그 패턴을 따른다 (예: `clean_apt.ipynb`)
+- EDA 결과 df를 직접 넘기지 않고, **원본 CSV를 다시 로드**하여 전처리 파이프라인을 독립 실행 가능하게 한다
 
 ## 워크플로우
 
 ### 1단계: 현재 상태 파악
-- 기존 EDA 셀 출력이 있으면 참조하여 전처리 전략 결정
-- EDA가 없으면 간단한 프로파일링 먼저 수행 (결측값, dtypes, 중복 수 확인)
+- 작업 디렉토리에 `docs/eda_report.md`가 있으면 Read로 읽고, 결측값·이상치·타입 이슈를 파악하여 전처리 전략에 반영
+- `docs/eda_report.md`가 없으면 기존 EDA 셀 출력을 참조하거나, 간단한 프로파일링 먼저 수행 (결측값, dtypes, 중복 수 확인)
 - 사용자에게 전처리 방향 확인 (자동/수동 선택)
 
 ### 2단계: 전처리 전략 제안
@@ -36,7 +54,23 @@ user_invocable: true
 
 ### 3단계: 노트북 셀 생성 (NotebookEdit)
 
-**셀 1 — 전처리 전 상태 확인**
+**셀 1 — 라이브러리 import + 작업 디렉토리 설정 + 데이터 로드**
+```python
+import os
+import pandas as pd
+import numpy as np
+
+# 작업 디렉토리 설정 (노트북 기준 상대경로)
+DATA_DIR = '../data'
+os.chdir(DATA_DIR)
+print(f"작업 디렉토리: {os.getcwd()}")
+
+# 원본 데이터 로드
+df = pd.read_csv('파일명.csv')
+print(f"데이터 로드 완료: {df.shape[0]}행 × {df.shape[1]}열")
+```
+
+**셀 2 — 전처리 전 상태 확인**
 ```python
 # 전처리 전 상태
 print(f"원본 데이터: {df.shape[0]}행 × {df.shape[1]}열")
@@ -44,44 +78,47 @@ print(f"결측값 총 수: {df.isnull().sum().sum()}")
 print(f"중복 행 수: {df.duplicated().sum()}")
 ```
 
-**셀 2 — 결측값 처리**
+**셀 3 — 결측값 처리**
 ```python
+# 원본 보존 후 전처리 시작
+df_clean = df.copy()
+
 # 결측값 처리
 # 전략: [상황에 따라 선택]
 
 # 방법 1: 결측률 높은 컬럼 제거 (50% 이상)
-drop_cols = [col for col in df.columns if df[col].isnull().mean() > 0.5]
+drop_cols = [col for col in df_clean.columns if df_clean[col].isnull().mean() > 0.5]
 if drop_cols:
     print(f"제거할 컬럼 (결측률 > 50%): {drop_cols}")
-    df = df.drop(columns=drop_cols)
+    df_clean = df_clean.drop(columns=drop_cols)
 
 # 방법 2: 수치형 — 중앙값 대체
-num_cols = df.select_dtypes(include=np.number).columns
+num_cols = df_clean.select_dtypes(include=np.number).columns
 for col in num_cols:
-    if df[col].isnull().sum() > 0:
-        df[col] = df[col].fillna(df[col].median())
+    if df_clean[col].isnull().sum() > 0:
+        df_clean[col] = df_clean[col].fillna(df_clean[col].median())
 
 # 방법 3: 범주형 — 최빈값 대체
-cat_cols = df.select_dtypes(include='object').columns
+cat_cols = df_clean.select_dtypes(include='object').columns
 for col in cat_cols:
-    if df[col].isnull().sum() > 0:
-        df[col] = df[col].fillna(df[col].mode()[0])
+    if df_clean[col].isnull().sum() > 0:
+        df_clean[col] = df_clean[col].fillna(df_clean[col].mode()[0])
 
-print(f"결측값 처리 후: {df.isnull().sum().sum()}개 남음")
+print(f"결측값 처리 후: {df_clean.isnull().sum().sum()}개 남음")
 ```
 
-**셀 3 — 중복 제거**
+**셀 4 — 중복 제거**
 ```python
 # 중복 행 제거
-dup_count = df.duplicated().sum()
+dup_count = df_clean.duplicated().sum()
 if dup_count > 0:
-    df = df.drop_duplicates()
-    print(f"중복 {dup_count}행 제거 → {df.shape[0]}행")
+    df_clean = df_clean.drop_duplicates()
+    print(f"중복 {dup_count}행 제거 → {df_clean.shape[0]}행")
 else:
     print("중복 행 없음")
 ```
 
-**셀 4 — 이상치 처리 (필요 시)**
+**셀 5 — 이상치 처리 (필요 시)**
 ```python
 # 이상치 탐지 (IQR 방식)
 def detect_outliers_iqr(series):
@@ -92,10 +129,10 @@ def detect_outliers_iqr(series):
     upper = Q3 + 1.5 * IQR
     return (series < lower) | (series > upper)
 
-num_cols = df.select_dtypes(include=np.number).columns
+num_cols = df_clean.select_dtypes(include=np.number).columns
 outlier_info = {}
 for col in num_cols:
-    mask = detect_outliers_iqr(df[col].dropna())
+    mask = detect_outliers_iqr(df_clean[col].dropna())
     outlier_info[col] = mask.sum()
 
 outlier_df = pd.Series(outlier_info).sort_values(ascending=False)
@@ -103,31 +140,41 @@ print("=== 이상치 수 (IQR) ===")
 print(outlier_df[outlier_df > 0])
 ```
 
-**셀 5 — 타입 변환 (필요 시)**
+**셀 6 — 타입 변환 (필요 시)**
 ```python
 # 타입 변환
 # 날짜형 변환 예시
-# df['date_col'] = pd.to_datetime(df['date_col'])
+# df_clean['date_col'] = pd.to_datetime(df_clean['date_col'])
 
 # 범주형 변환 예시
-# df['cat_col'] = df['cat_col'].astype('category')
+# df_clean['cat_col'] = df_clean['cat_col'].astype('category')
 
 print("=== 최종 dtypes ===")
-print(df.dtypes)
+print(df_clean.dtypes)
 ```
 
-**셀 6 — 전처리 결과 요약**
+**셀 7 — 전처리 결과 요약 + 저장**
 ```python
 # 전처리 완료 요약
-print(f"최종 데이터: {df.shape[0]}행 × {df.shape[1]}열")
-print(f"결측값: {df.isnull().sum().sum()}")
-print(f"메모리 사용: {df.memory_usage(deep=True).sum() / 1024**2:.1f} MB")
+print(f"원본 데이터: {df.shape[0]}행 × {df.shape[1]}열")
+print(f"전처리 후:  {df_clean.shape[0]}행 × {df_clean.shape[1]}열")
+print(f"결측값: {df_clean.isnull().sum().sum()}")
+print(f"메모리 사용: {df_clean.memory_usage(deep=True).sum() / 1024**2:.1f} MB")
+
+# 전처리 데이터 저장
+os.makedirs('cleaned', exist_ok=True)
+df_clean.to_csv('cleaned/파일명_cleaned.csv', index=False)
+print(f"저장 완료: cleaned/파일명_cleaned.csv")
 ```
 
-### 4단계: 결과 요약
-- 전처리 전후 비교 (행/열 수, 결측값 수)
-- 적용된 처리 방법 목록
-- 다음 단계 추천 (시각화, 통계 분석 등)
+### 4단계: 전처리 보고서 (`/data-clean report`)
+
+**`/data-clean report`가 호출되면** 실행한다 (셀 생성과 동시에 자동 실행하지 않음).
+
+사용자가 노트북 셀을 모두 실행한 후 `/data-clean report`를 호출하면:
+1. 노트북의 셀 출력 결과를 읽고 분석
+2. 전처리 보고서를 작성하여 `docs/preprocessing_report.md`에 저장 (`docs/` 폴더 없으면 생성)
+3. 보고서 구조와 작성 규칙은 **PREPROCESSING_REPORT.md**를 참조
 
 ## 코드 생성 규칙
 

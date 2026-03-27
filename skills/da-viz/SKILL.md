@@ -148,31 +148,23 @@ plt.show()
 
 **누적 비율 — 스택 바차트**
 ```python
-# 범주형 변수 간 상대도수 비교
-pv = pd.pivot_table(data=df, index='범주변수', columns='그룹변수', aggfunc='count')
-p = df['그룹변수'].unique().size
-pv = pv.iloc[:, 0:p].sort_index()
-pv.columns = pv.columns.droplevel(level=0)
-pv.columns.name = None
-pv = pv.reset_index()
-
-cols = pv.columns[1:]
-rowsum = pv[cols].apply(func=sum, axis=1)
-pv[cols] = pv[cols].div(rowsum, 0) * 100
-cumsum = pv[cols].cumsum(axis=1)
+# 범주형 변수 간 상대도수 비교 (crosstab 기반 — 안정적)
+ct = pd.crosstab(df['범주변수'], df['그룹변수'], normalize='index') * 100
 
 # 색상: 그룹 수에 맞게 (2그룹: skyblue/orange, 3그룹: + #D9D9D9)
-colors = ['skyblue', 'orange', '#D9D9D9'][:len(cols)]
+colors = ['skyblue', 'orange', '#D9D9D9'][:len(ct.columns)]
 
 fig, ax = plt.subplots(figsize=(10, 6))
-pv.plot(x='범주변수', kind='bar', stacked=True, rot=0,
-        color=colors, legend='reverse', ax=ax)
+ct.plot(kind='bar', stacked=True, rot=0, color=colors, ax=ax)
 
 # 각 구간에 비율 텍스트 표시
-for col in cols:
-    for i, (v1, v2) in enumerate(zip(cumsum[col], pv[col])):
-        ax.text(x=i, y=v1 - v2/2, s=f'{v2:.1f}%',
+for i, (idx, row) in enumerate(ct.iterrows()):
+    cumval = 0
+    for col in ct.columns:
+        val = row[col]
+        ax.text(x=i, y=cumval + val/2, s=f'{val:.1f}%',
                 ha='center', va='center', fontsize=8, fontweight='bold')
+        cumval += val
 
 ax.set_title('범주별 상대도수 비교', fontdict={'fontweight': 'bold'})
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=5)
@@ -223,7 +215,7 @@ fig.savefig('chart_name.png', dpi=150, bbox_inches='tight')
 4. **대용량**: 1000행 이상 산점도는 `.sample(1000)` 또는 `alpha=0.3` 적용
 5. **폰트 설정**: 한국어 레이블 사용 시 첫 셀에 폰트 설정 포함 — Windows `Malgun Gothic`, macOS `AppleGothic` (`platform.system()`으로 분기)
 6. **글로벌 폰트**: `plt.rcParams['font.size'] = 8`, `plt.rcParams['font.weight'] = 'bold'` — import 셀에서 설정
-7. **범례 위치**: `plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=5)` — 차트 하단 중앙 배치
+7. **범례 위치**: 범례가 필요한 차트(그룹 비교, 누적 바차트 등)에서만 `ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=5)` — 차트 하단 중앙 배치. 단일 변수 차트에서는 범례 불필요.
 
 ## Tableau 확장 (추후)
 - Tableau 스킬은 별도로 추가 예정

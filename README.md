@@ -26,8 +26,13 @@ EDA, 전처리, 통계 분석, 시각화를 명령어 하나로 수행한다.
 
 ## 설치
 
+**macOS / Linux:**
+```bash
+./scripts/install.sh
+```
+
+**Windows (PowerShell):**
 ```powershell
-# PowerShell에서 실행
 .\scripts\install.ps1
 ```
 
@@ -35,6 +40,12 @@ EDA, 전처리, 통계 분석, 시각화를 명령어 하나로 수행한다.
 
 ## 제거
 
+**macOS / Linux:**
+```bash
+./scripts/uninstall.sh
+```
+
+**Windows (PowerShell):**
 ```powershell
 .\scripts\uninstall.ps1
 ```

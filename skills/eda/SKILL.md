@@ -20,6 +20,7 @@ user_invocable: true
 /eda data.csv           ← 특정 파일 지정
 /eda df                 ← 노트북 내 기존 DataFrame 변수 사용
 /eda domain             ← 현재 디렉토리에 domain.md 템플릿 생성
+/eda report             ← EDA 보고서 생성 (셀 실행 후 사용)
 ```
 
 ## 도메인 컨텍스트 (`domain.md`)
@@ -38,12 +39,18 @@ user_invocable: true
 
 ### 2단계: 노트북 셀 생성 (NotebookEdit)
 
-**셀 1 — 라이브러리 import + 데이터 로드**
+**셀 1 — 라이브러리 import + 작업 디렉토리 설정 + 데이터 로드**
 ```python
+import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+# 작업 디렉토리 설정 (노트북 기준 상대경로)
+DATA_DIR = '../data'
+os.chdir(DATA_DIR)
+print(f"작업 디렉토리: {os.getcwd()}")
 
 # 한국어 폰트 설정
 import platform
@@ -56,7 +63,7 @@ plt.rcParams['font.size'] = 8
 plt.rcParams['font.weight'] = 'bold'
 plt.rcParams['legend.loc'] = 'upper center'
 
-df = pd.read_csv('경로')  # 또는 pd.read_excel()
+df = pd.read_csv('파일명.csv')  # os.chdir 후 파일명만으로 로드
 print(f"데이터 로드 완료: {df.shape[0]}행 × {df.shape[1]}열")
 ```
 
@@ -136,12 +143,14 @@ for col in num_cols:
     plt.show()
 ```
 
-### 3단계: EDA 보고서 (마크다운 셀)
+### 3단계: EDA 보고서 (`/eda report`)
 
-EDA 셀 실행 결과를 종합 분석하여 EDA 보고서를 작성한다.
-이 보고서만 읽으면 데이터를 직접 보지 않아도 전체 상태를 파악하고 의사결정할 수 있어야 한다.
-보고서는 작업 디렉토리의 `docs/eda_report.md`에 저장한다 (`docs/` 폴더 없으면 생성).
-보고서 구조와 작성 규칙은 **EDA_REPORT.md**를 참조한다.
+**`/eda report`가 호출되면** 실행한다 (셀 생성과 동시에 자동 실행하지 않음).
+
+사용자가 노트북 셀을 모두 실행한 후 `/eda report`를 호출하면:
+1. 노트북의 셀 출력 결과를 읽고 분석
+2. EDA 보고서를 작성하여 `docs/eda_report.md`에 저장 (`docs/` 폴더 없으면 생성)
+3. 보고서 구조와 작성 규칙은 **EDA_REPORT.md**를 참조
 
 ## 코드 생성 규칙
 
