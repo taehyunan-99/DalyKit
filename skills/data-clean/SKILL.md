@@ -3,7 +3,7 @@ name: data-clean
 description: >
   데이터 전처리 파이프라인. 결측값, 중복, 이상치, 타입 변환을 처리하는
   코드를 노트북 셀에 생성한다.
-  트리거: "/data-clean", "전처리", "결측값 처리", "clean this data",
+  트리거: "harnessda:clean", "전처리", "결측값 처리", "clean this data",
   "데이터 정제", "missing values", "이상치 제거".
 user_invocable: true
 ---
@@ -15,10 +15,10 @@ user_invocable: true
 ## 사용법
 
 ```
-/data-clean [데이터 경로]
-/data-clean              ← 현재 노트북의 df 변수 사용
-/data-clean data.csv     ← 특정 파일 지정
-/data-clean report       ← 전처리 보고서 생성 (셀 실행 후 사용)
+harnessda:clean [데이터 경로]
+harnessda:clean              ← 현재 노트북의 df 변수 사용
+harnessda:clean data.csv     ← 특정 파일 지정
+harnessda:clean report       ← 전처리 보고서 생성 (셀 실행 후 사용)
 ```
 
 ## 노트북 구조
@@ -167,11 +167,11 @@ df_clean.to_csv('cleaned/파일명_cleaned.csv', index=False)
 print(f"저장 완료: cleaned/파일명_cleaned.csv")
 ```
 
-### 4단계: 전처리 보고서 (`/data-clean report`)
+### 4단계: 전처리 보고서 (`harnessda:clean report`)
 
-**`/data-clean report`가 호출되면** 실행한다 (셀 생성과 동시에 자동 실행하지 않음).
+**`harnessda:clean report`가 호출되면** 실행한다 (셀 생성과 동시에 자동 실행하지 않음).
 
-사용자가 노트북 셀을 모두 실행한 후 `/data-clean report`를 호출하면:
+사용자가 노트북 셀을 모두 실행한 후 `harnessda:clean report`를 호출하면:
 1. 노트북의 셀 출력 결과를 읽고 분석
 2. 전처리 보고서를 작성하여 `docs/preprocessing_report.md`에 저장 (`docs/` 폴더 없으면 생성)
 3. 보고서 구조와 작성 규칙은 **PREPROCESSING_REPORT.md**를 참조

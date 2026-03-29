@@ -1,5 +1,5 @@
 # HarnessDA Install Script
-# Creates junctions and hardlinks from HarnessDA to ~/.claude/
+# 파일을 ~/.claude/에 복사하여 설치한다
 
 $ErrorActionPreference = "Stop"
 
@@ -11,8 +11,8 @@ Write-Host "Source: $HarnessRoot"
 Write-Host "Target: $ClaudeRoot"
 Write-Host ""
 
-# Ensure target directories exist
-$dirs = @("skills", "agents", "commands")
+# 대상 디렉토리 생성
+$dirs = @("skills", "agents")
 foreach ($dir in $dirs) {
     $targetDir = Join-Path $ClaudeRoot $dir
     if (-not (Test-Path $targetDir)) {
@@ -21,68 +21,33 @@ foreach ($dir in $dirs) {
     }
 }
 
-# Install skills (Junction for directories)
-$skills = @("eda", "data-clean", "stat-analysis", "da-viz")
+# 스킬 설치 (디렉토리 복사)
+$skills = @("eda", "data-clean", "stat-analysis", "viz", "report", "help", "tracker")
 foreach ($skill in $skills) {
     $source = Join-Path $HarnessRoot "skills\$skill"
     $target = Join-Path $ClaudeRoot "skills\$skill"
 
     if (Test-Path $target) {
-        $item = Get-Item $target -Force
-        if ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) {
-            Remove-Item $target -Force
-        } else {
-            Write-Host "  WARN: $target already exists (not a junction). Skipped." -ForegroundColor Red
-            continue
-        }
+        Remove-Item $target -Recurse -Force
     }
 
-    New-Item -ItemType Junction -Path $target -Target $source | Out-Null
+    Copy-Item -Path $source -Destination $target -Recurse -Force
     Write-Host "  Skill installed: $skill" -ForegroundColor Green
 }
 
-# Install agents (HardLink for files)
-$agents = @("data-profiler.md", "stat-analyst.md")
+# 에이전트 설치 (파일 복사)
+$agents = @("data-profiler.md")
 foreach ($agent in $agents) {
     $source = Join-Path $HarnessRoot "agents\$agent"
     $target = Join-Path $ClaudeRoot "agents\$agent"
 
-    if (Test-Path $target) {
-        $item = Get-Item $target -Force
-        if ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) {
-            Remove-Item $target -Force
-        } else {
-            Write-Host "  WARN: $target already exists. Skipped." -ForegroundColor Red
-            continue
-        }
-    }
-
-    New-Item -ItemType HardLink -Path $target -Target $source | Out-Null
+    if (Test-Path $target) { Remove-Item $target -Force }
+    Copy-Item -Path $source -Destination $target -Force
     Write-Host "  Agent installed: $agent" -ForegroundColor Green
-}
-
-# Install commands (HardLink for files)
-$commands = @("da.md")
-foreach ($cmd in $commands) {
-    $source = Join-Path $HarnessRoot "commands\$cmd"
-    $target = Join-Path $ClaudeRoot "commands\$cmd"
-
-    if (Test-Path $target) {
-        $item = Get-Item $target -Force
-        if ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) {
-            Remove-Item $target -Force
-        } else {
-            Write-Host "  WARN: $target already exists. Skipped." -ForegroundColor Red
-            continue
-        }
-    }
-
-    New-Item -ItemType HardLink -Path $target -Target $source | Out-Null
-    Write-Host "  Command installed: $cmd" -ForegroundColor Green
 }
 
 Write-Host ""
 Write-Host "=== Install Complete ===" -ForegroundColor Cyan
-Write-Host "Skills: $($skills.Count), Agents: $($agents.Count), Commands: $($commands.Count)"
+Write-Host "Skills: $($skills.Count), Agents: $($agents.Count)"
 Write-Host ""
-Write-Host "Usage: type '/da' in Claude Code" -ForegroundColor Yellow
+Write-Host "Usage: type 'harnessda:help' in Claude Code" -ForegroundColor Yellow

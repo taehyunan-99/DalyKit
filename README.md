@@ -11,18 +11,17 @@ EDA, 전처리, 통계 분석, 시각화를 명령어 하나로 수행한다.
 
 | 명령어 | 설명 |
 |--------|------|
-| `/eda` | 탐색적 데이터 분석 — 데이터 구조, 결측값, 분포, 상관관계 |
-| `/data-clean` | 데이터 전처리 — 결측값, 중복, 이상치, 타입 변환 |
-| `/stat-analysis` | 통계 분석 — 가설 검정, 상관분석, 회귀분석 |
-| `/da-viz` | 데이터 시각화 — matplotlib/seaborn 차트 |
-| `/da` | 허브 명령어 — 위 스킬들을 라우팅 |
+| `harnessda:eda` | 탐색적 데이터 분석 — 데이터 구조, 결측값, 분포, 상관관계 |
+| `harnessda:clean` | 데이터 전처리 — 결측값, 중복, 이상치, 타입 변환 |
+| `harnessda:stat` | 통계 분석 — 가설 검정, 상관분석, 회귀분석 |
+| `harnessda:report` | 최종 보고서 — 마크다운/PPTX/HTML |
+| `harnessda:help` | 스킬 목록 + 도움말 |
 
 ## 에이전트
 
 | 이름 | 설명 |
 |------|------|
 | `data-profiler` | 종합 데이터 프로파일링 (EDA + 품질 평가) |
-| `stat-analyst` | 통계 분석 전문 (검정 선택 + 해석) |
 
 ## 설치
 
@@ -36,7 +35,7 @@ EDA, 전처리, 통계 분석, 시각화를 명령어 하나로 수행한다.
 .\scripts\install.ps1
 ```
 
-설치 후 Claude Code에서 `/da`로 사용 가능.
+설치 후 Claude Code에서 `harnessda:help`로 사용 가능.
 
 ## 제거
 
@@ -53,20 +52,23 @@ EDA, 전처리, 통계 분석, 시각화를 명령어 하나로 수행한다.
 ## 사용법
 
 ```
-/da                    스킬 목록 보기
-/da eda data.csv       EDA 실행
-/da clean              데이터 전처리
-/da stat "두 그룹 비교"  통계 분석
-/da viz                시각화
-/da profile data.csv   종합 프로파일링
-/da report             최종 보고서 (HTML)
+harnessda:help             스킬 목록 보기
+harnessda:eda              탐색적 데이터 분석 (EDA)
+harnessda:clean            데이터 전처리
+harnessda:stat             통계 분석 · 가설 검정
+harnessda:report           최종 보고서 (마크다운)
+harnessda:report pptx      슬라이드형 HTML 생성
+harnessda:report config    보고서 설정 템플릿 생성
+harnessda:tracker          work-tracker 업데이트 (개발 전용)
 ```
+
+모든 스킬은 현재 디렉토리의 데이터/노트북을 자동 탐색합니다.
 
 ## 기술 스택
 
 - Python: pandas, numpy, matplotlib, seaborn, scipy, statsmodels
 - 작업 환경: Jupyter Notebook (.ipynb)
-- 연동: visualize(보고서), context7(문서 참조)
+- 연동: context7(문서 참조)
 
 ## 확장 예정
 

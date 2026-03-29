@@ -11,7 +11,7 @@ Write-Host ""
 $removed = 0
 
 # Remove skills (Junctions)
-$skills = @("eda", "data-clean", "stat-analysis", "da-viz")
+$skills = @("eda", "data-clean", "stat-analysis", "viz", "report", "help", "tracker")
 foreach ($skill in $skills) {
     $target = Join-Path $ClaudeRoot "skills\$skill"
     if (Test-Path $target) {
@@ -27,23 +27,12 @@ foreach ($skill in $skills) {
 }
 
 # Remove agents
-$agents = @("data-profiler.md", "stat-analyst.md")
+$agents = @("data-profiler.md")
 foreach ($agent in $agents) {
     $target = Join-Path $ClaudeRoot "agents\$agent"
     if (Test-Path $target) {
         Remove-Item $target -Force
         Write-Host "  Agent removed: $agent" -ForegroundColor Yellow
-        $removed++
-    }
-}
-
-# Remove commands
-$commands = @("da.md")
-foreach ($cmd in $commands) {
-    $target = Join-Path $ClaudeRoot "commands\$cmd"
-    if (Test-Path $target) {
-        Remove-Item $target -Force
-        Write-Host "  Command removed: $cmd" -ForegroundColor Yellow
         $removed++
     }
 }

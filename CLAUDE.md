@@ -17,12 +17,12 @@ HarnessDA_Project/
 │   ├── eda/          ← SKILL.md, EDA_REPORT.md, DOMAIN_TEMPLATE.md
 │   ├── data-clean/   ← SKILL.md
 │   ├── stat-analysis/← SKILL.md
-│   └── da-viz/       ← SKILL.md
+│   ├── viz/          ← STYLE_GUIDE.md, charts/*.md (공유 시각화 참조 문서)
+│   ├── report/       ← SKILL.md, SLIDE_STRUCTURE.md, HTML_TEMPLATE.md, REPORT_CONFIG_TEMPLATE.md
+│   ├── help/         ← SKILL.md (스킬 목록 + 도움말)
+│   └── tracker/      ← SKILL.md (work-tracker 자동 업데이트, 개발 전용)
 ├── agents/
-│   ├── data-profiler.md
-│   └── stat-analyst.md
-├── commands/
-│   └── da.md         ← 허브 라우터
+│   └── data-profiler.md
 └── scripts/
     ├── install.sh / install.ps1
     └── uninstall.sh / uninstall.ps1
@@ -49,34 +49,21 @@ HarnessDA_Project/
 - raw 데이터 전체 출력 **절대 금지**
 
 ### 플러그인 연동
-- **visualize**: `/da report` (최종 보고서)에서만 사용
 - **context7**: scipy, statsmodels 등 API 확인 시 참조
 - **code-cleaner**: 분석 코드 정리 시 활용
 
 ## 스킬 목록
 | 명령어 | 설명 |
 |--------|------|
-| `/eda` | 탐색적 데이터 분석 |
-| `/data-clean` | 데이터 전처리 |
-| `/stat-analysis` | 통계 분석 |
-| `/da-viz` | 데이터 시각화 |
-| `/da` | 허브 명령어 (라우팅) |
-
-### `/da` 서브명령어
-
-| 서브명령 | 대상 | 설명 |
-|----------|------|------|
-| `eda` | `/eda` 스킬 | 탐색적 데이터 분석 |
-| `clean` | `/data-clean` 스킬 | 데이터 전처리 |
-| `stat` | `/stat-analysis` 스킬 | 통계 분석 (대화형) |
-| `stat-deep` | `stat-analyst` 에이전트 | 통계 분석 (자동) |
-| `viz` | `/da-viz` 스킬 | 시각화 |
-| `profile` | `data-profiler` 에이전트 | 종합 프로파일링 |
-| `report` | `visualize` 플러그인 | 최종 HTML 보고서 |
+| `harnessda:eda` | 탐색적 데이터 분석 |
+| `harnessda:clean` | 데이터 전처리 |
+| `harnessda:stat` | 통계 분석 |
+| `harnessda:report` | 최종 보고서 (마크다운/PPTX/HTML) |
+| `harnessda:help` | 스킬 목록 + 도움말 |
+| `harnessda:tracker` | work-tracker.md 자동 업데이트 (개발 전용) |
 
 ## 에이전트 목록
 | 이름 | 설명 |
 |------|------|
 | `data-profiler` | 종합 데이터 프로파일링 |
-| `stat-analyst` | 통계 분석 전문 |
 

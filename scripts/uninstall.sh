@@ -12,7 +12,7 @@ echo ""
 removed=0
 
 # 스킬 제거
-skills=("eda" "data-clean" "stat-analysis" "da-viz")
+skills=("eda" "data-clean" "stat-analysis" "viz" "report" "help" "tracker")
 for skill in "${skills[@]}"; do
     target="$CLAUDE_ROOT/skills/$skill"
     if [ -L "$target" ]; then
@@ -25,7 +25,7 @@ for skill in "${skills[@]}"; do
 done
 
 # 에이전트 제거
-agents=("data-profiler.md" "stat-analyst.md")
+agents=("data-profiler.md")
 for agent in "${agents[@]}"; do
     target="$CLAUDE_ROOT/agents/$agent"
     if [ -L "$target" ]; then
@@ -34,19 +34,6 @@ for agent in "${agents[@]}"; do
         ((removed++))
     elif [ -e "$target" ]; then
         echo "  Skipped: $agent (심볼릭 링크 아님)"
-    fi
-done
-
-# 커맨드 제거
-commands=("da.md")
-for cmd in "${commands[@]}"; do
-    target="$CLAUDE_ROOT/commands/$cmd"
-    if [ -L "$target" ]; then
-        rm "$target"
-        echo "  Command removed: $cmd"
-        ((removed++))
-    elif [ -e "$target" ]; then
-        echo "  Skipped: $cmd (심볼릭 링크 아님)"
     fi
 done
 
