@@ -21,7 +21,6 @@
 | 7 | `preprocessing` | 전처리 과정 | 전후 비교표, 핵심 처리 내용 | `preprocessing_report.md` §1-2 |
 | 8 | `stat_results` | 분석 결과 | 가설 검정 요약 테이블 | `stat_report.md` §4 |
 | 9 | `key_findings` | 핵심 발견 | 효과 크기 상위 3개 + 실질적 해석 | `stat_report.md` §5 |
-| 10+ | `additional_charts` | 추가 시각화 | 나머지 차트 이미지 | `docs/figures/` |
 | 마지막 | `conclusion` | 결론 | 문제에 대한 답, 한계점, 후속 제안 | 3개 보고서 종합 |
 
 ## 조건부 포함 규칙
@@ -37,7 +36,6 @@
 | `preprocessing` | `preprocessing_report.md` 존재 시 |
 | `stat_results` | `stat_report.md` 존재 시 |
 | `key_findings` | `stat_report.md` §5 존재 시 |
-| `additional_charts` | 미사용 차트 이미지 존재 시 |
 | `conclusion` | 항상 포함 |
 
 ## 콘텐츠 추출 가이드

@@ -25,8 +25,12 @@ harnessda:report config       ← report_config.md 템플릿 생성
 | 파일 | 내용 |
 |------|------|
 | `SLIDE_STRUCTURE.md` | 슬라이드 기본 순서 + 콘텐츠 매핑 |
-| `HTML_TEMPLATE.md` | HTML 템플릿 (CSS 스케일, PDF 저장, html2canvas 주의사항) |
-| `REPORT_CONFIG_TEMPLATE.md` | 사용자 커스텀 설정 템플릿 |
+| `HTML_TEMPLATE.md` | template.html 설계 명세 (CSS 스케일, 테마, 렌더 구조) |
+| `JSON_SCHEMA.md` | report_data.json 스키마 (인덱스 + 조건부 규칙 + 슬라이드 순서) |
+| `SCHEMA_COMMON.md` | 공통 슬라이드 타입 스키마 |
+| `SCHEMA_DOMAIN.md` | 도메인 특화 슬라이드 타입 스키마 |
+| `SCHEMA_PORTFOLIO.md` | 포트폴리오 전용 슬라이드 타입 스키마 |
+| `templates/REPORT_CONFIG_TEMPLATE.md` | 사용자 커스텀 설정 템플릿 |
 
 ## 출력 형식 분기
 
@@ -34,7 +38,7 @@ harnessda:report config       ← report_config.md 템플릿 생성
 |------|------|------|
 | (없음) | `docs/report.md` | 직접 Write (마크다운 종합 보고서) |
 | `pptx` | `docs/report_ppt.html` | `frontend-design` 플러그인으로 슬라이드형 HTML 생성 |
-| `config` | `report_config.md` | REPORT_CONFIG_TEMPLATE.md 복사 |
+| `config` | `report_config.md` | templates/REPORT_CONFIG_TEMPLATE.md 복사 |
 
 ## 워크플로우
 
@@ -43,7 +47,7 @@ harnessda:report config       ← report_config.md 템플릿 생성
 1. 현재 디렉토리에 `report_config.md` 확인
    - **있으면**: Read로 읽고 프로젝트 정보 + 커스텀 슬라이드 순서 반영
    - **없으면**: SLIDE_STRUCTURE.md 기본값 사용 (프로젝트 정보는 보고서에서 추론)
-2. `harnessda:report config` 호출 시: REPORT_CONFIG_TEMPLATE.md를 현재 디렉토리에 `report_config.md`로 복사 → 종료
+2. `harnessda:report config` 호출 시: templates/REPORT_CONFIG_TEMPLATE.md를 현재 디렉토리에 `report_config.md`로 복사 → 종료
 
 ### 2단계: 수집
 
@@ -69,22 +73,17 @@ harnessda:report config       ← report_config.md 템플릿 생성
 
 #### PPTX (슬라이드형 HTML — `pptx` 인자)
 
-> `frontend-design` 플러그인을 호출하여 슬라이드형 HTML을 생성한다.
+> AI는 `report_data.json`만 생성. `template.html`이 JS로 렌더링. (토큰 절감)
 
-1. 2단계에서 수집한 보고서 내용을 바탕으로 **슬라이드별 데이터** 정리
-2. `frontend-design` 플러그인에 아래 정보를 전달:
-   - 슬라이드 구성 (SLIDE_STRUCTURE.md 순서)
-   - 각 슬라이드의 콘텐츠 (표, 수치, 해석)
-   - 톤&무드: `report_config.md`에 지정되어 있으면 그대로 사용, 없으면 데이터 키워드에서 자동 추론
-3. 결과: `docs/report_ppt.html` (슬라이드 네비게이션 + PDF 저장 포함)
-
-**슬라이드형 HTML 필수 요소:**
-- 화살표 키/스크롤 네비게이션
-- PDF 저장: html2canvas + jsPDF (CDN 동적 로드)
-- CSS 스케일 시스템: `:root { --s: 1; }` — 전체 크기 일괄 조절
-- 애니메이션 제외 (PDF 캡처 호환성)
-- 인라인 차트/시각화 (CSS/SVG 기반)
-- 한국어 폰트: `Malgun Gothic` / `Apple SD Gothic Neo`
+1. `JSON_SCHEMA.md` Read → 슬라이드 조건부 포함 규칙 + 기본 순서 확인
+2. `report_config.md`의 `domain` / `purpose` / 슬라이드 순서 확인 (없으면 자동 추론)
+3. 2단계 수집 보고서 내용 기반으로 `report_data.json` 생성:
+   - 슬라이드 타입별 스키마: `SCHEMA_COMMON.md` / `SCHEMA_DOMAIN.md` / `SCHEMA_PORTFOLIO.md` 참조
+   - 각 슬라이드에 `insight` 필드 포함 (수치 기반 1문장 해석)
+4. `template.html` 존재 여부 확인 (Glob):
+   - **있으면**: `report_data.json`만 저장 → 브라우저에서 자동 렌더링
+   - **없으면**: `frontend-design` 플러그인 호출 → `HTML_TEMPLATE.md` 전달하여 `template.html` 1회 생성
+5. 결과: `docs/report_ppt.html` + `docs/report_data.json`
 
 ## 마크다운 보고서 작성 규칙
 

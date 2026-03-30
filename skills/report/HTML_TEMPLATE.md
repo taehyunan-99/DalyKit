@@ -1,135 +1,187 @@
-# HTML 보고서 템플릿
+# HTML PPT 템플릿 설계 명세
 
-`frontend-design` 플러그인이 슬라이드형 HTML 생성 시 참조하는 패턴.
+`frontend-design` 플러그인이 `template.html` 제작 시 반드시 따라야 하는 설계 명세.
 
-## 특징
+> **핵심 원칙**: AI는 `report_data.json`만 생성. `template.html`은 1회 제작 후 재사용.
 
-- **단독 HTML 파일** — CDN/외부 리소스 없음, 오프라인 동작
-- **CSS 변수 스케일 시스템** — `--s` 변수 하나로 전체 크기 조절
-- **PDF 저장** — html2canvas + jsPDF로 화면 그대로 캡처
-- **차트 임베드** — base64 인코딩으로 이미지 내장
-- **한국어 폰트** — `Malgun Gothic`, `AppleGothic` 폰트 스택
+---
 
-## CSS 스케일 시스템
+## 아키텍처
 
-`:root`에 `--s` 변수를 선언하고, 모든 `px` 값에 `calc(원래값 * var(--s))`를 적용한다.
+```
+report_data.json  ←  AI가 생성 (슬라이드 데이터 + Smart Insight)
+      ↓
+template.html     ←  frontend-design이 1회 제작, 이후 재사용
+      ↓
+JS가 JSON 로드 → slides 배열 순회 → 타입별 렌더 함수 호출 → 슬라이드 생성
+```
+
+---
+
+## 1. 전체 크기 — CSS 변수 스케일 시스템
+
+`:root`의 `--s` 하나로 전체 크기 일괄 조절. **모든 px 값에 `calc(Npx * var(--s))` 적용.**
 
 ```css
 :root {
-  --s: 1;     /* 기본 크기 */
-  /* --s: 1.4;  ← 40% 확대 */
+  --s: 1;  /* 0.8로 바꾸면 전체 80% 축소 */
+
+  /* 폰트 — 발표용 기준 (포트폴리오는 --s 조절로 대응) */
+  --fs-h1:    calc(36px * var(--s));
+  --fs-h2:    calc(28px * var(--s));
+  --fs-body:  calc(16px * var(--s));
+  --fs-small: calc(12px * var(--s));
+  --spacing:  calc(24px * var(--s));
 }
-h2 { font-size: calc(22px * var(--s)); }
-.card { padding: calc(24px * var(--s)); border-radius: calc(10px * var(--s)); }
 ```
 
-### 스케일 제외 대상
+**스케일 제외 대상** (고정값 유지):
 - `border-width` (1px, 2px 등 얇은 선)
 - `letter-spacing`, `opacity`, `z-index`
-- `max-width` (레이아웃 제약)
-- `.save-toolbar`, `.nav-bar` 등 UI 컨트롤
-- `@media print` 고정 치수
 - `100%`, `100vw`, `100vh` 등 상대 단위
+- `.nav-bar`, `.pdf-btn` 등 UI 컨트롤
+- `@media print` 고정 치수
 
-## 기본 HTML 구조
+---
 
-```html
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{project_name} — 분석 보고서</title>
-    <style>
-        :root { --s: 1; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Malgun Gothic', 'AppleGothic', sans-serif;
-            color: #333; line-height: 1.6; background: #f5f5f5;
-        }
-        .page {
-            width: 960px;
-            margin: calc(20px * var(--s)) auto;
-            padding: calc(40px * var(--s)) calc(50px * var(--s));
-            background: #fff; border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            page-break-after: always;
-        }
-        .page:last-child { page-break-after: auto; }
-        /* 모든 px 값에 calc(Npx * var(--s)) 적용 */
-        h1 { font-size: calc(28px * var(--s)); }
-        h2 { font-size: calc(22px * var(--s)); color: #2C3E50; border-bottom: 2px solid #4A90D9; }
-        th { background: #2C3E50; color: #fff; }
-        .highlight { color: #4A90D9; font-weight: bold; }
-        .alert { color: #E74C3C; font-weight: bold; }
-        .callout { background: #f0f7ff; border-left: 4px solid #4A90D9; padding: calc(12px * var(--s)) calc(16px * var(--s)); }
-        .save-toolbar { position: fixed; top: 16px; right: 16px; z-index: 200; }
-        .save-btn { padding: 8px 16px; border-radius: 6px; border: 1px solid #4A90D9; background: rgba(255,255,255,0.95); color: #2C3E50; cursor: pointer; }
-        .save-btn:hover { background: #4A90D9; color: #fff; }
-        @media print { .save-toolbar { display: none; } }
-    </style>
-</head>
-<body>
-    <div class="save-toolbar">
-        <button class="save-btn" onclick="savePDF()">PDF 저장</button>
-    </div>
-    {content}
-    <script>
-    async function savePDF() {
-        const btn = document.querySelector('.save-btn');
-        btn.textContent = '생성 중...'; btn.disabled = true;
-        async function loadScript(src) {
-            return new Promise((resolve, reject) => {
-                if (document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
-                const s = document.createElement('script');
-                s.src = src; s.onload = resolve; s.onerror = reject;
-                document.head.appendChild(s);
-            });
-        }
-        try {
-            await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
-            await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
-            const pages = document.querySelectorAll('.page');
-            const { jsPDF } = window.jspdf;
-            const scale = (window.devicePixelRatio || 1) * 2;
-            const first = pages[0];
-            const pw = first.offsetWidth * 0.264583;
-            const ph = first.offsetHeight * 0.264583;
-            const pdf = new jsPDF({ orientation: ph > pw ? 'portrait' : 'landscape', unit: 'mm', format: [pw, ph] });
-            for (let i = 0; i < pages.length; i++) {
-                btn.textContent = `${i+1}/${pages.length}...`;
-                pages[i].scrollIntoView({ behavior: 'instant' });
-                const canvas = await html2canvas(pages[i], {
-                    scale, useCORS: true, allowTaint: true, backgroundColor: '#fff',
-                    width: first.offsetWidth, height: first.offsetHeight
-                });
-                if (i > 0) pdf.addPage([pw, ph]);
-                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, pw, ph, '', 'FAST');
-            }
-            pages[0].scrollIntoView({ behavior: 'instant' });
-            pdf.save(document.title.replace(/[^가-힣a-zA-Z0-9]/g, '_') + '.pdf');
-        } catch(e) { alert('PDF 생성 실패: ' + e.message); }
-        finally { btn.textContent = 'PDF 저장'; btn.disabled = false; }
-    }
-    </script>
-</body>
-</html>
+## 2. 슬라이드 캔버스 — 16:9 고정 + 중앙 정렬
+
+```css
+.slide {
+  width: calc(960px * var(--s));
+  height: calc(540px * var(--s));  /* 16:9 고정 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;                /* 콘텐츠 넘침 방지 */
+  position: relative;
+}
+
+/* 브라우저 창 크기와 무관하게 슬라이드 비율 유지 */
+#slide-viewport {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
 ```
 
-## 섹션 패턴 요약
+---
 
-각 섹션은 `<div class="page">` 로 감싼다. 슬라이드형(`report_ppt.html`)에서는 `.page` 대신 `.slide`를 사용할 수 있다.
+## 3. 도메인 테마 — CSS 클래스 전환
 
-| 유형 | 핵심 요소 |
-|------|----------|
-| cover | `.page.cover` + `h1` + `.subtitle` |
-| problem | `h2` + `h3`(배경/목적/질문) + `.highlight` |
-| table | `<table>` + `th`(#2C3E50 배경) + 짝수행 배경 |
-| chart | `<img class="chart" src="data:image/png;base64,...">` |
-| callout | `.callout` + `<strong>` 제목 + 본문 |
+`report_data.json`의 `domain` + `purpose` 값을 읽어 `<body>` 클래스 적용.
 
-## 주의사항
+```html
+<body class="finance presentation">
+```
 
-- **CSS `zoom` 사용 금지** — html2canvas가 무시하여 PDF 렌더링 깨짐
-- **CSS 애니메이션 제외** — `opacity: 0` 상태를 캡처하여 빈 페이지 생성
-- **`-webkit-text-fill-color: transparent` 금지** — html2canvas 미지원, 텍스트 안 보임
+```css
+/* 도메인별 색상 팔레트 */
+.finance    { --primary: #1B2D5B; --accent: #C9A84C; --bg: #F5F6F8; --text: #1A1A2E; }
+.healthcare { --primary: #2BA084; --accent: #2BA084; --bg: #F0FAF8; --text: #1C3A35; }
+.manufacturing { --primary: #2C3E50; --accent: #E87722; --bg: #F4F5F7; --text: #1A1A1A; }
+.ecommerce  { --primary: #1A0533; --accent: #C940D5; --bg: #0D0D1A; --text: #F0E6FF; }
+.general    { --primary: #2D3E6B; --accent: #5B8DEF; --bg: #F7F8FC; --text: #2C2C3E; }
+
+/* 용도별 정보 밀도 */
+.presentation .slide-content { font-size: var(--fs-body); line-height: 1.8; }
+.portfolio    .slide-content { font-size: var(--fs-small); line-height: 1.6; }
+.presentation .slide { padding: calc(48px * var(--s)); }
+.portfolio    .slide { padding: calc(32px * var(--s)); }
+```
+
+---
+
+## 4. HTML 뼈대 구조
+
+```
+[네비게이션 바]  ← 슬라이드 번호 + 전/다음 버튼 + PDF 저장 버튼
+[슬라이드 뷰포트]
+  └─ [슬라이드 캔버스 .slide]
+       ├─ [헤더 .slide-header]  ← 슬라이드 제목
+       ├─ [콘텐츠 .slide-content]  ← 타입별 렌더 함수 결과
+       └─ [푸터 .slide-footer]  ← 페이지 번호 + 프로젝트명
+```
+
+---
+
+## 5. 슬라이드 타입 — 렌더 함수 정의
+
+각 타입은 template.html 내부에 렌더 함수로 구현. **AI가 JSON에 올바른 타입만 지정하면 렌더링은 template.html이 담당.**
+
+### 공통 슬라이드
+| 타입 | 차트 | 설명 |
+|------|------|------|
+| `cover` | 없음 | 제목 + 부제목 + 날짜 |
+| `problem` | 없음 | 배경/목적/질문 텍스트 카드 |
+| `data_overview` | 막대차트 (인라인 SVG) | 컬럼 수, 행 수, 타입별 분포 |
+| `data_quality` | 막대차트 (인라인 SVG) | 결측값 비율, 중복 수 |
+| `key_findings` | 없음 | 수치 강조 카드 3~5개 |
+| `conclusion` | 없음 | 요약 + 후속 분석 제안 |
+
+### 도메인 특화 슬라이드
+| 타입 | 도메인 | 차트 |
+|------|--------|------|
+| `risk_matrix` | finance | 히트맵 (인라인 SVG) |
+| `portfolio_performance` | finance | 선형 차트 (인라인 SVG) |
+| `fraud_pattern` | finance | 산점도 (인라인 SVG) |
+| `clinical_significance` | healthcare | 박스플롯 (인라인 SVG) |
+| `survival_analysis` | healthcare | 선형 차트 (인라인 SVG) |
+| `defect_analysis` | manufacturing | 막대차트 (인라인 SVG) |
+| `process_efficiency` | manufacturing | 선형 차트 (인라인 SVG) |
+| `funnel_analysis` | ecommerce | 퍼널 차트 (인라인 SVG) |
+| `cohort_retention` | ecommerce | 히트맵 (인라인 SVG) |
+| `correlation` | 공통 | 히트맵 (인라인 SVG) |
+| `distributions` | 공통 | 히스토그램 (inline) 또는 PNG 폴백 |
+
+### 포트폴리오 전용 슬라이드
+| 타입 | 설명 |
+|------|------|
+| `tech_stack` | 사용 라이브러리/기술 뱃지 |
+| `troubleshooting` | 문제-해결 과정 타임라인 |
+| `lessons_learned` | 배운 점 카드 목록 |
+
+---
+
+## 6. 차트 렌더링 방식
+
+```javascript
+// report_data.json의 chart.mode로 분기
+const SLIDE_RENDERERS = {
+  "correlation": (data) => renderHeatmapSVG(data.chart.data),
+  "data_overview": (data) => renderBarSVG(data.chart.data),
+  "key_findings": (data) => renderTextCards(data.findings),
+  "distribution": (data) => {
+    if (data.chart.mode === "image") return `<img src="${data.chart.path}">`;
+    return renderHistogramSVG(data.chart.data);
+  }
+}
+```
+
+| 차트 종류 | 방식 |
+|-----------|------|
+| 막대/선/파이/히트맵 | 인라인 SVG (파일 의존성 없음) |
+| pairplot 등 복잡한 분포 | PNG 폴백 (`figures/` 폴더) |
+
+---
+
+## 7. 필수 기능
+
+| 기능 | 구현 |
+|------|------|
+| 키보드 네비게이션 | `←` `→` 키 이벤트 |
+| 슬라이드 번호 | `현재 / 전체` 표시 |
+| PDF 저장 | html2canvas + jsPDF CDN 동적 로드 |
+| 폰트 보장 | `document.fonts.ready` 후 렌더링 |
+| 한국어 폰트 | `Malgun Gothic`, `AppleGothic` |
+
+---
+
+## 8. 주의사항
+
+- **CSS `zoom` 사용 금지** — html2canvas가 무시, PDF 렌더링 깨짐
+- **CSS 애니메이션 제외** — PDF 캡처 호환성
+- **`-webkit-text-fill-color: transparent` 금지** — html2canvas 미지원
+- **외부 이미지 의존 최소화** — PNG는 base64 또는 상대경로만 사용

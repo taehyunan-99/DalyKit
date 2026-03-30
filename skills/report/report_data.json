@@ -1,0 +1,240 @@
+{
+  "meta": {
+    "project_name": "고객 이탈 예측 분석",
+    "author": "홍길동",
+    "date": "2026-03-30",
+    "domain": "finance",
+    "purpose": "portfolio"
+  },
+  "slides": [
+    {
+      "type": "cover",
+      "title": "고객 이탈 예측 분석",
+      "subtitle": "금융 고객 데이터 기반 이탈 요인 탐색",
+      "insight": null
+    },
+    {
+      "type": "problem",
+      "title": "문제 정의",
+      "content": {
+        "background": "최근 3개월간 고객 이탈률이 15%에서 22%로 급증했습니다. 이탈 고객의 특성을 파악하여 사전 방지 전략이 필요합니다.",
+        "objective": "고객 이탈에 영향을 미치는 핵심 변수를 식별하고 예측 모델의 기초를 마련합니다.",
+        "questions": [
+          "어떤 고객 속성이 이탈과 가장 강하게 연관되는가?",
+          "소득 수준과 이탈률 사이에 유의미한 관계가 있는가?",
+          "고위험 고객군을 사전에 식별할 수 있는가?"
+        ]
+      },
+      "insight": null
+    },
+    {
+      "type": "data_overview",
+      "title": "데이터 개요",
+      "content": {
+        "rows": 5000,
+        "cols": 14,
+        "types": { "numeric": 10, "categorical": 4 }
+      },
+      "chart": {
+        "mode": "inline",
+        "data": { "Age": 0, "Income": 2.3, "Balance": 1.1, "NumProducts": 0, "CreditScore": 0.5 }
+      },
+      "insight": "총 5,000명의 고객 데이터, 14개 변수 중 수치형 10개, 범주형 4개로 구성됩니다."
+    },
+    {
+      "type": "data_quality",
+      "title": "데이터 품질",
+      "content": {
+        "missing_cols": 3,
+        "duplicate_rows": 12,
+        "treatment": "Income은 중앙값, Balance는 평균으로 대체. 중복 12건 제거."
+      },
+      "chart": {
+        "mode": "inline",
+        "data": { "Income": 2.3, "Balance": 1.1, "CreditScore": 0.5 }
+      },
+      "insight": "결측률이 가장 높은 Income(2.3%)도 경미한 수준이며, 중앙값 대체로 처리했습니다."
+    },
+    {
+      "type": "distributions",
+      "title": "Income 분포",
+      "chart": {
+        "mode": "inline",
+        "data": { "bins": ["0-20K", "20-40K", "40-60K", "60-80K", "80-100K", "100K+"], "counts": [320, 890, 1450, 1280, 740, 320] }
+      },
+      "insight": "소득 40K-60K 구간에 가장 많은 고객이 분포하며, 오른쪽 꼬리가 긴 분포를 보입니다."
+    },
+    {
+      "type": "correlations",
+      "title": "주요 변수 상관관계",
+      "chart": {
+        "mode": "inline",
+        "data": [
+          [1.00, 0.65, 0.32, -0.15, 0.42],
+          [0.65, 1.00, 0.48, -0.22, 0.38],
+          [0.32, 0.48, 1.00, -0.08, 0.55],
+          [-0.15, -0.22, -0.08, 1.00, -0.31],
+          [0.42, 0.38, 0.55, -0.31, 1.00]
+        ],
+        "labels": ["Income", "Balance", "CreditScore", "Exited", "Tenure"]
+      },
+      "insight": "Income-Balance 간 강한 양의 상관(r=0.65)이 확인되며, Exited는 대부분 변수와 음의 상관을 보입니다."
+    },
+    {
+      "type": "preprocessing",
+      "title": "전처리 과정",
+      "content": {
+        "before": { "rows": 5000, "cols": 14, "missing": 190 },
+        "after": { "rows": 4988, "cols": 14, "missing": 0 },
+        "steps": [
+          "Income 결측값 → 중앙값(52,400) 대체",
+          "Balance 결측값 → 평균(76,480) 대체",
+          "CreditScore 결측값 → 중앙값(652) 대체",
+          "중복 12건 제거",
+          "Geography, Gender → Label Encoding"
+        ]
+      },
+      "insight": "결측값 190건 처리 및 중복 제거로 4,988건의 분석 데이터를 확보했습니다."
+    },
+    {
+      "type": "stat_results",
+      "title": "통계 분석 결과",
+      "content": {
+        "rows": [
+          {
+            "analysis": "소득 × 이탈",
+            "test": "Welch t-test",
+            "statistic": 4.832,
+            "p_value": 0.000014,
+            "conclusion": "귀무가설 기각",
+            "effect_size": 0.412
+          },
+          {
+            "analysis": "연령 × 이탈",
+            "test": "Mann-Whitney U",
+            "statistic": 2.156,
+            "p_value": 0.031,
+            "conclusion": "귀무가설 기각",
+            "effect_size": 0.185
+          },
+          {
+            "analysis": "성별 × 이탈",
+            "test": "Chi-squared",
+            "statistic": 1.245,
+            "p_value": 0.264,
+            "conclusion": "귀무가설 기각 불가",
+            "effect_size": 0.016
+          },
+          {
+            "analysis": "상품 수 × 이탈",
+            "test": "Kruskal-Wallis",
+            "statistic": 18.743,
+            "p_value": 0.0003,
+            "conclusion": "귀무가설 기각",
+            "effect_size": 0.298
+          }
+        ]
+      },
+      "insight": "소득 수준이 이탈 여부에 가장 큰 영향(d=0.412)을 미치며, 성별은 유의하지 않습니다."
+    },
+    {
+      "type": "key_findings",
+      "title": "핵심 발견",
+      "findings": [
+        { "label": "이탈률", "value": "22.4%", "highlight": true },
+        { "label": "고위험 연령대", "value": "45-55세", "highlight": false },
+        { "label": "소득 임계값", "value": "$40K 이하", "highlight": true },
+        { "label": "핵심 변수", "value": "Income", "highlight": false }
+      ],
+      "insight": "소득 $40K 이하 고객의 이탈률이 전체 평균의 2.8배이며, 45-55세 연령대에서 집중됩니다."
+    },
+    {
+      "type": "risk_matrix",
+      "title": "리스크 매트릭스",
+      "chart": {
+        "mode": "inline",
+        "data": [
+          [0.12, 0.18, 0.35],
+          [0.08, 0.22, 0.41],
+          [0.05, 0.15, 0.52]
+        ],
+        "labels": {
+          "x": ["저소득", "중소득", "고소득"],
+          "y": ["젊은층", "중년층", "고령층"]
+        }
+      },
+      "insight": "고소득-고령층 조합에서 이탈 확률이 52%로 가장 높게 나타납니다."
+    },
+    {
+      "type": "portfolio_performance",
+      "title": "월별 이탈률 추이",
+      "chart": {
+        "mode": "inline",
+        "data": {
+          "x": ["1월", "2월", "3월", "4월", "5월", "6월"],
+          "y": [15.2, 16.8, 18.1, 19.5, 21.3, 22.4]
+        }
+      },
+      "insight": "이탈률이 6개월간 지속적으로 상승하여 1월 대비 47% 증가했습니다."
+    },
+    {
+      "type": "fraud_pattern",
+      "title": "이상 거래 패턴",
+      "chart": {
+        "mode": "inline",
+        "data": {
+          "x": [120, 85, 200, 150, 300, 45, 180, 95, 250, 60, 400, 30],
+          "y": [50, 42, 78, 62, 95, 30, 70, 48, 88, 35, 110, 25],
+          "label": ["정상", "정상", "이상", "정상", "이상", "정상", "정상", "정상", "이상", "정상", "이상", "정상"]
+        }
+      },
+      "insight": "거래금액 $200 이상 + 빈도 70회 이상에서 이상 거래가 집중됩니다."
+    },
+    {
+      "type": "tech_stack",
+      "title": "기술 스택",
+      "items": ["Python 3.11", "pandas", "numpy", "scipy", "statsmodels", "scikit-learn", "matplotlib", "seaborn", "HarnessDA"],
+      "insight": null
+    },
+    {
+      "type": "troubleshooting",
+      "title": "문제 해결 과정",
+      "items": [
+        {
+          "problem": "Income 컬럼 결측값 패턴이 MCAR이 아닌 MAR로 확인됨",
+          "solution": "Little's MCAR 검정 후 MAR 확인, 조건부 중앙값 대체(연령대별) 적용"
+        },
+        {
+          "problem": "CreditScore의 이상치(Z>3)가 전체의 4.2% 차지",
+          "solution": "IQR 기반 탐지 후 도메인 전문가 협의하여 유지 결정 (실제 고신용자)"
+        },
+        {
+          "problem": "Shapiro-Wilk 정규성 검정에서 모든 수치형 변수 기각",
+          "solution": "n>5000이므로 Jarque-Bera로 전환, 비모수 검정(Mann-Whitney, Kruskal-Wallis) 적용"
+        }
+      ],
+      "insight": null
+    },
+    {
+      "type": "lessons_learned",
+      "title": "배운 점",
+      "items": [
+        "대표본에서 정규성 검정의 검정력 과잉 문제를 직접 경험하고, 효과 크기 중심 해석의 중요성을 체감했습니다.",
+        "결측값 처리 시 단순 대체보다 결측 메커니즘(MCAR/MAR/MNAR)을 먼저 판단하는 것이 분석 신뢰도에 큰 차이를 만듭니다.",
+        "통계적 유의성과 실질적 유의성은 다르며, Cohen's d 등 효과 크기 지표를 반드시 함께 보고해야 합니다."
+      ],
+      "insight": null
+    },
+    {
+      "type": "conclusion",
+      "title": "결론 및 제언",
+      "summary": "소득 수준과 연령이 고객 이탈의 핵심 요인으로 확인되었습니다. 특히 소득 $40K 이하, 45-55세 고객군이 고위험군으로 분류되며, 이들에 대한 선제적 리텐션 전략이 필요합니다. 성별은 이탈과 무관한 것으로 나타났습니다.",
+      "next_steps": [
+        "로지스틱 회귀 / Random Forest 기반 이탈 예측 모델 구축",
+        "고위험군 대상 맞춤형 리텐션 프로그램 설계",
+        "분기별 이탈률 모니터링 대시보드 구축"
+      ],
+      "insight": null
+    }
+  ]
+}
