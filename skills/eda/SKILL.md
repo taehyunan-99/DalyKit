@@ -10,7 +10,7 @@ user_invocable: true
 
 # EDA (탐색적 데이터 분석)
 
-주피터 노트북(.ipynb)에 EDA 코드 셀을 NotebookEdit로 직접 작성한다.
+> 이 스킬은 NotebookEdit 대신 .py 스크립트를 생성한다 (Heavy-Task-Offload).
 
 ## 사용법
 
@@ -18,131 +18,66 @@ user_invocable: true
 harnessda:eda [데이터 경로]
 harnessda:eda                    ← 현재 디렉토리의 CSV 자동 탐색
 harnessda:eda data.csv           ← 특정 파일 지정
-harnessda:eda df                 ← 노트북 내 기존 DataFrame 변수 사용
+harnessda:eda update             ← 기존 eda_analysis.py 재실행 + JSON + report 갱신
 harnessda:eda domain             ← 현재 디렉토리에 domain.md 템플릿 생성
-harnessda:eda report             ← EDA 보고서 생성 (셀 실행 후 사용)
 ```
 
 ## 도메인 컨텍스트 (`domain.md`)
 
-- `harnessda:eda domain` 실행 시: DOMAIN_TEMPLATE.md를 현재 작업 디렉토리에 `domain.md`로 복사 생성
+- `harnessda:eda domain` 실행 시: `templates/DOMAIN_TEMPLATE.md`를 현재 작업 디렉토리에 `domain.md`로 복사 생성
 - EDA 실행 시: 현재 디렉토리에 `domain.md`가 있으면 자동으로 읽고 도메인 맥락을 반영하여 분석
-- `domain.md`가 없으면: 일반적인 통계 기준으로 분석 (기존과 동일)
+- `domain.md`가 없으면: 일반적인 통계 기준으로 분석
 
 ## 워크플로우
 
 ### 1단계: 데이터 파악
+
 - 사용자가 경로를 제공하면 해당 파일 사용
 - 경로 미제공 시: Glob으로 현재 디렉토리의 CSV/Excel 파일 탐색 → 사용자에게 선택 요청
-- 기존 노트북이 없으면 새 .ipynb 생성, 있으면 기존 노트북에 셀 추가
-- **현재 디렉토리에 `domain.md`가 있으면 읽고, 이후 모든 분석·판단·보고서에 도메인 맥락을 반영**
+- 현재 디렉토리에 `domain.md`가 있으면 읽고, 이후 모든 분석·판단·보고서에 도메인 맥락 반영
 
-### 2단계: 노트북 셀 생성 (NotebookEdit)
+### 2단계: .py 스크립트 생성 + 실행
 
-**셀 1 — 라이브러리 import + 작업 디렉토리 설정 + 데이터 로드**
-```python
-import os
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
+> `CELL_PATTERNS.md`를 Read로 읽고 파일 구조를 따른다.
 
-# 작업 디렉토리 설정 (노트북 기준 상대경로)
-DATA_DIR = '../data'
-os.chdir(DATA_DIR)
-print(f"작업 디렉토리: {os.getcwd()}")
+- Write 도구로 `eda_analysis.py` 생성
+- Bash 도구로 `python eda_analysis.py` 실행 → `eda_results.json` 생성
 
-# 한국어 폰트 설정
-import platform
-if platform.system() == 'Darwin':
-    plt.rcParams['font.family'] = 'AppleGothic'
-else:
-    plt.rcParams['font.family'] = 'Malgun Gothic'
-plt.rcParams['axes.unicode_minus'] = False
-plt.rcParams['font.size'] = 8
-plt.rcParams['font.weight'] = 'bold'
-plt.rcParams['legend.loc'] = 'upper center'
+### 3단계: EDA 보고서 자동 생성
 
-df = pd.read_csv('파일명.csv')  # os.chdir 후 파일명만으로 로드
-print(f"데이터 로드 완료: {df.shape[0]}행 × {df.shape[1]}열")
-```
+스크립트 실행 완료 후 **자동으로** 이어서 실행한다.
 
-**셀 2 — 기본 정보**
-```python
-# 데이터 구조 확인
-print("=== Shape ===")
-print(df.shape)
-print("\n=== Dtypes ===")
-print(df.dtypes)
-print("\n=== 처음 5행 ===")
-df.head()
-```
+1. `eda_results.json` 읽고 분석
+2. EDA 보고서를 작성하여 `docs/eda_report.md`에 저장
+3. 보고서 구조와 작성 규칙은 **EDA_REPORT.md** 참조
 
-**셀 3 — 결측값 분석**
-```python
-# 결측값 현황
-missing = df.isnull().sum()
-missing_pct = (missing / len(df) * 100).round(2)
-missing_df = pd.DataFrame({'결측수': missing, '결측률(%)': missing_pct})
-missing_df[missing_df['결측수'] > 0].sort_values('결측률(%)', ascending=False)
-```
+## update 인자 처리
 
-**셀 4 — 기술통계**
-```python
-# 수치형 기술통계
-df.describe()
-```
+`harnessda:eda update` 호출 시:
 
-```python
-# 범주형 기술통계 (범주형 컬럼이 있는 경우)
-cat_cols = df.select_dtypes(include='object').columns
-if len(cat_cols) > 0:
-    for col in cat_cols:
-        print(f"\n=== {col} (unique: {df[col].nunique()}) ===")
-        print(df[col].value_counts().head(10))
-```
+1. `eda_analysis.py` 존재 여부 확인 (Glob)
+2. **있으면**: py 재실행 → JSON 갱신 → report 갱신 (py 생성 스킵)
+3. **없으면**: "eda_analysis.py를 찾을 수 없습니다. `harnessda:eda`를 먼저 실행하세요." 안내 후 종료
 
-**셀 5 — 상관관계**
-- 수치형 변수가 2개 이상이면 상관관계 히트맵 생성
-- `viz/charts/heatmap.md`를 Read로 읽고 패턴을 따른다
+## 참조 문서
 
-**셀 6 — 분포 시각화**
-- 수치형 변수별 히스토그램 + KDE 생성
-- `viz/charts/histogram.md`를 Read로 읽고 패턴을 따른다
-
-**셀 7 — 박스플롯 (이상치 확인)**
-- 수치형 변수별 박스플롯으로 이상치 시각 확인
-- `viz/charts/boxplot.md`를 Read로 읽고 패턴을 따른다
-
-### 3단계: EDA 보고서 (`harnessda:eda report`)
-
-**`harnessda:eda report`가 호출되면** 실행한다 (셀 생성과 동시에 자동 실행하지 않음).
-
-사용자가 노트북 셀을 모두 실행한 후 `harnessda:eda report`를 호출하면:
-1. 노트북의 셀 출력 결과를 읽고 분석
-2. EDA 보고서를 작성하여 `docs/eda_report.md`에 저장 (`docs/` 폴더 없으면 생성)
-3. 보고서 구조와 작성 규칙은 **EDA_REPORT.md**를 참조
+| 파일 | 내용 |
+|------|------|
+| `CELL_PATTERNS.md` | 파일 생성 구조 (.py + .json) |
+| `EDA_REPORT.md` | EDA 보고서 자동 생성 지침 |
+| `templates/DOMAIN_TEMPLATE.md` | domain.md 템플릿 |
 
 ## 코드 생성 규칙
 
-1. **주석은 한국어**로 작성
-2. **출력 제한**: `df.head()`, `.describe()`, `.value_counts().head(10)` 등 요약만
-3. **대용량 처리**: 1000행 이상이면 `.sample(1000)`이나 요약 통계만 시각화
-4. **셀 분리**: 각 분석 단계를 별도 셀로 분리
+1. **Heavy-Task-Offload**: 모든 데이터 처리는 .py 스크립트에서 수행
+2. **주석은 한국어**로 작성
+3. **출력 제한**: `.head()`, `.describe()`, `.value_counts().head(10)` 등 요약만
+4. **JSON 저장**: 모든 분석 결과를 `eda_results.json`에 구조화하여 저장
 5. **폰트 설정**: Windows `Malgun Gothic`, macOS `AppleGothic` — `platform.system()`으로 분기
-6. **시각화 크기**: `figsize`를 적절히 설정하여 가독성 확보
-7. **기존 노트북**: 이미 import 셀이 있으면 중복 생성하지 않음
-8. **변수명**: 데이터프레임은 `df` 사용 (사용자가 다른 이름 지정 시 따름)
+6. **변수명**: 데이터프레임은 `df` 사용 (사용자가 다른 이름 지정 시 따름)
 
 ## 시각화 참조
 
 > 색상 규칙, 폰트, 범례 설정은 `viz/STYLE_GUIDE.md`를 Read로 읽고 따른다.
 > 차트 코드 패턴은 `viz/charts/` 하위에서 필요한 차트 파일만 Read로 읽고 따른다.
 > 사용 가능한 차트: histogram, scatter, boxplot, heatmap, bar, line, stacked_bar, pairplot, subplot
-
-## 대용량 데이터 (1000행 이상) 특별 규칙
-
-데이터가 1000행 이상일 때:
-- 전체 데이터 출력 코드 생성 금지
-- 시각화는 `.sample(n)` 또는 집계 결과만 사용
-- 연산이 무거운 경우 (상관관계 등) 별도 .py 스크립트 생성 → 결과 JSON/CSV 저장 → 노트북에서 로드

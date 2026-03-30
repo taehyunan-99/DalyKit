@@ -14,13 +14,16 @@ HarnessDA_Project/
 ├── CLAUDE.md
 ├── README.md
 ├── skills/
-│   ├── eda/          ← SKILL.md, EDA_REPORT.md, DOMAIN_TEMPLATE.md
-│   ├── data-clean/   ← SKILL.md
-│   ├── stat-analysis/← SKILL.md
+│   ├── eda/          ← SKILL.md, EDA_REPORT.md, CELL_PATTERNS.md
+│   ├── data-clean/   ← SKILL.md, PREPROCESSING_REPORT.md, CELL_PATTERNS.md
+│   ├── stat-analysis/← SKILL.md (+ 참조 문서 다수)
 │   ├── viz/          ← STYLE_GUIDE.md, charts/*.md (공유 시각화 참조 문서)
-│   ├── report/       ← SKILL.md, SLIDE_STRUCTURE.md, HTML_TEMPLATE.md, REPORT_CONFIG_TEMPLATE.md
+│   ├── report/       ← SKILL.md, SLIDE_STRUCTURE.md, HTML_TEMPLATE.md
 │   ├── help/         ← SKILL.md (스킬 목록 + 도움말)
 │   └── tracker/      ← SKILL.md (work-tracker 자동 업데이트, 개발 전용)
+├── templates/        ← 사용자 입력 템플릿 (프로젝트 공유 자산)
+│   ├── DOMAIN_TEMPLATE.md       ← harnessda:eda domain 으로 복사
+│   └── REPORT_CONFIG_TEMPLATE.md ← harnessda:report config 으로 복사
 ├── agents/
 │   └── data-profiler.md
 └── scripts/
@@ -31,11 +34,10 @@ HarnessDA_Project/
 ## 핵심 규칙
 
 ### 작업 환경
-- **주피터 노트북(.ipynb)** 에서 작업하는 것을 전제
-- **NotebookEdit** 도구로 셀 직접 작성
-- 논리 단위로 셀 분리 (로드/탐색/시각화 각각 별도 셀)
-- **노트북 분리**: 단계별 별도 노트북 (`01_eda.ipynb`, `02_preprocessing.ipynb`, ...)
-- **���이터 로드**: `os.chdir(DATA_DIR)` 후 파일명만으로 로드. DATA_DIR은 노트북 기준 상대경로 사용 (예: `'../data'`)
+- **eda/clean/stat**: .py 스크립트 생성 → 실행 → JSON 저장 → 보고서 자동 생성 (Heavy-Task-Offload 패턴)
+- **report**: JSON 읽어 마크다운/HTML 보고서 생성
+- **노트북**: 결과 확인용으로만 사용 (선택 사항)
+- **데이터 로드**: `os.chdir(DATA_DIR)` 후 파일명만으로 로드. DATA_DIR은 프로젝트 기준 상대경로 사용 (예: `'data/'`)
 
 ### 코드 규칙
 - 주석은 **한국어**로 작성

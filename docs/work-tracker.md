@@ -1,19 +1,20 @@
 # HarnessDA Work Tracker
 <!-- Claude 전용: 새 컨텍스트에서 작업 이어가기 위한 상태 문서 -->
-<!-- 마지막 업데이트: 2026-03-29 -->
+<!-- 마지막 업데이트: 2026-03-30 -->
 
 ## 현재 상태 (Current State)
-> 1단계(DA) 실전 검증 완료 (UniversalBank 데이터). v2 리팩토링 필요: py 전환, PPT 템플릿화, 네이밍 통일.
+> P0-2(HTML PPT 템플릿화) 설계 완료. template.html 제작 + 구현 단계 진입 전.
 
 ## 최근 변경 (Recent Changes)
 <!-- 직전 세션에서 한 일 — 최대 5개, LIFO -->
 | 날짜 | 변경 | 영향 파일 |
 |------|------|-----------|
+| 2026-03-30 | P0-2 설계 완료. 도메인 5종 테마/색상 확정. JSON 스키마 설계 + 3파일 분리(SCHEMA_COMMON/DOMAIN/PORTFOLIO). HTML_TEMPLATE.md 전면 개편. SKILL.md pptx 워크플로우 교체. templates/ 통합 | report/SKILL.md, report/HTML_TEMPLATE.md, report/JSON_SCHEMA.md, report/SCHEMA_COMMON.md(신규), report/SCHEMA_DOMAIN.md(신규), report/SCHEMA_PORTFOLIO.md(신규), report/SLIDE_STRUCTURE.md, templates/DOMAIN_TEMPLATE.md(이동), templates/REPORT_CONFIG_TEMPLATE.md(이동) |
+| 2026-03-30 | eda/clean SKILL.md → py 방식 전환 (NotebookEdit 제거). CELL_PATTERNS.md 신규 생성. report 인자 제거, update 인자 추가, 자동 보고서 연결 | eda/SKILL.md, eda/CELL_PATTERNS.md(신규), data-clean/SKILL.md, data-clean/CELL_PATTERNS.md(신규), stat-analysis/SKILL.md |
 | 2026-03-29 | viz 스킬 → 공유 참조 문서 전환. CHART_PATTERNS.md → charts/ 개별 파일 분리(9개). SKILL.md 삭제 | skills/viz/*, eda/SKILL.md, stat-analysis/SKILL.md, CELL_PATTERNS.md, help/SKILL.md, CLAUDE.md, README.md, data-profiler.md, EDA_REPORT.md, PREPROCESSING_REPORT.md |
 | 2026-03-29 | UniversalBank 데이터로 전체 파이프라인 테스트 완료. v2 리팩토링 사항 도출 (7건) | docs/work-tracker.md |
 | 2026-03-29 | 플러그인 네임스페이스 전환: `/da`, `/eda` 등 → `harnessda:스킬` 형식 통일. da.md 삭제, commands/ 제거 | 전체 스킬 SKILL.md, EDA_REPORT.md, PREPROCESSING_REPORT.md, data-profiler.md, CLAUDE.md, README.md, install/uninstall scripts |
 | 2026-03-29 | help 스킬 생성 (da.md 라우터 대체) + tracker 스킬 생성 (work-tracker 자동 갱신) | skills/help/SKILL.md(신규), skills/tracker/SKILL.md(신규) |
-| 2026-03-28 | 스킬 리뷰: 중복 제거 355줄, PPTX_PATTERNS.md 삭제, HTML_TEMPLATE.md 통합, 구조 일관성 정리 | stat-analysis/SKILL.md, CELL_PATTERNS.md, report/HTML_TEMPLATE.md, REPORT_CONFIG_TEMPLATE.md, da.md, PPTX_PATTERNS.md(삭제) |
 | 2026-03-28 | report 스킬 생성 (마크다운/PPTX/HTML 보고서) | skills/report/*(5파일), da.md, viz/SKILL.md, CLAUDE.md, README.md, install/uninstall scripts |
 | 2026-03-28 | stat-analyst 에이전트 제거 → /stat-analysis 스킬로 통합 | agents/stat-analyst.md(삭제), SKILL.md, SCAN_LOGIC.md, CELL_PATTERNS.md, da.md, CLAUDE.md, README.md |
 
@@ -23,11 +24,11 @@
 ## 대기열 (Backlog)
 <!-- 우선순위 순, 각 항목에 WHY 포함 -->
 ### v2 리팩토링 (P0 — 구조적 변경)
-1. **eda/clean → py 스크립트 방식 전환** — 현재 NotebookEdit 방식이 토큰 50%+ 소모. stat처럼 .py → JSON → 보고서로 통일
-2. **HTML PPT → 템플릿 + JSON 방식 전환** — AI가 2000줄 HTML 직접 생성 → JSON 데이터만 생성 + 고정 템플릿 결합. PPT 버그 3건(세로 정렬 2건, 히트맵 레이블 잘림)도 동시 해결
+1. ~~**eda/clean → py 스크립트 방식 전환**~~ ✅ — SKILL.md 경량화 + CELL_PATTERNS.md 분리. report 자동 연결 + update 인자 추가
+2. **HTML PPT → 템플릿 + JSON 방식 전환** — 설계 완료. 다음 단계: frontend-design으로 template.html 1회 제작 → 구현 검증
 
 ### v2 리팩토링 (P1 — 즉시 수정 가능)
-3. **스킬 네이밍 통일** — SKILL.md name(eda) vs 문서(harnessda:eda) vs 실제 호출(/da eda) 불일치
+3. **스킬 네이밍 통일** — 플러그인화 이후 작업. 현재 콜론 포함 name은 플러그인 네임스페이스 전용으로 매칭 안 됨 (보류)
 4. **da 라우터 제거 또는 경량화** — /da → /eda 중첩 로드로 스킬 2개분 컨텍스트 소모
 5. **로컬 da-viz 구버전 삭제** — ~/.claude/skills/da-viz 잔존
 
@@ -47,6 +48,7 @@
 <!-- 의도적으로 안 하는 것 + 이유 — "왜 안 했지?" 방지 -->
 | 항목 | 이유 | 재개 조건 |
 |------|------|-----------|
+| #3 스킬 네이밍 통일 | 플러그인 미전환 상태에서 콜론 포함 name 사용 불가 | 플러그인화 완료 후 |
 | #5 visualize 의존성 | 사용자 보류 결정 | 사용자 요청 시 |
 | #11 Linux 폰트 | macOS 전용 환경 | Linux 사용 시 |
 | Tableau 연동 | 추후 학습 예정 | 사용자 학습 완료 후 |
@@ -56,6 +58,9 @@
 <!-- 중요한 기술적 결정 — "왜 이렇게 했지?" 방지 -->
 | 날짜 | 결정 | 근거 |
 |------|------|------|
+| 2026-03-30 | eda/clean: .py 실행 후 report 자동 연결 + update 인자 도입 | 스킬 내부 흐름은 끊지 않고, 스킬 간 전환에서만 사용자 판단. py 파일 잔존으로 수정 후 update 재실행 가능 |
+| 2026-03-30 | P0-2: template.html = 슬라이드 컴포넌트 라이브러리, report_data.json = 명세서 구조 확정 | AI가 매번 2000줄 HTML 생성하는 토큰 낭비 제거. 1개 템플릿으로 도메인 5종 × 용도 2종 커버 |
+| 2026-03-30 | 스킬 네이밍 통일(#3) → 보류. 플러그인화 이후 작업 | 콜론 포함 name은 플러그인 네임스페이스 전용, 현재 환경에서 매칭 불가 |
 | 2026-03-29 | viz를 스킬에서 공유 참조 문서로 전환, charts/ 개별 파일 분리 | 시각화는 독립 스킬이 아닌 eda/stat에서 필요 시 참조하는 구조 |
 | 2026-03-29 | v2 리팩토링 방향 확정: py 전환 + PPT 템플릿화 | UniversalBank 테스트에서 토큰 과다 소모 확인, 근본 원인은 노트북 생성 + HTML 직접 생성 |
 | 2026-03-29 | 명령어 네임스페이스 `harnessda:스킬` 형식 통일 | 플러그인 전환 대비, 다른 플러그인과 동일한 호출 패턴 |
