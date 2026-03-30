@@ -2,7 +2,7 @@
 name: stat-analysis
 description: >
   통계 분석 및 가설 검정. 변수 척도를 파악하고, 귀무가설을 설정한 뒤,
-  적합한 통계 검정을 선택하여 scipy/statsmodels 코드를 노트북 셀에 생성, 결과를 해석한다.
+  적합한 통계 검정을 선택하여 scipy/statsmodels .py 스크립트를 생성, 결과를 해석한다.
   트리거: "harnessda:stat", "통계 분석", "가설 검정", "hypothesis test",
   "상관 분석", "정규성 검정", "t-test", "ANOVA", "회귀 분석".
 user_invocable: true
@@ -10,15 +10,30 @@ user_invocable: true
 
 # Stat Analysis (통계 분석)
 
-> 이 스킬은 NotebookEdit 대신 .py 스크립트를 생성한다 (다수 검정 일괄 실행 + Heavy-Task-Offload).
+> .py 스크립트 생성 → 실행 → JSON → 보고서 자동 생성 (Heavy-Task-Offload).
 
 ## 사용법
 
 ```
-harnessda:stat [질문/목적]     ← 단일 분석 (대화형)
-harnessda:stat                 ← 전체 자동 분석 (보고서 기반 + 변수 스캔)
-harnessda:stat update          ← 기존 stat_analysis.py 재실행 + JSON + report 갱신
+harnessda:stat             ← cleaned/ 데이터 → 통계 검정 → 보고서
+harnessda:stat update      ← 기존 py 재실행 → 결과 갱신
+harnessda:stat notebook    ← stat_analysis.py → ipynb 변환
 ```
+
+## 사전 조건
+
+- `harnessda/` 폴더가 존재해야 한다 (Glob으로 확인)
+- 없으면: "`harnessda:init`을 먼저 실행하세요." 안내 후 종료
+
+## 경로 규칙
+
+| 항목 | 경로 |
+|------|------|
+| 전처리 데이터 | `harnessda/data/cleaned/` |
+| 스크립트 | `harnessda/code/stat_analysis.py` |
+| JSON 결과 | `harnessda/code/stat_results.json` |
+| 보고서 | `harnessda/docs/stat_report.md` |
+| 시각화 | `harnessda/figures/` |
 
 ## 전체 흐름 (노션 워크플로우 기반)
 
@@ -49,11 +64,11 @@ harnessda:stat update          ← 기존 stat_analysis.py 재실행 + JSON + re
 ### 0단계: 컨텍스트 수집
 
 1. **보고서 읽기**:
-   - `docs/eda_report.md` → "다음 단계 추천" 섹션에서 통계 분석 추천 항목 추출
-   - `docs/preprocessing_report.md` → "최종 컬럼 목록" + "다음 단계 추천" 추출
+   - `harnessda/docs/eda_report.md` → "다음 단계 추천" 섹션에서 통계 분석 추천 항목 추출
+   - `harnessda/docs/preprocessing_report.md` → "최종 컬럼 목록" + "다음 단계 추천" 추출
    - 보고서가 없으면 → 데이터 파일을 직접 프로파일링 (dtypes, nunique, describe)
 2. **타겟 변수 결정**: 보고서에서 종속변수로 반복 언급되는 변수 추론. 추론 불가 시 사용자에게 질문.
-3. **데이터 경로 확인**: `data/cleaned/` 하위 파일 탐색 또는 전처리 보고서의 "저장 파일" 경로 참조.
+3. **데이터 경로 확인**: `harnessda/data/cleaned/` 하위 파일 탐색 또는 전처리 보고서의 "저장 파일" 경로 참조.
 
 ### 1단계: 분석 계획 수립
 
@@ -65,14 +80,14 @@ harnessda:stat update          ← 기존 stat_analysis.py 재실행 + JSON + re
 
 > `CODE_PATTERNS.md`를 Read로 읽고 따른다.
 
-- Write 도구로 `stat_analysis.py` 생성 (분석 함수 + 실행 + JSON 저장)
-- Bash 도구로 `python stat_analysis.py` 실행 → `stat_results.json` 생성
+- Write 도구로 `harnessda/code/stat_analysis.py` 생성 (분석 함수 + 실행 + JSON 저장)
+- Bash 도구로 `python harnessda/code/stat_analysis.py` 실행 → `harnessda/code/stat_results.json` 생성
 
 ### 3단계: 통계 보고서 자동 생성
 
 스크립트 실행 완료 후 **자동으로** 이어서 실행한다.
 
-- `stat_results.json` 읽어 `docs/stat_report.md` 생성
+- `harnessda/code/stat_results.json` 읽어 `harnessda/docs/stat_report.md` 생성
 - 보고서 구조와 작성 규칙은 **REPORT_GUIDE.md** 참조
 - 시각화 필요 시 → `viz/charts/` 하위에서 적합한 차트 파일을 Read로 읽고 패턴을 따른다
 
@@ -80,8 +95,16 @@ harnessda:stat update          ← 기존 stat_analysis.py 재실행 + JSON + re
 
 `harnessda:stat update` 호출 시:
 
-1. `stat_analysis.py` 존재 여부 확인 (Glob)
+1. `harnessda/code/stat_analysis.py` 존재 여부 확인 (Glob)
 2. **있으면**: py 재실행 → JSON 갱신 → report 갱신 (py 생성 스킵)
+3. **없으면**: "stat_analysis.py를 찾을 수 없습니다. `harnessda:stat`을 먼저 실행하세요." 안내 후 종료
+
+## notebook 인자 처리
+
+`harnessda:stat notebook` 호출 시:
+
+1. `harnessda/code/stat_analysis.py` 존재 여부 확인 (Glob)
+2. **있으면**: `# %%` 구분자 기준으로 셀 분리 → `harnessda/code/stat_analysis.ipynb` 변환
 3. **없으면**: "stat_analysis.py를 찾을 수 없습니다. `harnessda:stat`을 먼저 실행하세요." 안내 후 종료
 
 ## 의사결정 트리

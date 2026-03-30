@@ -16,34 +16,46 @@ user_invocable: true
 📊 HarnessDA — 데이터 분석 도구 모음
 
 사용 가능한 스킬:
-  harnessda:eda             탐색적 데이터 분석 (EDA)
-  harnessda:clean           데이터 전처리
-  harnessda:stat            통계 분석 · 가설 검정
-  harnessda:report          최종 보고서 (마크다운)
-  harnessda:report pptx     슬라이드형 HTML (발표용)
-  harnessda:report config   보고서 설정 템플릿 생성
-  harnessda:help            도움말
-  harnessda:tracker         work-tracker 업데이트 (개발 전용)
+  harnessda:init                    프로젝트 구조 초기화
+  harnessda:eda                     탐색적 데이터 분석 (EDA)
+  harnessda:eda update              기존 분석 재실행
+  harnessda:eda notebook            py → ipynb 변환
+  harnessda:data-clean              데이터 전처리
+  harnessda:data-clean update       기존 전처리 재실행
+  harnessda:data-clean notebook     py → ipynb 변환
+  harnessda:stat-analysis           통계 분석 · 가설 검정
+  harnessda:stat-analysis update    기존 분석 재실행
+  harnessda:stat-analysis notebook  py → ipynb 변환
+  harnessda:report                  최종 마크다운 보고서
+  harnessda:help                    도움말
 
 에이전트:
-  data-profiler             종합 프로파일링 (Agent 도구로 호출)
+  data-profiler               종합 프로파일링 (Agent 도구로 호출)
 
-모든 스킬은 현재 디렉토리의 데이터/노트북을 자동 탐색합니다.
+시작하기:
+  1. harnessda:init 으로 프로젝트 구조 생성
+  2. harnessda/data/ 에 CSV 파일 배치
+  3. harnessda:eda → harnessda:data-clean → harnessda:stat-analysis → harnessda:report
 ```
 
 ## 실행 패턴
 
-| 패턴 | 스킬 | 방식 | 이유 |
-|------|------|------|------|
-| 노트북 직접 | eda, clean | NotebookEdit로 셀 생성 | 단순 연산, 인터랙티브 탐색 |
-| 스크립트 오프로드 | stat | Write(.py) + Bash 실행 → JSON | 다수 검정 일괄 실행, 대용량 데이터 |
-| 문서 생성 | report | Write(md) 또는 frontend-design(html) | 보고서 종합 |
+| 스킬 | 방식 | 출력 |
+|------|------|------|
+| init | 폴더 생성 + 템플릿 복사 | harnessda/ 구조 |
+| eda | .py → JSON → 보고서 | code/, docs/, figures/ |
+| data-clean | .py → JSON → cleaned CSV + 보고서 | code/, data/cleaned/, docs/ |
+| stat-analysis | .py → JSON → 보고서 | code/, docs/ |
+| report | 보고서 종합 → 최종 보고서 | docs/report.md |
 
-## 워크플로우 순서
+## 프로젝트 구조
 
 ```
-1. harnessda:eda        → docs/eda_report.md
-2. harnessda:clean      → data/cleaned/*.csv + docs/preprocessing_report.md
-3. harnessda:stat       → stat_results.json + docs/stat_report.md
-4. harnessda:report     → docs/report.md (또는 report_ppt.html)
+harnessda/
+├── config/          ← domain.md, report_config.md
+├── data/            ← 원본 CSV
+│   └── cleaned/     ← 전처리 결과
+├── code/            ← .py 스크립트 + .json 결과
+├── docs/            ← 보고서 (md)
+└── figures/         ← 시각화 이미지
 ```

@@ -12,7 +12,7 @@ echo ""
 removed=0
 
 # 스킬 제거
-skills=("eda" "data-clean" "stat-analysis" "viz" "report" "help" "tracker")
+skills=("init" "eda" "data-clean" "stat-analysis" "report" "help")
 for skill in "${skills[@]}"; do
     target="$CLAUDE_ROOT/skills/$skill"
     if [ -L "$target" ]; then

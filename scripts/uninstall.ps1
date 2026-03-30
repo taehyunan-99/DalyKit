@@ -11,7 +11,7 @@ Write-Host ""
 $removed = 0
 
 # Remove skills (Junctions)
-$skills = @("eda", "data-clean", "stat-analysis", "viz", "report", "help", "tracker")
+$skills = @("init", "eda", "data-clean", "stat-analysis", "report", "help")
 foreach ($skill in $skills) {
     $target = Join-Path $ClaudeRoot "skills\$skill"
     if (Test-Path $target) {

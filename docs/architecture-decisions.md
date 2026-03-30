@@ -125,3 +125,39 @@ project/
 - **harnessda/ 폴더 = 분석 워크스페이스**: 모든 입출력이 이 안에서 완결
 - **init 필수**: 스킬 실행 시 harnessda/ 존재 여부로 초기화 상태 판단
 - **경로 자동 해석**: 스킬이 harnessda/ 하위 경로를 자동으로 참조
+
+---
+
+## Phase 6: v3 구조 재설계 실행 완료 (2026-03-31)
+
+### 실행된 변경
+
+Phase 5 설계를 전면 구현. 10개 태스크 완료.
+
+| 항목 | Before | After |
+|------|--------|-------|
+| 결과물 경로 | 현재 디렉토리 기준 산발 | `harnessda/` 하위 통일 |
+| 프로젝트 초기화 | 없음 | `harnessda:init` 스킬 추가 |
+| 보고서 형식 | 마크다운 + PPT(HTML) | 마크다운 단일화 |
+| 노트북 변환 | 없음 | `notebook` 인자 → .py → .ipynb |
+| 스킬 목록 | eda, clean, stat, report, help, tracker | init, eda, data-clean, stat-analysis, report, help |
+
+### 스킬별 경로 변경 요약
+
+| 스킬 | 주요 경로 변경 |
+|------|--------------|
+| init | (신규) `harnessda/` 구조 생성 + templates/ 복사 |
+| eda | `code/` → `harnessda/code/`, `docs/` → `harnessda/docs/`, `figures/` → `harnessda/figures/` |
+| data-clean | `data/cleaned/` → `harnessda/data/cleaned/`, `code/` → `harnessda/code/` |
+| stat-analysis | `data/cleaned/` → `harnessda/data/cleaned/`, `code/` → `harnessda/code/` |
+| report | PPT 옵션 제거, 출력 → `harnessda/docs/report.md` |
+
+### 폐기된 기능
+- `harnessda:report pptx` — PPT/HTML 슬라이드 생성
+- `harnessda:tracker` — work-tracker 자동 업데이트 (개발 전용, 배포 제외)
+- `HTML_TEMPLATE.md`, `JSON_SCHEMA.md`, `SCHEMA_*.md` — PPT 템플릿 관련 파일 전체
+
+### data-profiler 에이전트 재설계 방향 (진행 예정)
+- **유지**: 프로파일링(1단계) + 자율 판단(2단계)
+- **제외**: 파이프라인 자율 실행(3단계) — 토큰 ~27,000 소모 + 중간 개입 불가
+- **강화**: 분석 흐름 자율 결정 + "왜 이상한지" 해석 포함

@@ -23,7 +23,7 @@ for dir in skills agents; do
 done
 
 # 스킬 설치 (디렉토리 복사)
-skills=("eda" "data-clean" "stat-analysis" "viz" "report" "help" "tracker")
+skills=("init" "eda" "data-clean" "stat-analysis" "report" "help")
 for skill in "${skills[@]}"; do
     source="$HARNESS_ROOT/skills/$skill"
     target="$CLAUDE_ROOT/skills/$skill"

@@ -7,8 +7,8 @@
 **해당 사항이 없는 섹션은 생략한다** (예: 결측값 처리 없으면 해당 섹션 불필요).
 
 ## 보고서 출력 위치
-- 작업 디렉토리에 `docs/` 폴더를 생성하고, 보고서는 `docs/` 하위에 마크다운 파일로 저장한다.
-- 파일명 예시: `docs/preprocessing_report.md`
+- `harnessda/docs/` 하위에 마크다운 파일로 저장한다.
+- 파일명: `harnessda/docs/preprocessing_report.md`
 
 ---
 
@@ -20,10 +20,10 @@
 ### 파이프라인 정보
 | 항목 | 값 |
 |------|-----|
-| 원본 데이터 | `data/파일명.csv` |
-| 전처리 노트북 | `notebooks/02_preprocessing.ipynb` |
-| 저장 파일 | `data/cleaned/파일명_cleaned.csv` |
-| EDA 보고서 참조 | `docs/eda_report.md` (있으면 명시, 없으면 "없음") |
+| 원본 데이터 | `harnessda/data/파일명.csv` |
+| 전처리 스크립트 | `harnessda/code/clean_pipeline.py` |
+| 저장 파일 | `harnessda/data/cleaned/파일명_cleaned.csv` |
+| EDA 보고서 참조 | `harnessda/docs/eda_report.md` (있으면 명시, 없으면 "없음") |
 
 ### 전처리 전후 비교
 | 항목 | 전처리 전 | 전처리 후 | 변화 |

@@ -1,48 +1,35 @@
 # HarnessDA Work Tracker
 <!-- Claude 전용: 새 컨텍스트에서 작업 이어가기 위한 상태 문서 -->
-<!-- 마지막 업데이트: 2026-03-30 -->
+<!-- 마지막 업데이트: 2026-03-31 -->
 
 ## 현재 상태 (Current State)
-> P0-2(HTML PPT 템플릿화) 설계 완료. template.html 제작 + 구현 단계 진입 전.
+> v3 구조 재설계 완료. 모든 결과물 harnessda/ 하위 통일, init 스킬 추가, PPT 폐기. Task 8(data-profiler 경로 수정 + 재설계) 대기 중.
 
 ## 최근 변경 (Recent Changes)
 <!-- 직전 세션에서 한 일 — 최대 5개, LIFO -->
 | 날짜 | 변경 | 영향 파일 |
 |------|------|-----------|
+| 2026-03-31 | v3 구조 재설계 완료. init 스킬 추가. 모든 경로 harnessda/ 기준 통일. PPT/HTML/tracker 폐기. notebook 인자 추가(eda/clean/stat). install/uninstall 스크립트 갱신. CLAUDE.md/README.md 갱신 | skills/init/SKILL.md(신규), eda/SKILL.md, eda/CELL_PATTERNS.md, data-clean/SKILL.md, data-clean/CELL_PATTERNS.md, stat-analysis/SKILL.md, stat-analysis/CELL_PATTERNS.md, report/SKILL.md, report/SLIDE_STRUCTURE.md, help/SKILL.md, scripts/*.sh, scripts/*.ps1, CLAUDE.md, README.md |
 | 2026-03-30 | P0-2 설계 완료. 도메인 5종 테마/색상 확정. JSON 스키마 설계 + 3파일 분리(SCHEMA_COMMON/DOMAIN/PORTFOLIO). HTML_TEMPLATE.md 전면 개편. SKILL.md pptx 워크플로우 교체. templates/ 통합 | report/SKILL.md, report/HTML_TEMPLATE.md, report/JSON_SCHEMA.md, report/SCHEMA_COMMON.md(신규), report/SCHEMA_DOMAIN.md(신규), report/SCHEMA_PORTFOLIO.md(신규), report/SLIDE_STRUCTURE.md, templates/DOMAIN_TEMPLATE.md(이동), templates/REPORT_CONFIG_TEMPLATE.md(이동) |
 | 2026-03-30 | eda/clean SKILL.md → py 방식 전환 (NotebookEdit 제거). CELL_PATTERNS.md 신규 생성. report 인자 제거, update 인자 추가, 자동 보고서 연결 | eda/SKILL.md, eda/CELL_PATTERNS.md(신규), data-clean/SKILL.md, data-clean/CELL_PATTERNS.md(신규), stat-analysis/SKILL.md |
 | 2026-03-29 | viz 스킬 → 공유 참조 문서 전환. CHART_PATTERNS.md → charts/ 개별 파일 분리(9개). SKILL.md 삭제 | skills/viz/*, eda/SKILL.md, stat-analysis/SKILL.md, CELL_PATTERNS.md, help/SKILL.md, CLAUDE.md, README.md, data-profiler.md, EDA_REPORT.md, PREPROCESSING_REPORT.md |
-| 2026-03-29 | UniversalBank 데이터로 전체 파이프라인 테스트 완료. v2 리팩토링 사항 도출 (7건) | docs/work-tracker.md |
 | 2026-03-29 | 플러그인 네임스페이스 전환: `/da`, `/eda` 등 → `harnessda:스킬` 형식 통일. da.md 삭제, commands/ 제거 | 전체 스킬 SKILL.md, EDA_REPORT.md, PREPROCESSING_REPORT.md, data-profiler.md, CLAUDE.md, README.md, install/uninstall scripts |
-| 2026-03-29 | help 스킬 생성 (da.md 라우터 대체) + tracker 스킬 생성 (work-tracker 자동 갱신) | skills/help/SKILL.md(신규), skills/tracker/SKILL.md(신규) |
-| 2026-03-28 | report 스킬 생성 (마크다운/PPTX/HTML 보고서) | skills/report/*(5파일), da.md, viz/SKILL.md, CLAUDE.md, README.md, install/uninstall scripts |
-| 2026-03-28 | stat-analyst 에이전트 제거 → /stat-analysis 스킬로 통합 | agents/stat-analyst.md(삭제), SKILL.md, SCAN_LOGIC.md, CELL_PATTERNS.md, da.md, CLAUDE.md, README.md |
 
 ## 진행 중 (In Progress)
-- (없음)
+- data-profiler 에이전트 재설계 (경로 수정 + 자율 판단 강화)
 
 ## 대기열 (Backlog)
 <!-- 우선순위 순, 각 항목에 WHY 포함 -->
-### v2 리팩토링 (P0 — 구조적 변경)
-1. ~~**eda/clean → py 스크립트 방식 전환**~~ ✅ — SKILL.md 경량화 + CELL_PATTERNS.md 분리. report 자동 연결 + update 인자 추가
-2. **HTML PPT → 템플릿 + JSON 방식 전환** — 설계 완료. 다음 단계: frontend-design으로 template.html 1회 제작 → 구현 검증
+### v3 후속 작업
+1. **data-profiler 에이전트 재설계** — 경로 harnessda/ 기준 수정 + 자율 판단 강화 (1+2단계: 분석 흐름 결정 + 이상 해석). 3단계(파이프라인 자율 실행)는 토큰 비용으로 제외
+2. **v3 전체 파이프라인 통합 테스트** — init → eda → data-clean → stat-analysis → report 새 경로 기준 검증
+3. **install.sh macOS 테스트** — 스크립트 작성 완료했으나 실행 검증 미완
 
-### v2 리팩토링 (P1 — 즉시 수정 가능)
-3. **스킬 네이밍 통일** — 플러그인화 이후 작업. 현재 콜론 포함 name은 플러그인 네임스페이스 전용으로 매칭 안 됨 (보류)
-4. **da 라우터 제거 또는 경량화** — /da → /eda 중첩 로드로 스킬 2개분 컨텍스트 소모
-5. **로컬 da-viz 구버전 삭제** — ~/.claude/skills/da-viz 잔존
-
-### v2 리팩토링 (P2 — P0 완료 후)
-6. **SKILL.md 경량화** — 코드 패턴 외부 파일 분리 (py 전환 시 자연 해결 가능)
-7. **--notebook 옵션 구현** — py 전환 후 검증용 노트북 생성 (py → ipynb 변환)
-
-### 기존 (완료/보류)
-8. ~~**report 마크다운 테스트**~~ ✅ — UniversalBank 테스트에서 검증 완료
-9. ~~**viz 실행 테스트**~~ ✅ — 공유 참조 문서로 전환 (charts/ 분리)
-10. ~~**전체 파이프라인 통합 테스트**~~ ✅ — UniversalBank 데이터로 eda→clean→stat→report 완료
-11. ~~**다른 데이터셋 범용성 테스트**~~ ✅ — UniversalBank(APT 외)로 검증 완료
-12. **install.sh macOS 테스트** — 스크립트 작성 완료했으나 실행 검증 미완
-13. **visualize 플러그인 graceful 처리** (보류) — 플러그인 미설치 시 에러 방지
+### 완료
+- ~~**v3 구조 재설계 10개 태스크**~~ ✅ — 2026-03-31 완료
+- ~~**eda/clean → py 스크립트 방식 전환**~~ ✅
+- ~~**report 마크다운 테스트**~~ ✅
+- ~~**전체 파이프라인 통합 테스트 (UniversalBank)**~~ ✅
 
 ## 보류/제외 (On Hold)
 <!-- 의도적으로 안 하는 것 + 이유 — "왜 안 했지?" 방지 -->
@@ -58,6 +45,9 @@
 <!-- 중요한 기술적 결정 — "왜 이렇게 했지?" 방지 -->
 | 날짜 | 결정 | 근거 |
 |------|------|------|
+| 2026-03-31 | v3: 모든 결과물 harnessda/ 하위 통일, init 스킬 추가 | 사용자 프로젝트 폴더 오염 방지. harnessda:init 한 번으로 표준 구조 생성 |
+| 2026-03-31 | v3: PPT/HTML 슬라이드 완전 폐기 → 마크다운 단일 출력 | 템플릿 방식도 토큰 비용 대비 활용도 낮음. 마크다운으로 충분 |
+| 2026-03-31 | data-profiler: 파이프라인 자율 실행(3단계) 제외 | ~27,000 토큰 소모 + 중간 개입 불가. 1+2단계(프로파일링+판단)만 유지 |
 | 2026-03-30 | eda/clean: .py 실행 후 report 자동 연결 + update 인자 도입 | 스킬 내부 흐름은 끊지 않고, 스킬 간 전환에서만 사용자 판단. py 파일 잔존으로 수정 후 update 재실행 가능 |
 | 2026-03-30 | P0-2: template.html = 슬라이드 컴포넌트 라이브러리, report_data.json = 명세서 구조 확정 | AI가 매번 2000줄 HTML 생성하는 토큰 낭비 제거. 1개 템플릿으로 도메인 5종 × 용도 2종 커버 |
 | 2026-03-30 | 스킬 네이밍 통일(#3) → 보류. 플러그인화 이후 작업 | 콜론 포함 name은 플러그인 네임스페이스 전용, 현재 환경에서 매칭 불가 |
