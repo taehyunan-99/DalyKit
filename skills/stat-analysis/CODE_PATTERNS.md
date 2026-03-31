@@ -87,6 +87,7 @@ def analyze_two_group(df, x_var, y_var, val1, val2):
             str(val1): {'n': len(group1), 'mean': float(group1.mean()), 'std': float(group1.std())},
             str(val2): {'n': len(group2), 'mean': float(group2.mean()), 'std': float(group2.std())},
         },
+        'figure_path': None,  # 시각화 저장 후 경로 할당 (예: save_fig('stat_h1_boxplot.png'))
     }
 ```
 
@@ -163,6 +164,7 @@ def analyze_multi_group(df, x_var, y_var):
         'effect_size': {'name': 'η²', 'value': eta_sq},
         'posthoc': posthoc_result,
         'group_stats': {str(k): {'n': len(v), 'mean': float(v.mean()), 'std': float(v.std())} for k, v in groups.items()},
+        'figure_path': None,  # 시각화 저장 후 경로 할당 (예: save_fig('stat_h2_boxplot.png'))
     }
 ```
 
@@ -211,6 +213,7 @@ def analyze_correlation(df, x_var, y_var):
         'effect_size': {'name': 'r²', 'value': float(r**2)},
         'posthoc': None,
         'group_stats': {'n': n, 'r': float(r)},
+        'figure_path': None,  # 시각화 저장 후 경로 할당 (예: save_fig('stat_h3_scatter.png'))
     }
 ```
 
@@ -240,6 +243,7 @@ def analyze_chi_square(df, x_var, y_var):
         'effect_size': {'name': "Cramér's V", 'value': cramers_v},
         'posthoc': None,
         'group_stats': {'dof': int(dof), 'n': int(n)},
+        'figure_path': None,  # 시각화 저장 후 경로 할당 (예: save_fig('stat_h4_stacked_bar.png'))
     }
 ```
 
@@ -289,7 +293,84 @@ def analyze_paired(df, before_var, after_var):
         'effect_size': {'name': "Cohen's d", 'value': cohens_d},
         'posthoc': None,
         'group_stats': {'n': n, 'before_mean': float(before.mean()), 'after_mean': float(after.mean())},
+        'figure_path': None,  # 시각화 저장 후 경로 할당 (예: save_fig('stat_h5_boxplot.png'))
     }
+```
+
+---
+
+## 시각화 저장 규칙
+
+### 저장 대상 (가설 연결 + 핵심 인사이트만)
+
+통계 분석 단계에서는 **가설 검증 근거와 핵심 인사이트를 뒷받침하는 차트만** 저장한다.
+
+| 저장 대상 | 파일명 컨벤션 | 보고서 섹션 |
+|-----------|--------------|------------|
+| 가설별 검증 시각화 (유의/비유의 무관) | `stat_h{n}_{유형}.png` | hypothesis / stat_results |
+| 효과 크기 상위 핵심 인사이트 차트 | `stat_insight_{col}.png` | key_findings |
+
+> **기준**: 가설 번호(h1, h2, ...)와 1:1 매핑된 차트만 저장.
+> 단순 탐색용이나 가설과 무관한 차트는 저장하지 않는다.
+> 비유의(H0 기각 불가) 결과도 "근거 없음"의 근거 자료로 저장한다.
+
+### save_fig() 유틸 패턴 (stat 스크립트용)
+
+```python
+def save_fig(filename: str) -> str:
+    """figures/ 폴더에 저장하고 경로 반환"""
+    os.makedirs(FIGURES_DIR, exist_ok=True)
+    path = os.path.join(FIGURES_DIR, filename)
+    plt.savefig(path, dpi=150, bbox_inches='tight')
+    plt.close()
+    return path
+```
+
+### 검정별 시각화 패턴
+
+#### 범주형 → 연속형 (t-test / ANOVA / Mann-Whitney / Kruskal)
+
+```python
+# 가설 h1: X변수에 따른 Y변수 차이 → 박스플롯
+fig, ax = plt.subplots(figsize=(8, 5))
+sns.boxplot(x=x_var, y=y_var, data=df, ax=ax)
+ax.set_title(f'[H1] {x_var}에 따른 {y_var} 분포', fontdict={'fontweight': 'bold'})
+figure_path = save_fig('stat_h1_boxplot.png')
+# result dict에 경로 포함
+result['figure_path'] = figure_path
+```
+
+#### 연속형 → 연속형 (Pearson / Spearman)
+
+```python
+# 가설 h2: X변수와 Y변수 상관 → 산점도
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.scatterplot(x=x_var, y=y_var, data=df, alpha=0.5, ax=ax)
+ax.set_title(f'[H2] {x_var} vs {y_var}', fontdict={'fontweight': 'bold'})
+figure_path = save_fig('stat_h2_scatter.png')
+result['figure_path'] = figure_path
+```
+
+#### 범주형 → 범주형 (카이제곱)
+
+```python
+# 가설 h3: X변수와 Y변수 연관성 → 누적 바차트
+ct = pd.crosstab(df[x_var], df[y_var], normalize='index')
+fig, ax = plt.subplots(figsize=(8, 5))
+ct.plot(kind='bar', stacked=True, ax=ax)
+ax.set_title(f'[H3] {x_var}별 {y_var} 비율', fontdict={'fontweight': 'bold'})
+figure_path = save_fig('stat_h3_stacked_bar.png')
+result['figure_path'] = figure_path
+```
+
+#### 핵심 인사이트 차트 (key_findings용)
+
+```python
+# 효과 크기 상위 변수 — 별도 저장 (stat_insight_*)
+fig, ax = plt.subplots(figsize=(8, 5))
+sns.boxplot(x=top_var, y=target_var, data=df, ax=ax)
+ax.set_title(f'핵심 인사이트: {top_var}에 따른 {target_var}', fontdict={'fontweight': 'bold'})
+save_fig(f'stat_insight_{top_var}.png')
 ```
 
 ---

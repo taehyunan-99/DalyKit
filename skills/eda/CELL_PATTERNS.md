@@ -99,3 +99,70 @@ print(f"결과 저장: {CODE_DIR}/eda_results.json")
 ```
 
 > 시각화 차트는 `viz/charts/` 패턴을 참조하여 `harnessda/figures/`에 저장
+
+---
+
+## 시각화 저장 규칙
+
+### 저장 대상 (선택적 저장)
+
+EDA 단계에서 **모든 차트를 저장하지 않는다**. 아래 기준에 해당하는 차트만 저장한다:
+
+| 저장 대상 | 파일명 컨벤션 | 예시 |
+|-----------|--------------|------|
+| 타겟 변수 분포 (불균형, 분포 형태) | `dist_{target}.png` | `dist_loan_status.png` |
+| 타겟과 강한 상관 변수 분포 | `dist_{col}.png` | `dist_income.png` |
+| 상관관계 히트맵 | `heatmap_corr.png` | `heatmap_corr.png` |
+| 결측값 히트맵 (결측 심각 시) | `missing_heatmap.png` | `missing_heatmap.png` |
+| 이상치 시각화 (주요 변수만) | `outlier_{col}.png` | `outlier_age.png` |
+
+> **기준**: 가설 후보(§7)에 언급된 변수, 타겟 변수와 관련된 분포가 저장 우선순위.
+> 탐색 목적의 임시 확인용 차트는 저장하지 않는다.
+
+### save_fig() 유틸 패턴
+
+```python
+def save_fig(filename: str) -> str:
+    """figures/ 폴더에 저장하고 경로 반환"""
+    os.makedirs(FIGURES_DIR, exist_ok=True)
+    path = os.path.join(FIGURES_DIR, filename)
+    plt.savefig(path, dpi=150, bbox_inches='tight')
+    plt.close()
+    return path
+```
+
+### 타겟 변수 분포 저장 예시
+
+```python
+# TARGET_COL = 'loan_status'  # 실제 타겟 컬럼명으로 설정
+TARGET_COL = '타겟_컬럼명'
+
+# 범주형 타겟 — 불균형 확인용
+if df[TARGET_COL].dtype == 'object' or df[TARGET_COL].nunique() <= 10:
+    fig, ax = plt.subplots(figsize=(8, 5))
+    counts = df[TARGET_COL].value_counts()
+    sns.barplot(x=counts.index, y=counts.values, ax=ax)
+    ax.set_title(f'{TARGET_COL} 분포 (불균형 확인)', fontdict={'fontweight': 'bold'})
+    save_fig(f'dist_{TARGET_COL}.png')
+
+# 수치형 타겟 — 분포 형태 확인용
+else:
+    fig, ax = plt.subplots(figsize=(8, 5))
+    sns.histplot(df[TARGET_COL], kde=True, ax=ax)
+    ax.set_title(f'{TARGET_COL} 분포', fontdict={'fontweight': 'bold'})
+    save_fig(f'dist_{TARGET_COL}.png')
+```
+
+### 상관관계 히트맵 저장 예시
+
+```python
+num_cols = df.select_dtypes(include=np.number).columns
+if len(num_cols) >= 2:
+    corr = df[num_cols].corr()
+    mask = np.triu(np.ones_like(corr, dtype=bool), k=1)  # 상삼각 마스크 (하삼각만 표시)
+    fig, ax = plt.subplots(figsize=(12, 10))
+    sns.heatmap(corr, annot=True, fmt='.2f', cmap='RdYlBu',
+                mask=mask, linewidths=1, linecolor='white', ax=ax)
+    ax.set_title('상관관계 히트맵', fontdict={'fontweight': 'bold'})
+    save_fig('heatmap_corr.png')
+```

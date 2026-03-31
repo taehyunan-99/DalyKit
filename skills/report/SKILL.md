@@ -37,7 +37,7 @@ harnessda:report           ← 종합 마크다운 보고서 생성
 
 | 파일 | 내용 |
 |------|------|
-| `SLIDE_STRUCTURE.md` | 보고서 섹션 순서 + 콘텐츠 매핑 |
+| `REPORT_STRUCTURE.md` | 보고서 섹션 순서 + 콘텐츠 매핑 |
 
 ## 워크플로우
 
@@ -45,7 +45,7 @@ harnessda:report           ← 종합 마크다운 보고서 생성
 
 1. `harnessda/config/report_config.md` 확인
    - **있으면**: Read로 읽고 프로젝트 정보 + 커스텀 순서 반영
-   - **없으면**: SLIDE_STRUCTURE.md 기본값 사용 (프로젝트 정보는 보고서에서 추론)
+   - **없으면**: REPORT_STRUCTURE.md 기본값 사용 (프로젝트 정보는 보고서에서 추론)
 
 ### 2단계: 수집
 
@@ -60,9 +60,9 @@ harnessda:report           ← 종합 마크다운 보고서 생성
 
 ### 3단계: 생성
 
-> SLIDE_STRUCTURE.md를 Read로 읽고, 섹션 순서를 따라 `harnessda/docs/report.md`에 Write.
+> REPORT_STRUCTURE.md를 Read로 읽고, 섹션 순서를 따라 `harnessda/docs/report.md`에 Write.
 
-보고서 구조는 SLIDE_STRUCTURE.md의 순서를 따르되, 마크다운 형식으로 작성:
+보고서 구조는 REPORT_STRUCTURE.md의 순서를 따르되, 마크다운 형식으로 작성:
 - 각 섹션 → 마크다운 제목 (`##`)
 - 차트 이미지 → `![](../figures/chart.png)` 상대경로 참조
 - 테이블 → 마크다운 테이블
