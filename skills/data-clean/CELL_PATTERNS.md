@@ -1,39 +1,32 @@
-# 파일 생성 패턴
+# 전처리 노트북 셀 패턴
 
-`harnessda:clean` 스킬이 생성하는 파일 구조.
-
-> **Heavy-Task-Offload**: 데이터 처리는 .py 스크립트에서 수행.
-> 결과는 JSON으로 저장. 전처리 데이터는 cleaned/ 폴더에 CSV로 저장.
+`harnessda:clean` 스킬이 생성하는 ipynb 구조.
 
 ## 생성 파일
 
 ```
 harnessda/
 ├── code/
-│   ├── clean_pipeline.py        ← 전처리 스크립트 (Write 도구로 생성)
-│   ├── clean_results.json       ← 처리 결과 요약 (Bash로 실행)
-│   └── clean_pipeline.ipynb     ← (notebook 인자 시) py → ipynb 변환
-├── data/
-│   └── cleaned/
-│       └── 파일명_cleaned.csv   ← 전처리 완료 데이터
-└── docs/
-    └── preprocessing_report.md  ← 보고서 자동 생성
+│   └── clean_pipeline.ipynb     ← 전처리 노트북 (Write 도구로 생성)
+└── data/
+    └── cleaned/
+        └── 파일명_cleaned.csv   ← 전처리 완료 데이터 (셀 실행 시 저장)
 ```
 
 ## 워크플로우
 
 ```
-1. Write 도구 → harnessda/code/clean_pipeline.py 생성
-2. Bash 도구 → python harnessda/code/clean_pipeline.py 실행
-3. 완료 → harnessda/code/clean_results.json + harnessda/data/cleaned/*.csv 저장됨
-4. 자동 → harnessda/docs/preprocessing_report.md 보고서 생성
+1. Write 도구 → harnessda/code/clean_pipeline.ipynb 생성 (nbformat 4)
+2. 사용자가 노트북을 열어 전체 셀 실행
+3. harnessda/data/cleaned/ 에 결과 CSV 저장 확인
+4. harnessda:report 호출 → 보고서 생성
 ```
 
-## clean_pipeline.py 구조
+## ipynb 셀 구조
 
 ```python
+# 셀 1: 라이브러리 임포트 (code cell)
 import os
-import json
 import pandas as pd
 import numpy as np
 
@@ -41,60 +34,100 @@ import numpy as np
 BASE_DIR = 'harnessda'
 DATA_DIR = os.path.join(BASE_DIR, 'data')
 CLEANED_DIR = os.path.join(DATA_DIR, 'cleaned')
-CODE_DIR = os.path.join(BASE_DIR, 'code')
+os.makedirs(CLEANED_DIR, exist_ok=True)
 
-# 데이터 로드
+# 셀 2: 데이터 로드 (code cell)
 DATA_PATH = os.path.join(DATA_DIR, '데이터_파일.csv')  # 실제 파일명으로 대체
 df = pd.read_csv(DATA_PATH)
 df_clean = df.copy()  # 원본 보존
+print(f"원본: {df.shape[0]}행 × {df.shape[1]}열")
+df.head()
 
-results = {
-    'before': {'shape': list(df.shape), 'missing': int(df.isnull().sum().sum()), 'duplicates': int(df.duplicated().sum())},
-    'steps': []
-}
+# 셀 3: 전처리 전 현황 (code cell)
+print("=== 결측값 ===")
+print(df.isnull().sum())
+print(f"\n중복 행: {df.duplicated().sum()}")
+print(f"\n데이터 타입:\n{df.dtypes}")
 
-# %% 1. 중복 제거
+# 셀 4: 중복 제거 (code cell)
 dup_count = df_clean.duplicated().sum()
+print(f"중복 행 수: {dup_count}")
 if dup_count > 0:
     df_clean = df_clean.drop_duplicates()
-    results['steps'].append({'step': '중복 제거', 'removed': int(dup_count)})
+    print(f"중복 제거 후: {df_clean.shape}")
 
-# %% 2. 결측값 처리 (전략은 EDA 결과 기반으로 조정)
+# 셀 5: 결측값 처리 (code cell)
+# 전략은 EDA 결과 및 도메인 지식 기반으로 조정
 num_cols = df_clean.select_dtypes(include=np.number).columns
 for col in num_cols:
     n_missing = df_clean[col].isnull().sum()
     if n_missing > 0:
+        # 중앙값 대체 (왜곡 분포에 안전)
         df_clean[col] = df_clean[col].fillna(df_clean[col].median())
-        results['steps'].append({'step': f'{col} 결측값 중앙값 대체', 'count': int(n_missing)})
+        print(f"{col}: {n_missing}개 결측값 → 중앙값 대체")
 
 cat_cols = df_clean.select_dtypes(include='object').columns
 for col in cat_cols:
     n_missing = df_clean[col].isnull().sum()
     if n_missing > 0:
+        # 최빈값 대체
         df_clean[col] = df_clean[col].fillna(df_clean[col].mode()[0])
-        results['steps'].append({'step': f'{col} 결측값 최빈값 대체', 'count': int(n_missing)})
+        print(f"{col}: {n_missing}개 결측값 → 최빈값 대체")
 
-# %% 3. 이상치 탐지 (제거 안 함 — 사용자 판단)
+# 셀 6: 이상치 탐지 (제거 안 함 — 사용자 판단) (code cell)
 def detect_outliers_iqr(series):
     Q1, Q3 = series.quantile(0.25), series.quantile(0.75)
     IQR = Q3 - Q1
-    return ((series < Q1 - 1.5 * IQR) | (series > Q3 + 1.5 * IQR)).sum()
+    return int(((series < Q1 - 1.5 * IQR) | (series > Q3 + 1.5 * IQR)).sum())
 
-results['outliers'] = {col: int(detect_outliers_iqr(df_clean[col].dropna())) for col in num_cols}
+outliers = {col: detect_outliers_iqr(df_clean[col].dropna()) for col in num_cols}
+print("=== 이상치 탐지 결과 (IQR 기준) ===")
+pd.Series(outliers, name='이상치 수').sort_values(ascending=False)
 
-# %% 4. 전처리 후 요약
-results['after'] = {'shape': list(df_clean.shape), 'missing': int(df_clean.isnull().sum().sum())}
+# 셀 7: 타입 변환 (필요 시 수정) (code cell)
+# 예시: df_clean['날짜컬럼'] = pd.to_datetime(df_clean['날짜컬럼'])
+# 예시: df_clean['범주컬럼'] = df_clean['범주컬럼'].astype('category')
 
-# %% 저장
-os.makedirs(CLEANED_DIR, exist_ok=True)
+# 셀 8: 전처리 후 요약 (code cell)
+print("=== 전처리 결과 ===")
+print(f"원본: {df.shape} → 처리 후: {df_clean.shape}")
+print(f"잔여 결측값: {df_clean.isnull().sum().sum()}")
+df_clean.describe()
+
+# 셀 9: 저장 (code cell)
 output_path = os.path.join(CLEANED_DIR, f"{os.path.splitext(os.path.basename(DATA_PATH))[0]}_cleaned.csv")
 df_clean.to_csv(output_path, index=False)
-results['output_path'] = output_path
-
-with open(os.path.join(CODE_DIR, 'clean_results.json'), 'w', encoding='utf-8') as f:
-    json.dump(results, f, ensure_ascii=False, indent=2)
-
-print(f"전처리 완료: {df.shape} → {df_clean.shape}")
-print(f"데이터 저장: {output_path}")
-print(f"결과 저장: {CODE_DIR}/clean_results.json")
+print(f"저장 완료: {output_path}")
 ```
+
+## nbformat 4 JSON 구조 (Write 도구 사용 시)
+
+```json
+{
+  "nbformat": 4,
+  "nbformat_minor": 5,
+  "metadata": {
+    "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+    "language_info": {"name": "python", "version": "3.8.0"}
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": ["# 데이터 전처리 파이프라인\n"],
+      "id": "cell-md-title"
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": ["# 셀 코드 내용"],
+      "id": "cell-01"
+    }
+  ]
+}
+```
+
+> 각 셀의 `id`는 고유하게 부여 (cell-01, cell-02, …)
+> `source`는 줄 단위 문자열 배열로 작성
