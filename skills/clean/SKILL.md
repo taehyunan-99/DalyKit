@@ -1,5 +1,5 @@
 ---
-name: data-clean
+name: clean
 description: >
   데이터 전처리 파이프라인. 결측값, 중복, 이상치, 타입 변환을 처리하는
   노트북을 생성한다.
@@ -10,12 +10,13 @@ user_invocable: true
 
 # Data Clean (데이터 전처리)
 
-> ipynb 노트북 생성 → 사용자가 직접 실행 → `harnessda:report`로 보고서 생성.
+> ipynb 노트북 생성 → 사용자가 직접 실행 → `harnessda:clean report`로 보고서 생성.
 
 ## 사용법
 
 ```
-harnessda:clean            ← data/ → 전처리 전략 제안 → clean_pipeline.ipynb 생성
+harnessda:clean              ← data/ → 전처리 전략 제안 → clean_pipeline.ipynb 생성
+harnessda:clean report       ← 실행된 노트북 결과 읽기 → harnessda/docs/preprocessing_report.md 생성
 ```
 
 ## 사전 조건
@@ -54,9 +55,18 @@ harnessda:clean            ← data/ → 전처리 전략 제안 → clean_pipel
 - 생성 완료 후 사용자에게 안내:
   ```
   clean_pipeline.ipynb 생성 완료.
-  노트북을 열어 전체 셀을 실행한 뒤 `harnessda:report`를 실행하세요.
+  노트북을 열어 전체 셀을 실행한 뒤 `harnessda:clean report`를 실행하세요.
   전처리 결과는 harnessda/data/cleaned/ 에 저장됩니다.
   ```
+
+### report 인자 워크플로우
+
+> `harnessda:clean report` 호출 시 실행. 노트북을 사용자가 실행한 뒤 호출해야 한다.
+
+1. `harnessda/code/clean_pipeline.ipynb` Read → 셀 출력(outputs) 분석
+2. `PREPROCESSING_REPORT.md` Read → 보고서 작성 지침 확인
+3. `harnessda/docs/preprocessing_report.md` Write → 보고서 생성
+4. ipynb 미존재 또는 outputs가 비어 있으면: "노트북을 먼저 실행한 뒤 다시 시도하세요." 안내 후 종료
 
 ## 참조 문서
 

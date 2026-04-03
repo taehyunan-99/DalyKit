@@ -22,7 +22,7 @@ foreach ($dir in $dirs) {
 }
 
 # 스킬 설치 (디렉토리 복사)
-$skills = @("init", "eda", "data-clean", "stat-analysis", "report", "help")
+$skills = @("init", "eda", "clean", "stat", "report", "help")
 foreach ($skill in $skills) {
     $source = Join-Path $HarnessRoot "skills\$skill"
     $target = Join-Path $ClaudeRoot "skills\$skill"
@@ -46,8 +46,22 @@ foreach ($agent in $agents) {
     Write-Host "  Agent installed: $agent" -ForegroundColor Green
 }
 
+# viz 공유 참조 문서 설치 (스킬이 아닌 공유 참조 문서)
+$vizSource = Join-Path $HarnessRoot "skills\viz"
+$vizTarget = Join-Path $ClaudeRoot "skills\viz"
+if (Test-Path $vizTarget) { Remove-Item $vizTarget -Recurse -Force }
+Copy-Item -Path $vizSource -Destination $vizTarget -Recurse -Force
+Write-Host "  Shared docs installed: viz" -ForegroundColor Green
+
+# 템플릿 설치
+$templatesSource = Join-Path $HarnessRoot "templates"
+$templatesTarget = Join-Path $ClaudeRoot "templates"
+if (-not (Test-Path $templatesTarget)) { New-Item -ItemType Directory -Path $templatesTarget -Force | Out-Null }
+Copy-Item -Path "$templatesSource\*" -Destination $templatesTarget -Recurse -Force
+Write-Host "  Templates installed" -ForegroundColor Green
+
 Write-Host ""
 Write-Host "=== Install Complete ===" -ForegroundColor Cyan
-Write-Host "Skills: $($skills.Count), Agents: $($agents.Count)"
+Write-Host "Skills: $($skills.Count), Agents: $($agents.Count), Shared: viz, templates"
 Write-Host ""
 Write-Host "Usage: type 'harnessda:help' in Claude Code" -ForegroundColor Yellow

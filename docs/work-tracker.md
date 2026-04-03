@@ -3,12 +3,13 @@
 <!-- 마지막 업데이트: 2026-04-02 -->
 
 ## 현재 상태 (Current State)
-> EDA/전처리 ipynb 방식 전환 완료. 토큰 절감 + 사용자 중간 개입 구조로 개편. 하네스 시스템 및 init 인자 확장 예정.
+> 스킬명/폴더명 통일(clean/stat), report 인자 추가, 배포 스크립트 수정, 문서 동기화 완료. 전체 파이프라인 통합 테스트 예정.
 
 ## 최근 변경 (Recent Changes)
 <!-- 직전 세션에서 한 일 — 최대 5개, LIFO -->
 | 날짜 | 변경 | 영향 파일 |
 |------|------|-----------|
+| 2026-04-03 | 스킬명/폴더명 통일(data-clean→clean, stat-analysis→stat), eda/clean에 report 인자 추가, install/uninstall 스크립트에 viz/templates 배포 추가 + 제거 로직 수정, CLAUDE.md/help/README 문서 동기화 | skills/clean/, skills/stat/, eda/SKILL.md, clean/SKILL.md, scripts/*.sh, scripts/*.ps1, CLAUDE.md, help/SKILL.md, README.md |
 | 2026-04-02 | EDA/전처리 실행 방식 전환: py→json→보고서 자동 → ipynb 생성 후 사용자 직접 실행. update/notebook 인자 제거. 보고서는 harnessda:report 별도 호출로 분리. CELL_PATTERNS.md ipynb 셀 구조로 전면 교체 | eda/SKILL.md, eda/CELL_PATTERNS.md, data-clean/SKILL.md, data-clean/CELL_PATTERNS.md |
 | 2026-03-31 | v3 구조 재설계 완료. init 스킬 추가. 모든 경로 harnessda/ 기준 통일. PPT/HTML/tracker 폐기. notebook 인자 추가(eda/clean/stat). install/uninstall 스크립트 갱신. CLAUDE.md/README.md 갱신 | skills/init/SKILL.md(신규), eda/SKILL.md, eda/CELL_PATTERNS.md, data-clean/SKILL.md, data-clean/CELL_PATTERNS.md, stat-analysis/SKILL.md, stat-analysis/CELL_PATTERNS.md, report/SKILL.md, report/SLIDE_STRUCTURE.md, help/SKILL.md, scripts/*.sh, scripts/*.ps1, CLAUDE.md, README.md |
 | 2026-03-30 | P0-2 설계 완료. 도메인 5종 테마/색상 확정. JSON 스키마 설계 + 3파일 분리(SCHEMA_COMMON/DOMAIN/PORTFOLIO). HTML_TEMPLATE.md 전면 개편. SKILL.md pptx 워크플로우 교체. templates/ 통합 | report/SKILL.md, report/HTML_TEMPLATE.md, report/JSON_SCHEMA.md, report/SCHEMA_COMMON.md(신규), report/SCHEMA_DOMAIN.md(신규), report/SCHEMA_PORTFOLIO.md(신규), report/SLIDE_STRUCTURE.md, templates/DOMAIN_TEMPLATE.md(이동), templates/REPORT_CONFIG_TEMPLATE.md(이동) |
@@ -24,7 +25,7 @@
 1. **하네스 시스템 추가** — 코드 및 명령 제약, 참조 및 사용 폴더 강제 등 스킬 실행 환경 제어 레이어 설계
 2. **init 인자 확장** — `harnessda:init current` (현재 디렉토리 기준 초기화) + `harnessda:init <name>` (지정 이름으로 프로젝트 생성) 인자 추가
 3. **data-profiler 에이전트 재설계** — 경로 harnessda/ 기준 수정 + 자율 판단 강화 (1+2단계: 분석 흐름 결정 + 이상 해석). 3단계(파이프라인 자율 실행)는 토큰 비용으로 제외
-4. **v3 전체 파이프라인 통합 테스트** — init → eda → data-clean → stat-analysis → report 새 경로 기준 검증
+4. **v3 전체 파이프라인 통합 테스트** — init → eda → clean → stat → report 새 경로 기준 검증
 5. **install.sh macOS 테스트** — 스크립트 작성 완료했으나 실행 검증 미완
 
 ### 완료
@@ -47,6 +48,9 @@
 <!-- 중요한 기술적 결정 — "왜 이렇게 했지?" 방지 -->
 | 날짜 | 결정 | 근거 |
 |------|------|------|
+| 2026-04-03 | 스킬 폴더명/name 통일: data-clean→clean, stat-analysis→stat | 트리거 호출명(harnessda:clean, harnessda:stat)과 폴더명 불일치로 혼란 발생. 폴더명=스킬명=호출명 일치 원칙으로 정리 |
+| 2026-04-03 | eda/clean에 `report` 인자 추가 | ipynb 전환 후 보고서 생성 주체 불명확. `harnessda:eda report` / `harnessda:clean report`로 명시적 호출하여 ipynb 실행 결과를 읽고 보고서 생성 |
+| 2026-04-03 | stat은 .py 방식 유지 (ipynb 전환 안 함) | 통계 분석은 가정 검정→본 검정→사후 분석이 자동 분기되어야 하므로 스크립트 실행+JSON 결과 방식이 적합. 사용자 중간 개입이 검정 흐름에서는 불필요 |
 | 2026-04-02 | EDA/전처리: py→json→보고서 자동 방식 → ipynb 직접 생성 방식으로 전환 | 토큰 ~30-50% 절감 + 셀 단위 수정/재실행으로 분석 퀄리티 향상. 자동화 편의성 일부 감소는 트레이드오프로 수용 |
 | 2026-04-02 | EDA/전처리: update/notebook 인자 제거 | ipynb가 기본이 되면서 두 인자 모두 불필요. 보고서는 harnessda:report 별도 호출로 분리 |
 | 2026-03-31 | v3: 모든 결과물 harnessda/ 하위 통일, init 스킬 추가 | 사용자 프로젝트 폴더 오염 방지. harnessda:init 한 번으로 표준 구조 생성 |

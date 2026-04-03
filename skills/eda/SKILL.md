@@ -10,12 +10,13 @@ user_invocable: true
 
 # EDA (탐색적 데이터 분석)
 
-> ipynb 노트북 생성 → 사용자가 직접 실행 → `harnessda:report`로 보고서 생성.
+> ipynb 노트북 생성 → 사용자가 직접 실행 → `harnessda:eda report`로 보고서 생성.
 
 ## 사용법
 
 ```
 harnessda:eda              ← data/에서 CSV 탐색 → eda_analysis.ipynb 생성
+harnessda:eda report       ← 실행된 노트북 결과 읽기 → harnessda/docs/eda_report.md 생성
 ```
 
 ## 사전 조건
@@ -48,8 +49,17 @@ harnessda:eda              ← data/에서 CSV 탐색 → eda_analysis.ipynb 생
 - 생성 완료 후 사용자에게 안내:
   ```
   eda_analysis.ipynb 생성 완료.
-  노트북을 열어 전체 셀을 실행한 뒤 `harnessda:report`를 실행하세요.
+  노트북을 열어 전체 셀을 실행한 뒤 `harnessda:eda report`를 실행하세요.
   ```
+
+### report 인자 워크플로우
+
+> `harnessda:eda report` 호출 시 실행. 노트북을 사용자가 실행한 뒤 호출해야 한다.
+
+1. `harnessda/code/eda_analysis.ipynb` Read → 셀 출력(outputs) 분석
+2. `EDA_REPORT.md` Read → 보고서 작성 지침 확인
+3. `harnessda/docs/eda_report.md` Write → 보고서 생성
+4. ipynb 미존재 또는 outputs가 비어 있으면: "노트북을 먼저 실행한 뒤 다시 시도하세요." 안내 후 종료
 
 ## 참조 문서
 

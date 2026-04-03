@@ -16,10 +16,10 @@ HarnessDA_Project/
 ├── skills/
 │   ├── init/         ← SKILL.md (harnessda/ 구조 초기화)
 │   ├── eda/          ← SKILL.md, EDA_REPORT.md, CELL_PATTERNS.md
-│   ├── data-clean/   ← SKILL.md, PREPROCESSING_REPORT.md, CELL_PATTERNS.md
-│   ├── stat-analysis/← SKILL.md (+ 참조 문서 다수)
+│   ├── clean/        ← SKILL.md, PREPROCESSING_REPORT.md, CELL_PATTERNS.md
+│   ├── stat/         ← SKILL.md (+ 참조 문서 다수)
 │   ├── viz/          ← STYLE_GUIDE.md, charts/*.md (공유 시각화 참조 문서)
-│   ├── report/       ← SKILL.md, SLIDE_STRUCTURE.md
+│   ├── report/       ← SKILL.md, REPORT_STRUCTURE.md
 │   └── help/         ← SKILL.md (스킬 목록 + 도움말)
 ├── templates/        ← 사용자 입력 템플릿 (프로젝트 공유 자산)
 │   └── REPORT_CONFIG_TEMPLATE.md ← harnessda:init 으로 복사
@@ -34,9 +34,10 @@ HarnessDA_Project/
 
 ### 작업 환경
 - **모든 결과물**: `harnessda/` 폴더 하위에 저장 (`harnessda:init`으로 구조 생성)
-- **eda/clean/stat**: .py 스크립트 생성 → 실행 → JSON 저장 → 보고서 자동 생성 (Heavy-Task-Offload 패턴)
+- **eda/clean**: ipynb 노트북 생성 → 사용자 직접 실행 → `eda report` / `clean report`로 보고서 생성
+- **stat**: .py 스크립트 생성 → 실행 → JSON 저장 → 보고서 자동 생성 (Heavy-Task-Offload 패턴)
+- **stat notebook 인자**: .py → .ipynb 변환 (결과 확인용, 선택 사항)
 - **report**: 기존 보고서 종합 → 마크다운 최종 보고서 생성
-- **notebook 인자**: .py → .ipynb 변환 (결과 확인용, 선택 사항)
 - **데이터 로드**: `harnessda/data/` 기준 상대경로 사용
 
 ### 코드 규칙
@@ -59,8 +60,8 @@ HarnessDA_Project/
 |--------|------|
 | `harnessda:init` | 프로젝트 구조 초기화 |
 | `harnessda:eda` | 탐색적 데이터 분석 |
-| `harnessda:data-clean` | 데이터 전처리 |
-| `harnessda:stat-analysis` | 통계 분석 |
+| `harnessda:clean` | 데이터 전처리 |
+| `harnessda:stat` | 통계 분석 |
 | `harnessda:report` | 최종 보고서 (마크다운) |
 | `harnessda:help` | 스킬 목록 + 도움말 |
 

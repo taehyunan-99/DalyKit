@@ -1,5 +1,5 @@
 # HarnessDA Uninstall Script
-# Removes junctions and hardlinks. Original files are preserved.
+# Removes installed files. Original files are preserved.
 
 $ErrorActionPreference = "Stop"
 
@@ -10,23 +10,34 @@ Write-Host ""
 
 $removed = 0
 
-# Remove skills (Junctions)
-$skills = @("init", "eda", "data-clean", "stat-analysis", "report", "help")
+# 스킬 제거
+$skills = @("init", "eda", "clean", "stat", "report", "help")
 foreach ($skill in $skills) {
     $target = Join-Path $ClaudeRoot "skills\$skill"
     if (Test-Path $target) {
-        $item = Get-Item $target -Force
-        if ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) {
-            Remove-Item $target -Force
-            Write-Host "  Skill removed: $skill" -ForegroundColor Yellow
-            $removed++
-        } else {
-            Write-Host "  Skipped: $skill (not a junction)" -ForegroundColor Red
-        }
+        Remove-Item $target -Recurse -Force
+        Write-Host "  Skill removed: $skill" -ForegroundColor Yellow
+        $removed++
     }
 }
 
-# Remove agents
+# viz 공유 참조 문서 제거
+$vizTarget = Join-Path $ClaudeRoot "skills\viz"
+if (Test-Path $vizTarget) {
+    Remove-Item $vizTarget -Recurse -Force
+    Write-Host "  Shared docs removed: viz" -ForegroundColor Yellow
+    $removed++
+}
+
+# 템플릿 제거
+$templatesTarget = Join-Path $ClaudeRoot "templates"
+if (Test-Path $templatesTarget) {
+    Remove-Item $templatesTarget -Recurse -Force
+    Write-Host "  Templates removed" -ForegroundColor Yellow
+    $removed++
+}
+
+# 에이전트 제거
 $agents = @("data-profiler.md")
 foreach ($agent in $agents) {
     $target = Join-Path $ClaudeRoot "agents\$agent"

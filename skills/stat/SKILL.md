@@ -1,5 +1,5 @@
 ---
-name: stat-analysis
+name: stat
 description: >
   통계 분석 및 가설 검정. 변수 척도를 파악하고, 귀무가설을 설정한 뒤,
   적합한 통계 검정을 선택하여 scipy/statsmodels .py 스크립트를 생성, 결과를 해석한다.

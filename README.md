@@ -13,8 +13,8 @@ EDA, 전처리, 통계 분석을 명령어 하나로 수행하며, 모든 결과
 |--------|------|
 | `harnessda:init` | 프로젝트 구조 초기화 — `harnessda/` 폴더 생성 |
 | `harnessda:eda` | 탐색적 데이터 분석 — 데이터 구조, 결측값, 분포, 상관관계 |
-| `harnessda:data-clean` | 데이터 전처리 — 결측값, 중복, 이상치, 타입 변환 |
-| `harnessda:stat-analysis` | 통계 분석 — 가설 검정, 상관분석, 회귀분석 |
+| `harnessda:clean` | 데이터 전처리 — 결측값, 중복, 이상치, 타입 변환 |
+| `harnessda:stat` | 통계 분석 — 가설 검정, 상관분석, 회귀분석 |
 | `harnessda:report` | 최종 보고서 — 마크다운 |
 | `harnessda:help` | 스킬 목록 + 도움말 |
 
@@ -55,22 +55,20 @@ EDA, 전처리, 통계 분석을 명령어 하나로 수행하며, 모든 결과
 ```
 harnessda:init                    프로젝트 구조 초기화
 harnessda:help                    스킬 목록 보기
-harnessda:eda                     탐색적 데이터 분석 (EDA)
-harnessda:eda update              기존 분석 재실행
-harnessda:eda notebook            py → ipynb 변환
-harnessda:data-clean              데이터 전처리
-harnessda:data-clean update       기존 전처리 재실행
-harnessda:data-clean notebook     py → ipynb 변환
-harnessda:stat-analysis           통계 분석 · 가설 검정
-harnessda:stat-analysis update    기존 분석 재실행
-harnessda:stat-analysis notebook  py → ipynb 변환
-harnessda:report                  최종 마크다운 보고서
+harnessda:eda                탐색적 데이터 분석 (EDA)
+harnessda:eda report         노트북 실행 후 EDA 보고서 생성
+harnessda:clean              데이터 전처리
+harnessda:clean report       노트북 실행 후 전처리 보고서 생성
+harnessda:stat               통계 분석 · 가설 검정
+harnessda:stat update        기존 분석 재실행
+harnessda:stat notebook      py → ipynb 변환
+harnessda:report             최종 마크다운 보고서
 ```
 
 시작하기:
 1. `harnessda:init` 으로 프로젝트 구조 생성
 2. `harnessda/data/` 에 CSV 파일 배치
-3. `harnessda:eda` → `harnessda:data-clean` → `harnessda:stat-analysis` → `harnessda:report`
+3. `harnessda:eda` → `harnessda:clean` → `harnessda:stat` → `harnessda:report`
 
 ## 기술 스택
 

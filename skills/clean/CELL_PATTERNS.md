@@ -30,11 +30,19 @@ import os
 import pandas as pd
 import numpy as np
 
+# 프로젝트 루트 탐색 (Jupyter 실행 위치와 무관하게 동작)
+_search = os.getcwd()
+while not os.path.exists(os.path.join(_search, 'harnessda')):
+    _parent = os.path.dirname(_search)
+    if _parent == _search:
+        raise FileNotFoundError('harnessda/ 폴더를 찾을 수 없습니다. harnessda:init을 먼저 실행하세요.')
+    _search = _parent
+os.chdir(_search)
+
 # 경로 설정
-BASE_DIR = 'harnessda'
-DATA_DIR = os.path.join(BASE_DIR, 'data')
+BASE_DIR    = 'harnessda'
+DATA_DIR    = os.path.join(BASE_DIR, 'data')
 CLEANED_DIR = os.path.join(DATA_DIR, 'cleaned')
-os.makedirs(CLEANED_DIR, exist_ok=True)
 
 # 셀 2: 데이터 로드 (code cell)
 DATA_PATH = os.path.join(DATA_DIR, '데이터_파일.csv')  # 실제 파일명으로 대체

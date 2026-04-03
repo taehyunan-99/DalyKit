@@ -23,7 +23,7 @@ for dir in skills agents; do
 done
 
 # 스킬 설치 (디렉토리 복사)
-skills=("init" "eda" "data-clean" "stat-analysis" "report" "help")
+skills=("init" "eda" "clean" "stat" "report" "help")
 for skill in "${skills[@]}"; do
     source="$HARNESS_ROOT/skills/$skill"
     target="$CLAUDE_ROOT/skills/$skill"
@@ -43,8 +43,18 @@ for agent in "${agents[@]}"; do
     echo "  Agent installed: $agent"
 done
 
+# viz 공유 참조 문서 설치 (스킬이 아닌 공유 참조 문서)
+rm -rf "$CLAUDE_ROOT/skills/viz"
+cp -r "$HARNESS_ROOT/skills/viz" "$CLAUDE_ROOT/skills/viz"
+echo "  Shared docs installed: viz"
+
+# 템플릿 설치
+mkdir -p "$CLAUDE_ROOT/templates"
+cp -r "$HARNESS_ROOT/templates/"* "$CLAUDE_ROOT/templates/"
+echo "  Templates installed"
+
 echo ""
 echo "=== Install Complete ==="
-echo "Skills: ${#skills[@]}, Agents: ${#agents[@]}"
+echo "Skills: ${#skills[@]}, Agents: ${#agents[@]}, Shared: viz, templates"
 echo ""
 echo "Usage: type 'harnessda:help' in Claude Code"
