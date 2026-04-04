@@ -7,7 +7,8 @@
 ```
 dalykit/
 ├── code/
-│   └── eda_analysis.ipynb   ← EDA 노트북 (Write 도구로 생성)
+│   └── notebooks/
+│       └── eda_analysis.ipynb   ← EDA 노트북 (Write 도구로 생성)
 └── figures/
     └── *.png                ← 시각화 이미지
 ```
@@ -15,7 +16,7 @@ dalykit/
 ## 워크플로우
 
 ```
-1. Write 도구 → dalykit/code/eda_analysis.ipynb 생성 (nbformat 4)
+1. Write 도구 → dalykit/code/notebooks/eda_analysis.ipynb 생성 (nbformat 4)
 2. 사용자가 노트북을 열어 전체 셀 실행
 3. dalykit:report 호출 → 보고서 생성
 ```
