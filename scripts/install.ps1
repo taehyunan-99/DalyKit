@@ -1,4 +1,4 @@
-# HarnessDA Install Script
+# DalyKit Install Script
 # 파일을 ~/.claude/에 복사하여 설치한다
 
 $ErrorActionPreference = "Stop"
@@ -6,13 +6,13 @@ $ErrorActionPreference = "Stop"
 $HarnessRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $ClaudeRoot = Join-Path $env:USERPROFILE ".claude"
 
-Write-Host "=== HarnessDA Install ===" -ForegroundColor Cyan
+Write-Host "=== DalyKit Install ===" -ForegroundColor Cyan
 Write-Host "Source: $HarnessRoot"
 Write-Host "Target: $ClaudeRoot"
 Write-Host ""
 
 # 대상 디렉토리 생성
-$dirs = @("skills", "agents")
+$dirs = @("skills", "shared", "hooks")
 foreach ($dir in $dirs) {
     $targetDir = Join-Path $ClaudeRoot $dir
     if (-not (Test-Path $targetDir)) {
@@ -22,7 +22,7 @@ foreach ($dir in $dirs) {
 }
 
 # 스킬 설치 (디렉토리 복사)
-$skills = @("init", "eda", "clean", "stat", "report", "help")
+$skills = @("init", "domain", "eda", "clean", "stat", "help")
 foreach ($skill in $skills) {
     $source = Join-Path $HarnessRoot "skills\$skill"
     $target = Join-Path $ClaudeRoot "skills\$skill"
@@ -35,20 +35,9 @@ foreach ($skill in $skills) {
     Write-Host "  Skill installed: $skill" -ForegroundColor Green
 }
 
-# 에이전트 설치 (파일 복사)
-$agents = @("data-profiler.md")
-foreach ($agent in $agents) {
-    $source = Join-Path $HarnessRoot "agents\$agent"
-    $target = Join-Path $ClaudeRoot "agents\$agent"
-
-    if (Test-Path $target) { Remove-Item $target -Force }
-    Copy-Item -Path $source -Destination $target -Force
-    Write-Host "  Agent installed: $agent" -ForegroundColor Green
-}
-
 # viz 공유 참조 문서 설치 (스킬이 아닌 공유 참조 문서)
-$vizSource = Join-Path $HarnessRoot "skills\viz"
-$vizTarget = Join-Path $ClaudeRoot "skills\viz"
+$vizSource = Join-Path $HarnessRoot "shared\viz"
+$vizTarget = Join-Path $ClaudeRoot "shared\viz"
 if (Test-Path $vizTarget) { Remove-Item $vizTarget -Recurse -Force }
 Copy-Item -Path $vizSource -Destination $vizTarget -Recurse -Force
 Write-Host "  Shared docs installed: viz" -ForegroundColor Green
@@ -60,8 +49,15 @@ if (-not (Test-Path $templatesTarget)) { New-Item -ItemType Directory -Path $tem
 Copy-Item -Path "$templatesSource\*" -Destination $templatesTarget -Recurse -Force
 Write-Host "  Templates installed" -ForegroundColor Green
 
+# hook 스크립트 설치 (init 스킬이 프로젝트에 복사할 원본)
+$hooksSource = Join-Path $HarnessRoot "hooks"
+$hooksTarget = Join-Path $ClaudeRoot "hooks"
+Copy-Item -Path "$hooksSource\guard_write.py" -Destination "$hooksTarget\guard_write.py" -Force
+Copy-Item -Path "$hooksSource\guard_read.py" -Destination "$hooksTarget\guard_read.py" -Force
+Write-Host "  Hooks installed" -ForegroundColor Green
+
 Write-Host ""
 Write-Host "=== Install Complete ===" -ForegroundColor Cyan
-Write-Host "Skills: $($skills.Count), Agents: $($agents.Count), Shared: viz, templates"
+Write-Host "Skills: $($skills.Count), Shared: viz, templates, hooks"
 Write-Host ""
-Write-Host "Usage: type 'harnessda:help' in Claude Code" -ForegroundColor Yellow
+Write-Host "Usage: type 'dalykit:help' in Claude Code" -ForegroundColor Yellow

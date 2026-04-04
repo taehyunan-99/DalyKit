@@ -2,7 +2,7 @@
 
 ## 트리거
 
-`harnessda:stat report` 호출 시 실행
+`dalykit:stat report` 호출 시 실행
 
 ## 결과 파싱 방법
 
@@ -121,7 +121,7 @@
 | `stat_insight_{col}.png` | key_findings | 효과 크기 상위 핵심 인사이트 |
 
 > **저장 기준**: 가설 번호와 1:1 매핑된 차트만 저장. 유의/비유의 무관 — 비유의 결과도 "근거 없음"의 근거 자료.
-> `report.md` 생성 시 Glob으로 `harnessda/figures/stat_*` 파일을 탐색하여 hypothesis / stat_results / key_findings 섹션에 자동 포함한다.
+> `report.md` 생성 시 Glob으로 `dalykit/figures/stat_*` 파일을 탐색하여 hypothesis / stat_results / key_findings 섹션에 자동 포함한다.
 
 ---
 

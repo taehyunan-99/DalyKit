@@ -3,7 +3,7 @@ name: stat
 description: >
   통계 분석 및 가설 검정. 변수 척도를 파악하고, 귀무가설을 설정한 뒤,
   적합한 통계 검정을 선택하여 scipy/statsmodels .py 스크립트를 생성, 결과를 해석한다.
-  트리거: "harnessda:stat", "통계 분석", "가설 검정", "hypothesis test",
+  트리거: "dalykit:stat", "통계 분석", "가설 검정", "hypothesis test",
   "상관 분석", "정규성 검정", "t-test", "ANOVA", "회귀 분석".
 user_invocable: true
 ---
@@ -15,25 +15,25 @@ user_invocable: true
 ## 사용법
 
 ```
-harnessda:stat             ← cleaned/ 데이터 → 통계 검정 → 보고서
-harnessda:stat update      ← 기존 py 재실행 → 결과 갱신
-harnessda:stat notebook    ← stat_analysis.py → ipynb 변환
+dalykit:stat             ← cleaned/ 데이터 → 통계 검정 → 보고서
+dalykit:stat update      ← 기존 py 재실행 → 결과 갱신
+dalykit:stat notebook    ← stat_analysis.py → ipynb 변환
 ```
 
 ## 사전 조건
 
-- `harnessda/` 폴더가 존재해야 한다 (Glob으로 확인)
-- 없으면: "`harnessda:init`을 먼저 실행하세요." 안내 후 종료
+- `dalykit/` 폴더가 존재해야 한다 (Glob으로 확인)
+- 없으면: "`dalykit:init`을 먼저 실행하세요." 안내 후 종료
 
 ## 경로 규칙
 
 | 항목 | 경로 |
 |------|------|
-| 전처리 데이터 | `harnessda/data/cleaned/` |
-| 스크립트 | `harnessda/code/stat_analysis.py` |
-| JSON 결과 | `harnessda/code/stat_results.json` |
-| 보고서 | `harnessda/docs/stat_report.md` |
-| 시각화 | `harnessda/figures/` |
+| 전처리 데이터 | `dalykit/data/` |
+| 스크립트 | `dalykit/code/stat_analysis.py` |
+| JSON 결과 | `dalykit/code/stat_results.json` |
+| 보고서 | `dalykit/docs/stat_report.md` |
+| 시각화 | `dalykit/figures/` |
 
 ## 전체 흐름 (노션 워크플로우 기반)
 
@@ -50,62 +50,62 @@ harnessda:stat notebook    ← stat_analysis.py → ipynb 변환
 
 | 파일 | 내용 |
 |------|------|
-| `TEST_SELECTION.md` | 척도 분류 + 의사결정 트리 + 사후 분석 매핑 |
-| `HYPOTHESIS_GUIDE.md` | 귀무가설/대립가설 레퍼런스 테이블 |
-| `CODE_PATTERNS.md` | 검정별 함수 패턴 (.py 스크립트용) |
-| `CELL_PATTERNS.md` | 파일 생성 구조 (.py + .json + .ipynb) |
-| `SCAN_LOGIC.md` | 변수 자동 스캔 알고리즘 + 분석 계획 출력 형식 |
-| `REPORT_GUIDE.md` | 통계 보고서 자동 생성 지침 |
+| `~/.claude/skills/stat/TEST_SELECTION.md` | 척도 분류 + 의사결정 트리 + 사후 분석 매핑 |
+| `~/.claude/skills/stat/HYPOTHESIS_GUIDE.md` | 귀무가설/대립가설 레퍼런스 테이블 |
+| `~/.claude/skills/stat/CODE_PATTERNS.md` | 검정별 함수 패턴 (.py 스크립트용) |
+| `~/.claude/skills/stat/CELL_PATTERNS.md` | 파일 생성 구조 (.py + .json + .ipynb) |
+| `~/.claude/skills/stat/SCAN_LOGIC.md` | 변수 자동 스캔 알고리즘 + 분석 계획 출력 형식 |
+| `~/.claude/skills/stat/REPORT_GUIDE.md` | 통계 보고서 자동 생성 지침 |
 
 ## 전체 자동 분석 (인자 없이 호출 시)
 
-인자 없이 `harnessda:stat` 호출 시, 아래 순서로 전체 분석을 자동 수행한다.
+인자 없이 `dalykit:stat` 호출 시, 아래 순서로 전체 분석을 자동 수행한다.
 
 ### 0단계: 컨텍스트 수집
 
 1. **보고서 읽기**:
-   - `harnessda/docs/eda_report.md` → "다음 단계 추천" 섹션에서 통계 분석 추천 항목 추출
-   - `harnessda/docs/preprocessing_report.md` → "최종 컬럼 목록" + "다음 단계 추천" 추출
+   - `dalykit/docs/eda_report.md` → "다음 단계 추천" 섹션에서 통계 분석 추천 항목 추출
+   - `dalykit/docs/preprocessing_report.md` → "최종 컬럼 목록" + "다음 단계 추천" 추출
    - 보고서가 없으면 → 데이터 파일을 직접 프로파일링 (dtypes, nunique, describe)
 2. **타겟 변수 결정**: 보고서에서 종속변수로 반복 언급되는 변수 추론. 추론 불가 시 사용자에게 질문.
-3. **데이터 경로 확인**: `harnessda/data/cleaned/` 하위 파일 탐색 또는 전처리 보고서의 "저장 파일" 경로 참조.
+3. **데이터 경로 확인**: `dalykit/data/` 하위 파일 탐색 또는 전처리 보고서의 "저장 파일" 경로 참조.
 
 ### 1단계: 분석 계획 수립
 
-> `SCAN_LOGIC.md`를 Read로 읽고 따른다.
+> `~/.claude/skills/stat/SCAN_LOGIC.md`를 Read로 읽고 따른다.
 
 - P1(보고서 추천) + P2(변수 자동 스캔) → 중복 제거 → 분석 계획 확정 → 바로 스크립트 생성 진행
 
 ### 2단계: .py 스크립트 생성 + 실행
 
-> `CODE_PATTERNS.md`를 Read로 읽고 따른다.
+> `~/.claude/skills/stat/CODE_PATTERNS.md`를 Read로 읽고 따른다.
 
-- Write 도구로 `harnessda/code/stat_analysis.py` 생성 (분석 함수 + 실행 + JSON 저장)
-- Bash 도구로 `python harnessda/code/stat_analysis.py` 실행 → `harnessda/code/stat_results.json` 생성
+- Write 도구로 `dalykit/code/stat_analysis.py` 생성 (분석 함수 + 실행 + JSON 저장)
+- Bash 도구로 `python dalykit/code/stat_analysis.py` 실행 → `dalykit/code/stat_results.json` 생성
 
 ### 3단계: 통계 보고서 자동 생성
 
 스크립트 실행 완료 후 **자동으로** 이어서 실행한다.
 
-- `harnessda/code/stat_results.json` 읽어 `harnessda/docs/stat_report.md` 생성
-- 보고서 구조와 작성 규칙은 **REPORT_GUIDE.md** 참조
-- 시각화 필요 시 → `viz/charts/` 하위에서 적합한 차트 파일을 Read로 읽고 패턴을 따른다
+- `dalykit/code/stat_results.json` 읽어 `dalykit/docs/stat_report.md` 생성
+- 보고서 구조와 작성 규칙은 **`~/.claude/skills/stat/REPORT_GUIDE.md`** 참조
+- 시각화 필요 시 → `~/.claude/shared/viz/STYLE_GUIDE.md` Read 후 `~/.claude/shared/viz/charts/` 하위에서 적합한 차트 파일을 Read로 읽고 패턴을 따른다
 
 ## update 인자 처리
 
-`harnessda:stat update` 호출 시:
+`dalykit:stat update` 호출 시:
 
-1. `harnessda/code/stat_analysis.py` 존재 여부 확인 (Glob)
+1. `dalykit/code/stat_analysis.py` 존재 여부 확인 (Glob)
 2. **있으면**: py 재실행 → JSON 갱신 → report 갱신 (py 생성 스킵)
-3. **없으면**: "stat_analysis.py를 찾을 수 없습니다. `harnessda:stat`을 먼저 실행하세요." 안내 후 종료
+3. **없으면**: "stat_analysis.py를 찾을 수 없습니다. `dalykit:stat`을 먼저 실행하세요." 안내 후 종료
 
 ## notebook 인자 처리
 
-`harnessda:stat notebook` 호출 시:
+`dalykit:stat notebook` 호출 시:
 
-1. `harnessda/code/stat_analysis.py` 존재 여부 확인 (Glob)
-2. **있으면**: `# %%` 구분자 기준으로 셀 분리 → `harnessda/code/stat_analysis.ipynb` 변환
-3. **없으면**: "stat_analysis.py를 찾을 수 없습니다. `harnessda:stat`을 먼저 실행하세요." 안내 후 종료
+1. `dalykit/code/stat_analysis.py` 존재 여부 확인 (Glob)
+2. **있으면**: `# %%` 구분자 기준으로 셀 분리 → `dalykit/code/stat_analysis.ipynb` 변환
+3. **없으면**: "stat_analysis.py를 찾을 수 없습니다. `dalykit:stat`을 먼저 실행하세요." 안내 후 종료
 
 ## 의사결정 트리
 

@@ -1,17 +1,20 @@
-# HarnessDA Work Tracker
+# DalyKit Work Tracker
 <!-- Claude 전용: 새 컨텍스트에서 작업 이어가기 위한 상태 문서 -->
 <!-- 마지막 업데이트: 2026-04-02 -->
 
 ## 현재 상태 (Current State)
-> 스킬명/폴더명 통일(clean/stat), report 인자 추가, 배포 스크립트 수정, 문서 동기화 완료. 전체 파이프라인 통합 테스트 예정.
+> Harness Hook 시스템 설계 및 구현 완료(guard_write/guard_read). init 스킬에 hook 설치 단계 추가. data/cleaned/ → data/ 경로 통일.
 
 ## 최근 변경 (Recent Changes)
 <!-- 직전 세션에서 한 일 — 최대 5개, LIFO -->
 | 날짜 | 변경 | 영향 파일 |
 |------|------|-----------|
+| 2026-04-04 | Harness Hook 시스템 구현(guard_write.py: 쓰기 경로 제한, guard_read.py: 대용량 Read 차단), init 스킬에 hook 설치 4단계 추가, install/uninstall 스크립트에 hooks 배포/제거 추가, data/cleaned/ → data/ 경로 전면 통일 | hooks/guard_write.py(신규), hooks/guard_read.py(신규), skills/init/SKILL.md, skills/clean/SKILL.md, skills/clean/CELL_PATTERNS.md, skills/clean/PREPROCESSING_REPORT.md, skills/stat/SKILL.md, skills/help/SKILL.md, scripts/*.sh, scripts/*.ps1 |
+| 2026-04-04 | viz 폴더 skills/viz/ → shared/viz/ 이동(의미 명확화), install/uninstall 스크립트 정리(domain 추가, report/data-profiler 제거), eda/stat SKILL.md 및 CLAUDE.md 참조 경로 갱신 | shared/viz/(이동), scripts/*.sh, scripts/*.ps1, skills/eda/SKILL.md, skills/stat/SKILL.md, CLAUDE.md |
+| 2026-04-04 | domain 스킬 신규 추가(자유 입력→구조화), 가상 시나리오 검토로 eda/clean/stat/help 상대경로 수정, DOMAIN_TEMPLATE.md 자유 입력 섹션 추가, data-profiler 에이전트 ML 단계 보류 결정 | skills/domain/SKILL.md(신규), templates/DOMAIN_TEMPLATE.md, skills/eda/SKILL.md, skills/clean/SKILL.md, skills/stat/SKILL.md, skills/help/SKILL.md, CLAUDE.md, docs/work-tracker.md |
 | 2026-04-03 | 스킬명/폴더명 통일(data-clean→clean, stat-analysis→stat), eda/clean에 report 인자 추가, install/uninstall 스크립트에 viz/templates 배포 추가 + 제거 로직 수정, CLAUDE.md/help/README 문서 동기화 | skills/clean/, skills/stat/, eda/SKILL.md, clean/SKILL.md, scripts/*.sh, scripts/*.ps1, CLAUDE.md, help/SKILL.md, README.md |
-| 2026-04-02 | EDA/전처리 실행 방식 전환: py→json→보고서 자동 → ipynb 생성 후 사용자 직접 실행. update/notebook 인자 제거. 보고서는 harnessda:report 별도 호출로 분리. CELL_PATTERNS.md ipynb 셀 구조로 전면 교체 | eda/SKILL.md, eda/CELL_PATTERNS.md, data-clean/SKILL.md, data-clean/CELL_PATTERNS.md |
-| 2026-03-31 | v3 구조 재설계 완료. init 스킬 추가. 모든 경로 harnessda/ 기준 통일. PPT/HTML/tracker 폐기. notebook 인자 추가(eda/clean/stat). install/uninstall 스크립트 갱신. CLAUDE.md/README.md 갱신 | skills/init/SKILL.md(신규), eda/SKILL.md, eda/CELL_PATTERNS.md, data-clean/SKILL.md, data-clean/CELL_PATTERNS.md, stat-analysis/SKILL.md, stat-analysis/CELL_PATTERNS.md, report/SKILL.md, report/SLIDE_STRUCTURE.md, help/SKILL.md, scripts/*.sh, scripts/*.ps1, CLAUDE.md, README.md |
+| 2026-04-02 | EDA/전처리 실행 방식 전환: py→json→보고서 자동 → ipynb 생성 후 사용자 직접 실행. update/notebook 인자 제거. 보고서는 dalykit:report 별도 호출로 분리. CELL_PATTERNS.md ipynb 셀 구조로 전면 교체 | eda/SKILL.md, eda/CELL_PATTERNS.md, data-clean/SKILL.md, data-clean/CELL_PATTERNS.md |
+| 2026-03-31 | v3 구조 재설계 완료. init 스킬 추가. 모든 경로 dalykit/ 기준 통일. PPT/HTML/tracker 폐기. notebook 인자 추가(eda/clean/stat). install/uninstall 스크립트 갱신. CLAUDE.md/README.md 갱신 | skills/init/SKILL.md(신규), eda/SKILL.md, eda/CELL_PATTERNS.md, data-clean/SKILL.md, data-clean/CELL_PATTERNS.md, stat-analysis/SKILL.md, stat-analysis/CELL_PATTERNS.md, report/SKILL.md, report/SLIDE_STRUCTURE.md, help/SKILL.md, scripts/*.sh, scripts/*.ps1, CLAUDE.md, README.md |
 | 2026-03-30 | P0-2 설계 완료. 도메인 5종 테마/색상 확정. JSON 스키마 설계 + 3파일 분리(SCHEMA_COMMON/DOMAIN/PORTFOLIO). HTML_TEMPLATE.md 전면 개편. SKILL.md pptx 워크플로우 교체. templates/ 통합 | report/SKILL.md, report/HTML_TEMPLATE.md, report/JSON_SCHEMA.md, report/SCHEMA_COMMON.md(신규), report/SCHEMA_DOMAIN.md(신규), report/SCHEMA_PORTFOLIO.md(신규), report/SLIDE_STRUCTURE.md, templates/DOMAIN_TEMPLATE.md(이동), templates/REPORT_CONFIG_TEMPLATE.md(이동) |
 | 2026-03-30 | eda/clean SKILL.md → py 방식 전환 (NotebookEdit 제거). CELL_PATTERNS.md 신규 생성. report 인자 제거, update 인자 추가, 자동 보고서 연결 | eda/SKILL.md, eda/CELL_PATTERNS.md(신규), data-clean/SKILL.md, data-clean/CELL_PATTERNS.md(신규), stat-analysis/SKILL.md |
 | 2026-03-29 | viz 스킬 → 공유 참조 문서 전환. CHART_PATTERNS.md → charts/ 개별 파일 분리(9개). SKILL.md 삭제 | skills/viz/*, eda/SKILL.md, stat-analysis/SKILL.md, CELL_PATTERNS.md, help/SKILL.md, CLAUDE.md, README.md, data-profiler.md, EDA_REPORT.md, PREPROCESSING_REPORT.md |
@@ -22,11 +25,12 @@
 ## 대기열 (Backlog)
 <!-- 우선순위 순, 각 항목에 WHY 포함 -->
 ### v3 후속 작업
-1. **하네스 시스템 추가** — 코드 및 명령 제약, 참조 및 사용 폴더 강제 등 스킬 실행 환경 제어 레이어 설계
-2. **init 인자 확장** — `harnessda:init current` (현재 디렉토리 기준 초기화) + `harnessda:init <name>` (지정 이름으로 프로젝트 생성) 인자 추가
-3. **data-profiler 에이전트 재설계** — 경로 harnessda/ 기준 수정 + 자율 판단 강화 (1+2단계: 분석 흐름 결정 + 이상 해석). 3단계(파이프라인 자율 실행)는 토큰 비용으로 제외
+1. ~~**하네스 시스템 추가**~~ ✅ — guard_write(쓰기 경로 제한) + guard_read(대용량 Read 차단) 구현 완료. PreToolUse hook으로 물리적 차단.
+2. **init 인자 확장** — `dalykit:init current` (현재 디렉토리 기준 초기화) + `dalykit:init <name>` (지정 이름으로 프로젝트 생성) 인자 추가
+3. **data-profiler 에이전트 재설계** — 경로 dalykit/ 기준 수정 + 자율 판단 강화 (1+2단계: 분석 흐름 결정 + 이상 해석). 3단계(파이프라인 자율 실행)는 토큰 비용으로 제외
 4. **v3 전체 파이프라인 통합 테스트** — init → eda → clean → stat → report 새 경로 기준 검증
 5. **install.sh macOS 테스트** — 스크립트 작성 완료했으나 실행 검증 미완
+6. **report 스킬 경로 수정 + 완성** — 상대경로 → `~/.claude/skills/report/` 절대경로 수정 필요. ML 워크플로우 완성 후 전체 파이프라인 종합 보고서 용도로 활용 예정
 
 ### 완료
 - ~~**v3 구조 재설계 10개 태스크**~~ ✅ — 2026-03-31 완료
@@ -48,12 +52,18 @@
 <!-- 중요한 기술적 결정 — "왜 이렇게 했지?" 방지 -->
 | 날짜 | 결정 | 근거 |
 |------|------|------|
-| 2026-04-03 | 스킬 폴더명/name 통일: data-clean→clean, stat-analysis→stat | 트리거 호출명(harnessda:clean, harnessda:stat)과 폴더명 불일치로 혼란 발생. 폴더명=스킬명=호출명 일치 원칙으로 정리 |
-| 2026-04-03 | eda/clean에 `report` 인자 추가 | ipynb 전환 후 보고서 생성 주체 불명확. `harnessda:eda report` / `harnessda:clean report`로 명시적 호출하여 ipynb 실행 결과를 읽고 보고서 생성 |
+| 2026-04-04 | viz를 skills/ → shared/로 이동 | viz는 독립 스킬이 아닌 공유 참조 문서. skills/ 안에 두는 것은 의미상 부정확. shared/viz/로 이동하여 구조 명확화 |
+| 2026-04-04 | Harness Hook을 ~/.claude/hooks/ 원본 배포 + dalykit:init이 프로젝트에 설치하는 구조 채택 | 글로벌 ~/.claude/settings.json 직접 병합은 기존 설정 파괴 위험. 프로젝트 레벨 .claude/settings.json이 안전하고 git 공유 가능. init 시점에 설치하면 hook이 필요한 프로젝트에만 적용 |
+| 2026-04-04 | Harness Hook v1 범위: 쓰기 경로 제한 + 대용량 Read 차단만 구현 | 도구-스킬 매칭(현재 스킬 감지 불가) 등 고난이도 제약은 제외. 효과 대비 난이도가 낮은 2가지만 우선 적용 |
+| 2026-04-04 | data/cleaned/ 폴더 폐지 → data/ 단일 폴더로 통합 | 원본/전처리 파일을 같은 폴더에 저장하는 것이 단순하고 관리 용이. 파일명(_cleaned 접미사)으로 구분 |
+| 2026-04-04 | data-profiler 에이전트를 install/uninstall 스크립트에서 제거 | ML 단계 재설계 예정이라 현재 배포해도 실질 활용 없음. 재설계 완료 후 재추가 예정 |
+| 2026-04-04 | report 스킬을 install/uninstall 스크립트에서 제거 | ML 워크플로우 완성 후 종합 보고서 용도로 사용 예정. 현재 단계에서 배포 불필요 |
+| 2026-04-03 | 스킬 폴더명/name 통일: data-clean→clean, stat-analysis→stat | 트리거 호출명(dalykit:clean, dalykit:stat)과 폴더명 불일치로 혼란 발생. 폴더명=스킬명=호출명 일치 원칙으로 정리 |
+| 2026-04-03 | eda/clean에 `report` 인자 추가 | ipynb 전환 후 보고서 생성 주체 불명확. `dalykit:eda report` / `dalykit:clean report`로 명시적 호출하여 ipynb 실행 결과를 읽고 보고서 생성 |
 | 2026-04-03 | stat은 .py 방식 유지 (ipynb 전환 안 함) | 통계 분석은 가정 검정→본 검정→사후 분석이 자동 분기되어야 하므로 스크립트 실행+JSON 결과 방식이 적합. 사용자 중간 개입이 검정 흐름에서는 불필요 |
 | 2026-04-02 | EDA/전처리: py→json→보고서 자동 방식 → ipynb 직접 생성 방식으로 전환 | 토큰 ~30-50% 절감 + 셀 단위 수정/재실행으로 분석 퀄리티 향상. 자동화 편의성 일부 감소는 트레이드오프로 수용 |
-| 2026-04-02 | EDA/전처리: update/notebook 인자 제거 | ipynb가 기본이 되면서 두 인자 모두 불필요. 보고서는 harnessda:report 별도 호출로 분리 |
-| 2026-03-31 | v3: 모든 결과물 harnessda/ 하위 통일, init 스킬 추가 | 사용자 프로젝트 폴더 오염 방지. harnessda:init 한 번으로 표준 구조 생성 |
+| 2026-04-02 | EDA/전처리: update/notebook 인자 제거 | ipynb가 기본이 되면서 두 인자 모두 불필요. 보고서는 dalykit:report 별도 호출로 분리 |
+| 2026-03-31 | v3: 모든 결과물 dalykit/ 하위 통일, init 스킬 추가 | 사용자 프로젝트 폴더 오염 방지. dalykit:init 한 번으로 표준 구조 생성 |
 | 2026-03-31 | v3: PPT/HTML 슬라이드 완전 폐기 → 마크다운 단일 출력 | 템플릿 방식도 토큰 비용 대비 활용도 낮음. 마크다운으로 충분 |
 | 2026-03-31 | data-profiler: 파이프라인 자율 실행(3단계) 제외 | ~27,000 토큰 소모 + 중간 개입 불가. 1+2단계(프로파일링+판단)만 유지 |
 | 2026-03-30 | eda/clean: .py 실행 후 report 자동 연결 + update 인자 도입 | 스킬 내부 흐름은 끊지 않고, 스킬 간 전환에서만 사용자 판단. py 파일 잔존으로 수정 후 update 재실행 가능 |
@@ -61,8 +71,8 @@
 | 2026-03-30 | 스킬 네이밍 통일(#3) → 보류. 플러그인화 이후 작업 | 콜론 포함 name은 플러그인 네임스페이스 전용, 현재 환경에서 매칭 불가 |
 | 2026-03-29 | viz를 스킬에서 공유 참조 문서로 전환, charts/ 개별 파일 분리 | 시각화는 독립 스킬이 아닌 eda/stat에서 필요 시 참조하는 구조 |
 | 2026-03-29 | v2 리팩토링 방향 확정: py 전환 + PPT 템플릿화 | UniversalBank 테스트에서 토큰 과다 소모 확인, 근본 원인은 노트북 생성 + HTML 직접 생성 |
-| 2026-03-29 | 명령어 네임스페이스 `harnessda:스킬` 형식 통일 | 플러그인 전환 대비, 다른 플러그인과 동일한 호출 패턴 |
-| 2026-03-29 | da.md 라우터 제거 → harnessda:help 스킬로 대체 | 라우터 커맨드 불필요, 플러그인 구조에서는 네임스페이스 자체가 라우팅 |
+| 2026-03-29 | 명령어 네임스페이스 `dalykit:스킬` 형식 통일 | 플러그인 전환 대비, 다른 플러그인과 동일한 호출 패턴 |
+| 2026-03-29 | da.md 라우터 제거 → dalykit:help 스킬로 대체 | 라우터 커맨드 불필요, 플러그인 구조에서는 네임스페이스 자체가 라우팅 |
 | 2026-03-29 | tracker 스킬 도입 (개발 전용) | work-tracker 수동 업데이트 부담 해소, 배포 시 제외 |
 | 2026-03-28 | PPTX_PATTERNS.md 삭제 → frontend-design 플러그인으로 대체 | python-pptx 코드 패턴 불필요, 플러그인이 HTML 슬라이드 직접 생성 |
 | 2026-03-28 | stat-analysis SKILL.md: 의사결정 트리 → TEST_SELECTION.md 참조 포인터로 교체 | 30줄 중복 제거, 단일 소스 유지 |

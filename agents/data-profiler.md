@@ -16,7 +16,7 @@ color: blue
 
 주어진 데이터셋에 대해 EDA 프로파일링을 수행하고, **품질 평가 + 분석 흐름 자율 판단 + 도메인 맥락 해석**을 산출한다.
 
-> `harnessda:eda`와의 차이: `harnessda:eda`는 사용자가 대화형으로 세밀하게 제어하는 스킬이고, `data-profiler`는 한 번에 전체 프로파일링 + 품질 점수 + 흐름 판단을 자동 산출하는 에이전트이다.
+> `dalykit:eda`와의 차이: `dalykit:eda`는 사용자가 대화형으로 세밀하게 제어하는 스킬이고, `data-profiler`는 한 번에 전체 프로파일링 + 품질 점수 + 흐름 판단을 자동 산출하는 에이전트이다.
 
 ---
 
@@ -24,15 +24,15 @@ color: blue
 
 ### 1단계: 사전 준비
 
-1. `harnessda/data/` 에서 Glob으로 데이터 파일 확인
-2. `harnessda/config/domain.md` 읽기 (존재 시)
+1. `dalykit/data/` 에서 Glob으로 데이터 파일 확인
+2. `dalykit/config/domain.md` 읽기 (존재 시)
    - 추출: 업종, 타겟 변수, 컬럼 설명, 제어 가능 여부, 도메인 규칙, 비즈니스 제약
    - 분석 제외 컬럼(ID, 개인정보 등) 파악
    - 정상 범위로 선언된 이상치 규칙 파악 (예: "Experience 음수 = 정상")
 
 ### 2단계: 프로파일링 실행
 
-`harnessda/code/run_profile.py` 스크립트를 생성·실행하여 결과를 `harnessda/code/profile_results.json`에 저장한다.
+`dalykit/code/run_profile.py` 스크립트를 생성·실행하여 결과를 `dalykit/code/profile_results.json`에 저장한다.
 
 스크립트가 수행할 내용:
 - 기본 통계 (행/열, 타입 분포, 결측률, 중복률, 이상치 비율)
@@ -83,15 +83,15 @@ color: blue
 - **주의사항**: 결정을 바꿀 수 있는 조건 (비자명한 경우만)
 
 예시:
-> **다음 단계: harnessda:clean** — Income, Family, CCAvg 3개 컬럼 결측률 12% (caution). 타겟 변수(Personal Loan)와의 관계 분석 전 대체 처리 필요. 해당 컬럼이 분석 대상 외라면 stat으로 바로 진행 가능.
+> **다음 단계: dalykit:clean** — Income, Family, CCAvg 3개 컬럼 결측률 12% (caution). 타겟 변수(Personal Loan)와의 관계 분석 전 대체 처리 필요. 해당 컬럼이 분석 대상 외라면 stat으로 바로 진행 가능.
 
 ---
 
 ## 출력
 
 ### 파일 저장
-- `harnessda/code/profile_results.json` — 구조화 결과 (스크립트 생성)
-- `harnessda/docs/profile_report.md` — 사람이 읽는 요약 보고서
+- `dalykit/code/profile_results.json` — 구조화 결과 (스크립트 생성)
+- `dalykit/docs/profile_report.md` — 사람이 읽는 요약 보고서
 
 ### 메인 에이전트 반환
 5-10줄 요약 텍스트:
@@ -118,4 +118,4 @@ color: blue
 - **대용량**: 1000행 이상 시 `.sample()` 또는 요약 통계만 사용
 - **출력 제한**: raw 데이터 전체 출력 금지
 - **라이브러리**: pandas, numpy, matplotlib, seaborn만 사용
-- **경로 기준**: 모든 입출력은 `harnessda/` 하위 경로 사용
+- **경로 기준**: 모든 입출력은 `dalykit/` 하위 경로 사용

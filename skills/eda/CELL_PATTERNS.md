@@ -1,11 +1,11 @@
 # EDA 노트북 셀 패턴
 
-`harnessda:eda` 스킬이 생성하는 ipynb 구조.
+`dalykit:eda` 스킬이 생성하는 ipynb 구조.
 
 ## 생성 파일
 
 ```
-harnessda/
+dalykit/
 ├── code/
 │   └── eda_analysis.ipynb   ← EDA 노트북 (Write 도구로 생성)
 └── figures/
@@ -15,9 +15,9 @@ harnessda/
 ## 워크플로우
 
 ```
-1. Write 도구 → harnessda/code/eda_analysis.ipynb 생성 (nbformat 4)
+1. Write 도구 → dalykit/code/eda_analysis.ipynb 생성 (nbformat 4)
 2. 사용자가 노트북을 열어 전체 셀 실행
-3. harnessda:report 호출 → 보고서 생성
+3. dalykit:report 호출 → 보고서 생성
 ```
 
 ## ipynb 셀 구조
@@ -40,15 +40,15 @@ plt.rcParams['axes.unicode_minus'] = False
 
 # 프로젝트 루트 탐색 (Jupyter 실행 위치와 무관하게 동작)
 _search = os.getcwd()
-while not os.path.exists(os.path.join(_search, 'harnessda')):
+while not os.path.exists(os.path.join(_search, 'dalykit')):
     _parent = os.path.dirname(_search)
     if _parent == _search:
-        raise FileNotFoundError('harnessda/ 폴더를 찾을 수 없습니다. harnessda:init을 먼저 실행하세요.')
+        raise FileNotFoundError('dalykit/ 폴더를 찾을 수 없습니다. dalykit:init을 먼저 실행하세요.')
     _search = _parent
 os.chdir(_search)
 
 # 경로 설정
-BASE_DIR    = 'harnessda'
+BASE_DIR    = 'dalykit'
 DATA_DIR    = os.path.join(BASE_DIR, 'data')
 FIGURES_DIR = os.path.join(BASE_DIR, 'figures')
 

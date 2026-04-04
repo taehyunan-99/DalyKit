@@ -1,17 +1,17 @@
-# HarnessDA Uninstall Script
+# DalyKit Uninstall Script
 # Removes installed files. Original files are preserved.
 
 $ErrorActionPreference = "Stop"
 
 $ClaudeRoot = Join-Path $env:USERPROFILE ".claude"
 
-Write-Host "=== HarnessDA Uninstall ===" -ForegroundColor Cyan
+Write-Host "=== DalyKit Uninstall ===" -ForegroundColor Cyan
 Write-Host ""
 
 $removed = 0
 
 # 스킬 제거
-$skills = @("init", "eda", "clean", "stat", "report", "help")
+$skills = @("init", "domain", "eda", "clean", "stat", "help")
 foreach ($skill in $skills) {
     $target = Join-Path $ClaudeRoot "skills\$skill"
     if (Test-Path $target) {
@@ -22,7 +22,7 @@ foreach ($skill in $skills) {
 }
 
 # viz 공유 참조 문서 제거
-$vizTarget = Join-Path $ClaudeRoot "skills\viz"
+$vizTarget = Join-Path $ClaudeRoot "shared\viz"
 if (Test-Path $vizTarget) {
     Remove-Item $vizTarget -Recurse -Force
     Write-Host "  Shared docs removed: viz" -ForegroundColor Yellow
@@ -37,13 +37,13 @@ if (Test-Path $templatesTarget) {
     $removed++
 }
 
-# 에이전트 제거
-$agents = @("data-profiler.md")
-foreach ($agent in $agents) {
-    $target = Join-Path $ClaudeRoot "agents\$agent"
+# hook 스크립트 제거
+$hooks = @("guard_write.py", "guard_read.py")
+foreach ($hook in $hooks) {
+    $target = Join-Path $ClaudeRoot "hooks\$hook"
     if (Test-Path $target) {
         Remove-Item $target -Force
-        Write-Host "  Agent removed: $agent" -ForegroundColor Yellow
+        Write-Host "  Hook removed: $hook" -ForegroundColor Yellow
         $removed++
     }
 }

@@ -1,5 +1,5 @@
 #!/bin/bash
-# HarnessDA 설치 스크립트
+# DalyKit 설치 스크립트
 # 파일을 ~/.claude/에 복사하여 설치한다
 
 set -e
@@ -8,13 +8,13 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 HARNESS_ROOT="$(dirname "$SCRIPT_DIR")"
 CLAUDE_ROOT="$HOME/.claude"
 
-echo "=== HarnessDA Install ==="
+echo "=== DalyKit Install ==="
 echo "Source: $HARNESS_ROOT"
 echo "Target: $CLAUDE_ROOT"
 echo ""
 
 # 대상 디렉토리 생성
-for dir in skills agents; do
+for dir in skills shared hooks; do
     target_dir="$CLAUDE_ROOT/$dir"
     if [ ! -d "$target_dir" ]; then
         mkdir -p "$target_dir"
@@ -23,7 +23,7 @@ for dir in skills agents; do
 done
 
 # 스킬 설치 (디렉토리 복사)
-skills=("init" "eda" "clean" "stat" "report" "help")
+skills=("init" "domain" "eda" "clean" "stat" "help")
 for skill in "${skills[@]}"; do
     source="$HARNESS_ROOT/skills/$skill"
     target="$CLAUDE_ROOT/skills/$skill"
@@ -33,19 +33,9 @@ for skill in "${skills[@]}"; do
     echo "  Skill installed: $skill"
 done
 
-# 에이전트 설치 (파일 복사)
-agents=("data-profiler.md")
-for agent in "${agents[@]}"; do
-    source="$HARNESS_ROOT/agents/$agent"
-    target="$CLAUDE_ROOT/agents/$agent"
-
-    cp "$source" "$target"
-    echo "  Agent installed: $agent"
-done
-
 # viz 공유 참조 문서 설치 (스킬이 아닌 공유 참조 문서)
-rm -rf "$CLAUDE_ROOT/skills/viz"
-cp -r "$HARNESS_ROOT/skills/viz" "$CLAUDE_ROOT/skills/viz"
+rm -rf "$CLAUDE_ROOT/shared/viz"
+cp -r "$HARNESS_ROOT/shared/viz" "$CLAUDE_ROOT/shared/viz"
 echo "  Shared docs installed: viz"
 
 # 템플릿 설치
@@ -53,8 +43,13 @@ mkdir -p "$CLAUDE_ROOT/templates"
 cp -r "$HARNESS_ROOT/templates/"* "$CLAUDE_ROOT/templates/"
 echo "  Templates installed"
 
+# hook 스크립트 설치 (init 스킬이 프로젝트에 복사할 원본)
+cp "$HARNESS_ROOT/hooks/guard_write.py" "$CLAUDE_ROOT/hooks/guard_write.py"
+cp "$HARNESS_ROOT/hooks/guard_read.py" "$CLAUDE_ROOT/hooks/guard_read.py"
+echo "  Hooks installed"
+
 echo ""
 echo "=== Install Complete ==="
-echo "Skills: ${#skills[@]}, Agents: ${#agents[@]}, Shared: viz, templates"
+echo "Skills: ${#skills[@]}, Shared: viz, templates, hooks"
 echo ""
-echo "Usage: type 'harnessda:help' in Claude Code"
+echo "Usage: type 'dalykit:help' in Claude Code"
