@@ -170,6 +170,22 @@ KNeighborsRegressor()
 # 튜닝 그리드: 분류와 동일
 ```
 
+### DecisionTreeRegressor (DT)
+```python
+# 기본값
+DecisionTreeRegressor(random_state=42)
+
+# 튜닝 그리드: 분류와 동일
+```
+
+### GradientBoostingRegressor (GB)
+```python
+# 기본값
+GradientBoostingRegressor(n_estimators=100, random_state=42)
+
+# 튜닝 그리드: 분류와 동일
+```
+
 ---
 
 ## 자동 모델 선택 기본 후보

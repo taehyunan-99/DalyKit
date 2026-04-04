@@ -7,9 +7,9 @@ model_results.json을 분석하여 보고서를 생성한다.
 
 1. Read로 `dalykit/code/results/model_results.json` 읽기
 2. `history[0]` → 1회차 베이스라인 결과
-3. `history[n]` → 각 튜닝 라운드 결과
-4. `final_model` → 최종 선택 모델 상세
-5. `feature_diagnosis` → 피처 진단 결과
+3. `history[0]["feature_diagnosis"]` → 피처 진단 결과 (history[0] 내부에 중첩)
+4. `history[n]` (n≥1) → 각 튜닝 라운드 결과
+5. `final_model` → 최종 선택 모델 상세
 
 ## 보고서 출력 위치
 
