@@ -19,6 +19,8 @@ DalyKit/
 │   ├── eda/          ← SKILL.md, EDA_REPORT.md, CELL_PATTERNS.md
 │   ├── clean/        ← SKILL.md, PREPROCESSING_REPORT.md, CELL_PATTERNS.md
 │   ├── stat/         ← SKILL.md (+ 참조 문서 다수)
+│   ├── feature/      ← SKILL.md, CELL_PATTERNS.md
+│   ├── model/        ← SKILL.md, MODEL_CATALOG.md, REPORT_GUIDE.md
 │   ├── report/       ← SKILL.md, REPORT_STRUCTURE.md
 │   └── help/         ← SKILL.md (스킬 목록 + 도움말)
 ├── shared/
@@ -65,6 +67,8 @@ DalyKit/
 | `dalykit:eda` | 탐색적 데이터 분석 |
 | `dalykit:clean` | 데이터 전처리 |
 | `dalykit:stat` | 통계 분석 |
+| `dalykit:feature` | 피처 엔지니어링 |
+| `dalykit:model` | 모델 학습 · 평가 |
 | `dalykit:report` | 최종 보고서 (마크다운) |
 | `dalykit:help` | 스킬 목록 + 도움말 |
 
