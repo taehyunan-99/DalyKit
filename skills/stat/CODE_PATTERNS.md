@@ -408,7 +408,7 @@ output = {
                   'p_value': r['p_value'], 'conclusion': r['conclusion'],
                   'effect_size': r['effect_size']} for r in results]
 }
-OUTPUT_PATH = 'stat_results.json'
+OUTPUT_PATH = 'dalykit/code/results/stat_results.json'
 with open(OUTPUT_PATH, 'w', encoding='utf-8') as f:
     json.dump(output, f, ensure_ascii=False, indent=2)
 print(f"결과 저장: {OUTPUT_PATH}")

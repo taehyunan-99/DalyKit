@@ -10,9 +10,12 @@
 ```
 dalykit/
 ├── code/
-│   ├── stat_analysis.py         ← 분석 스크립트 (Write 도구로 생성)
-│   ├── stat_results.json        ← 스크립트 실행 결과 (Bash로 실행)
-│   └── stat_analysis.ipynb      ← (notebook 인자 시) py → ipynb 변환
+│   ├── py/
+│   │   └── stat_analysis.py         ← 분석 스크립트 (Write 도구로 생성)
+│   ├── notebooks/
+│   │   └── stat_analysis.ipynb      ← (notebook 인자 시) py → ipynb 변환
+│   └── results/
+│       └── stat_results.json        ← 스크립트 실행 결과 (Bash로 실행)
 └── docs/
     └── stat_report.md           ← 보고서 자동 생성
 ```

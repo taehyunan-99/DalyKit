@@ -30,10 +30,13 @@ dalykit:stat notebook    ← stat_analysis.py → ipynb 변환
 | 항목 | 경로 |
 |------|------|
 | 전처리 데이터 | `dalykit/data/` |
-| 스크립트 | `dalykit/code/stat_analysis.py` |
-| JSON 결과 | `dalykit/code/stat_results.json` |
+| 스크립트 | `dalykit/code/py/stat_analysis.py` |
+| JSON 결과 | `dalykit/code/results/stat_results.json` |
 | 보고서 | `dalykit/docs/stat_report.md` |
 | 시각화 | `dalykit/figures/` |
+
+## 보고서 요약 섹션
+보고서 최상단에 `## 요약` 섹션 (5줄 이내) 필수 포함. REPORT_GUIDE.md 참조.
 
 ## 전체 흐름 (노션 워크플로우 기반)
 
@@ -80,14 +83,15 @@ dalykit:stat notebook    ← stat_analysis.py → ipynb 변환
 
 > `~/.claude/skills/stat/CODE_PATTERNS.md`를 Read로 읽고 따른다.
 
-- Write 도구로 `dalykit/code/stat_analysis.py` 생성 (분석 함수 + 실행 + JSON 저장)
-- Bash 도구로 `python dalykit/code/stat_analysis.py` 실행 → `dalykit/code/stat_results.json` 생성
+- Write 도구로 `dalykit/code/py/stat_analysis.py` 생성 (분석 함수 + 실행 + JSON 저장)
+- `dalykit/config/domain.md`의 "실행 환경" 섹션에 Python 경로가 있으면 해당 경로를 사용하여 실행. 없으면 `python3` 사용.
+- Bash 도구로 `{python경로} dalykit/code/py/stat_analysis.py` 실행 → `dalykit/code/results/stat_results.json` 생성
 
 ### 3단계: 통계 보고서 자동 생성
 
 스크립트 실행 완료 후 **자동으로** 이어서 실행한다.
 
-- `dalykit/code/stat_results.json` 읽어 `dalykit/docs/stat_report.md` 생성
+- `dalykit/code/results/stat_results.json` 읽어 `dalykit/docs/stat_report.md` 생성
 - 보고서 구조와 작성 규칙은 **`~/.claude/skills/stat/REPORT_GUIDE.md`** 참조
 - 시각화 필요 시 → `~/.claude/shared/viz/STYLE_GUIDE.md` Read 후 `~/.claude/shared/viz/charts/` 하위에서 적합한 차트 파일을 Read로 읽고 패턴을 따른다
 
@@ -95,7 +99,7 @@ dalykit:stat notebook    ← stat_analysis.py → ipynb 변환
 
 `dalykit:stat update` 호출 시:
 
-1. `dalykit/code/stat_analysis.py` 존재 여부 확인 (Glob)
+1. `dalykit/code/py/stat_analysis.py` 존재 여부 확인 (Glob)
 2. **있으면**: py 재실행 → JSON 갱신 → report 갱신 (py 생성 스킵)
 3. **없으면**: "stat_analysis.py를 찾을 수 없습니다. `dalykit:stat`을 먼저 실행하세요." 안내 후 종료
 
@@ -103,8 +107,8 @@ dalykit:stat notebook    ← stat_analysis.py → ipynb 변환
 
 `dalykit:stat notebook` 호출 시:
 
-1. `dalykit/code/stat_analysis.py` 존재 여부 확인 (Glob)
-2. **있으면**: `# %%` 구분자 기준으로 셀 분리 → `dalykit/code/stat_analysis.ipynb` 변환
+1. `dalykit/code/py/stat_analysis.py` 존재 여부 확인 (Glob)
+2. **있으면**: `# %%` 구분자 기준으로 셀 분리 → `dalykit/code/notebooks/stat_analysis.ipynb` 변환
 3. **없으면**: "stat_analysis.py를 찾을 수 없습니다. `dalykit:stat`을 먼저 실행하세요." 안내 후 종료
 
 ## 의사결정 트리
