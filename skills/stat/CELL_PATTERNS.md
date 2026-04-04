@@ -23,9 +23,9 @@ dalykit/
 ## 워크플로우
 
 ```
-1. Write 도구 → dalykit/code/stat_analysis.py 생성
-2. Bash 도구 → python dalykit/code/stat_analysis.py 실행
-3. 완료 → dalykit/code/stat_results.json 저장됨
+1. Write 도구 → dalykit/code/py/stat_analysis.py 생성
+2. Bash 도구 → python dalykit/code/py/stat_analysis.py 실행
+3. 완료 → dalykit/code/results/stat_results.json 저장됨
 4. 자동 → dalykit/docs/stat_report.md 보고서 생성
 ```
 
