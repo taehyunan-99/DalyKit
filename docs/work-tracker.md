@@ -1,6 +1,6 @@
 # DalyKit Work Tracker
 <!-- Claude 전용: 새 컨텍스트에서 작업 이어가기 위한 상태 문서 -->
-<!-- 마지막 업데이트: 2026-04-02 -->
+<!-- 마지막 업데이트: 2026-04-05 -->
 
 ## 현재 상태 (Current State)
 > ML 파이프라인(feature + model 스킬) 구현 완료. 기존 스킬(eda/clean/stat) 경로를 code/notebooks/, code/py/, code/results/ 하위 구조로 마이그레이션. init 스킬에 models/ 폴더 추가.
@@ -29,7 +29,7 @@
 1. ~~**하네스 시스템 추가**~~ ✅ — guard_write(쓰기 경로 제한) + guard_read(대용량 Read 차단) 구현 완료. PreToolUse hook으로 물리적 차단.
 2. **init 인자 확장** — `dalykit:init current` (현재 디렉토리 기준 초기화) + `dalykit:init <name>` (지정 이름으로 프로젝트 생성) 인자 추가
 3. **data-profiler 에이전트 재설계** — 경로 dalykit/ 기준 수정 + 자율 판단 강화 (1+2단계: 분석 흐름 결정 + 이상 해석). 3단계(파이프라인 자율 실행)는 토큰 비용으로 제외
-4. **v3 전체 파이프라인 통합 테스트** — init → eda → clean → stat → report 새 경로 기준 검증
+4. **전체 파이프라인 통합 테스트** — init → eda → clean → stat → feature → model 새 경로 기준 검증
 5. **install.sh macOS 테스트** — 스크립트 작성 완료했으나 실행 검증 미완
 6. **report 스킬 경로 수정 + 완성** — 상대경로 → `~/.claude/skills/report/` 절대경로 수정 필요. ML 워크플로우 완성 후 전체 파이프라인 종합 보고서 용도로 활용 예정
 
