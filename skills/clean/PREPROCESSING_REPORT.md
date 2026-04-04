@@ -30,7 +30,7 @@
 | 항목 | 값 |
 |------|-----|
 | 원본 데이터 | `dalykit/data/파일명.csv` |
-| 전처리 스크립트 | `dalykit/code/clean_pipeline.py` |
+| 전처리 스크립트 | `dalykit/code/notebooks/clean_pipeline.ipynb` |
 | 저장 파일 | `dalykit/data/파일명_cleaned.csv` |
 | EDA 보고서 참조 | `dalykit/docs/eda_report.md` (있으면 명시, 없으면 "없음") |
 

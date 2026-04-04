@@ -15,7 +15,7 @@
 
 ## 결과 파싱 방법
 
-1. Read로 `stat_results.json` 읽기
+1. Read로 `dalykit/code/results/stat_results.json` 읽기
 2. `output['summary']` → 요약 테이블
 3. `output['results'][i]['assumptions']` → 가정 검정 결과
 4. `output['results'][i]['posthoc']` → 사후 분석 결과
@@ -79,7 +79,7 @@
 
 | 연구 질문 | H0 | 검정 | 통계량 | p-value | 결론 | 효과 크기 |
 |----------|-----|------|--------|---------|------|-----------|
-| (stat_results.json에서 추출) |
+| (dalykit/code/results/stat_results.json에서 추출) |
 
 ### 4. 사후 분석 결과
 
