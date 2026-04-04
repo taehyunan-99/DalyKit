@@ -22,7 +22,7 @@ foreach ($dir in $dirs) {
 }
 
 # 스킬 설치 (디렉토리 복사)
-$skills = @("init", "domain", "eda", "clean", "stat", "help")
+$skills = @("init", "domain", "eda", "clean", "stat", "feature", "model", "help")
 foreach ($skill in $skills) {
     $source = Join-Path $HarnessRoot "skills\$skill"
     $target = Join-Path $ClaudeRoot "skills\$skill"

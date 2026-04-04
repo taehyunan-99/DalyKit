@@ -11,7 +11,7 @@ Write-Host ""
 $removed = 0
 
 # 스킬 제거
-$skills = @("init", "domain", "eda", "clean", "stat", "help")
+$skills = @("init", "domain", "eda", "clean", "stat", "feature", "model", "help")
 foreach ($skill in $skills) {
     $target = Join-Path $ClaudeRoot "skills\$skill"
     if (Test-Path $target) {

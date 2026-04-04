@@ -23,7 +23,7 @@ for dir in skills shared hooks; do
 done
 
 # 스킬 설치 (디렉토리 복사)
-skills=("init" "domain" "eda" "clean" "stat" "help")
+skills=("init" "domain" "eda" "clean" "stat" "feature" "model" "help")
 for skill in "${skills[@]}"; do
     source="$HARNESS_ROOT/skills/$skill"
     target="$CLAUDE_ROOT/skills/$skill"
