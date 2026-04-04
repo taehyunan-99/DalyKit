@@ -32,7 +32,7 @@ color: blue
 
 ### 2단계: 프로파일링 실행
 
-`dalykit/code/run_profile.py` 스크립트를 생성·실행하여 결과를 `dalykit/code/profile_results.json`에 저장한다.
+`dalykit/code/py/run_profile.py` 스크립트를 생성·실행하여 결과를 `dalykit/code/results/profile_results.json`에 저장한다.
 
 스크립트가 수행할 내용:
 - 기본 통계 (행/열, 타입 분포, 결측률, 중복률, 이상치 비율)
@@ -90,7 +90,7 @@ color: blue
 ## 출력
 
 ### 파일 저장
-- `dalykit/code/profile_results.json` — 구조화 결과 (스크립트 생성)
+- `dalykit/code/results/profile_results.json` — 구조화 결과 (스크립트 생성)
 - `dalykit/docs/profile_report.md` — 사람이 읽는 요약 보고서
 
 ### 메인 에이전트 반환
