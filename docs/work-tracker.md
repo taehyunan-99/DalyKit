@@ -3,12 +3,13 @@
 <!-- 마지막 업데이트: 2026-04-02 -->
 
 ## 현재 상태 (Current State)
-> Harness Hook 시스템 설계 및 구현 완료(guard_write/guard_read). init 스킬에 hook 설치 단계 추가. data/cleaned/ → data/ 경로 통일.
+> ML 파이프라인(feature + model 스킬) 구현 완료. 기존 스킬(eda/clean/stat) 경로를 code/notebooks/, code/py/, code/results/ 하위 구조로 마이그레이션. init 스킬에 models/ 폴더 추가.
 
 ## 최근 변경 (Recent Changes)
 <!-- 직전 세션에서 한 일 — 최대 5개, LIFO -->
 | 날짜 | 변경 | 영향 파일 |
 |------|------|-----------|
+| 2026-04-05 | ML 파이프라인 구현 완료 — feature 스킬(ipynb 방식), model 스킬(.py 루프 방식) 신규 추가. 기존 스킬 경로 마이그레이션(code/notebooks/, code/py/, code/results/). 모든 보고서에 ## 요약 섹션 추가. domain.md에 실행 환경 + ML 목표 섹션 추가 | skills/feature/SKILL.md(신규), skills/feature/CELL_PATTERNS.md(신규), skills/model/SKILL.md(신규), skills/model/MODEL_CATALOG.md(신규), skills/model/REPORT_GUIDE.md(신규), skills/eda/*, skills/clean/*, skills/stat/*, skills/init/SKILL.md, templates/DOMAIN_TEMPLATE.md, agents/data-profiler.md, skills/help/SKILL.md, scripts/*.sh, scripts/*.ps1, CLAUDE.md, README.md |
 | 2026-04-04 | Harness Hook 시스템 구현(guard_write.py: 쓰기 경로 제한, guard_read.py: 대용량 Read 차단), init 스킬에 hook 설치 4단계 추가, install/uninstall 스크립트에 hooks 배포/제거 추가, data/cleaned/ → data/ 경로 전면 통일 | hooks/guard_write.py(신규), hooks/guard_read.py(신규), skills/init/SKILL.md, skills/clean/SKILL.md, skills/clean/CELL_PATTERNS.md, skills/clean/PREPROCESSING_REPORT.md, skills/stat/SKILL.md, skills/help/SKILL.md, scripts/*.sh, scripts/*.ps1 |
 | 2026-04-04 | viz 폴더 skills/viz/ → shared/viz/ 이동(의미 명확화), install/uninstall 스크립트 정리(domain 추가, report/data-profiler 제거), eda/stat SKILL.md 및 CLAUDE.md 참조 경로 갱신 | shared/viz/(이동), scripts/*.sh, scripts/*.ps1, skills/eda/SKILL.md, skills/stat/SKILL.md, CLAUDE.md |
 | 2026-04-04 | domain 스킬 신규 추가(자유 입력→구조화), 가상 시나리오 검토로 eda/clean/stat/help 상대경로 수정, DOMAIN_TEMPLATE.md 자유 입력 섹션 추가, data-profiler 에이전트 ML 단계 보류 결정 | skills/domain/SKILL.md(신규), templates/DOMAIN_TEMPLATE.md, skills/eda/SKILL.md, skills/clean/SKILL.md, skills/stat/SKILL.md, skills/help/SKILL.md, CLAUDE.md, docs/work-tracker.md |
@@ -46,12 +47,16 @@
 | #5 visualize 의존성 | 사용자 보류 결정 | 사용자 요청 시 |
 | #11 Linux 폰트 | macOS 전용 환경 | Linux 사용 시 |
 | Tableau 연동 | 추후 학습 예정 | 사용자 학습 완료 후 |
-| 피처 엔지니어링 | ML 단계에서 추가 | ML 워크플로우 구축 시 |
+| ~~피처 엔지니어링~~ | ~~ML 단계에서 추가~~ | ✅ 2026-04-05 완료 |
 
 ## 설계 결정 로그 (Decision Log)
 <!-- 중요한 기술적 결정 — "왜 이렇게 했지?" 방지 -->
 | 날짜 | 결정 | 근거 |
 |------|------|------|
+| 2026-04-05 | feature = ipynb, model = .py 루프 방식으로 분리 | 피처 엔지니어링은 시행착오가 많아 사용자 직접 개입이 중요(ipynb). 모델 학습은 자동 루프에 적합(.py). 역할 명확 분리 |
+| 2026-04-05 | 1회차 피처 진단 → 조기 종료 분기 | 헛된 튜닝 방지. 피처 문제가 있으면 튜닝해도 개선 없음 |
+| 2026-04-05 | 루프 최대 5회 + 수렴 기준 0.5% | 토큰 소모 제한 + 실무에서 5회 이상 반복 시 수확 체감 |
+| 2026-04-05 | 모든 보고서에 ## 요약 섹션 필수 | 후속 스킬의 컨텍스트 수집 시 요약 섹션만 Read하여 토큰 절약 (2단계 참조 패턴) |
 | 2026-04-04 | viz를 skills/ → shared/로 이동 | viz는 독립 스킬이 아닌 공유 참조 문서. skills/ 안에 두는 것은 의미상 부정확. shared/viz/로 이동하여 구조 명확화 |
 | 2026-04-04 | Harness Hook을 ~/.claude/hooks/ 원본 배포 + dalykit:init이 프로젝트에 설치하는 구조 채택 | 글로벌 ~/.claude/settings.json 직접 병합은 기존 설정 파괴 위험. 프로젝트 레벨 .claude/settings.json이 안전하고 git 공유 가능. init 시점에 설치하면 hook이 필요한 프로젝트에만 적용 |
 | 2026-04-04 | Harness Hook v1 범위: 쓰기 경로 제한 + 대용량 Read 차단만 구현 | 도구-스킬 매칭(현재 스킬 감지 불가) 등 고난이도 제약은 제외. 효과 대비 난이도가 낮은 2가지만 우선 적용 |
