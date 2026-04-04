@@ -7,16 +7,16 @@
 ```
 dalykit/
 ├── code/
-│   └── clean_pipeline.ipynb     ← 전처리 노트북 (Write 도구로 생성)
+│   └── notebooks/
+│       └── clean_pipeline.ipynb     ← 전처리 노트북 (Write 도구로 생성)
 └── data/
-    └── cleaned/
-        └── 파일명_cleaned.csv   ← 전처리 완료 데이터 (셀 실행 시 저장)
+    └── 파일명_cleaned.csv           ← 전처리 완료 데이터 (셀 실행 시 저장)
 ```
 
 ## 워크플로우
 
 ```
-1. Write 도구 → dalykit/code/clean_pipeline.ipynb 생성 (nbformat 4)
+1. Write 도구 → dalykit/code/notebooks/clean_pipeline.ipynb 생성 (nbformat 4)
 2. 사용자가 노트북을 열어 전체 셀 실행
 3. dalykit/data/ 에 결과 CSV 저장 확인
 4. dalykit:report 호출 → 보고서 생성
@@ -103,7 +103,7 @@ print(f"잔여 결측값: {df_clean.isnull().sum().sum()}")
 df_clean.describe()
 
 # 셀 9: 저장 (code cell)
-output_path = os.path.join(CLEANED_DIR, f"{os.path.splitext(os.path.basename(DATA_PATH))[0]}_cleaned.csv")
+output_path = os.path.join(DATA_DIR, f"{os.path.splitext(os.path.basename(DATA_PATH))[0]}_cleaned.csv")
 df_clean.to_csv(output_path, index=False)
 print(f"저장 완료: {output_path}")
 ```

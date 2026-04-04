@@ -30,7 +30,7 @@ dalykit:clean report       ← 실행된 노트북 결과 읽기 → dalykit/doc
 |------|------|
 | 원본 데이터 | `dalykit/data/` |
 | 전처리 결과 | `dalykit/data/` |
-| 노트북 | `dalykit/code/clean_pipeline.ipynb` |
+| 노트북 | `dalykit/code/notebooks/clean_pipeline.ipynb` |
 
 ## 워크플로우
 
@@ -51,7 +51,7 @@ dalykit:clean report       ← 실행된 노트북 결과 읽기 → dalykit/doc
 
 > `~/.claude/skills/clean/CELL_PATTERNS.md`를 Read로 읽고 셀 구조를 따른다.
 
-- Write 도구로 `dalykit/code/clean_pipeline.ipynb` 생성 (nbformat 4)
+- Write 도구로 `dalykit/code/notebooks/clean_pipeline.ipynb` 생성 (nbformat 4)
 - 생성 완료 후 사용자에게 안내:
   ```
   clean_pipeline.ipynb 생성 완료.
@@ -63,7 +63,7 @@ dalykit:clean report       ← 실행된 노트북 결과 읽기 → dalykit/doc
 
 > `dalykit:clean report` 호출 시 실행. 노트북을 사용자가 실행한 뒤 호출해야 한다.
 
-1. `dalykit/code/clean_pipeline.ipynb` Read → 셀 출력(outputs) 분석
+1. `dalykit/code/notebooks/clean_pipeline.ipynb` Read → 셀 출력(outputs) 분석
 2. `~/.claude/skills/clean/PREPROCESSING_REPORT.md` Read → 보고서 작성 지침 확인
 3. `dalykit/docs/preprocessing_report.md` Write → 보고서 생성
 4. ipynb 미존재 또는 outputs가 비어 있으면: "노트북을 먼저 실행한 뒤 다시 시도하세요." 안내 후 종료
