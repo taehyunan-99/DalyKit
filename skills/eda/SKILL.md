@@ -81,3 +81,6 @@ dalykit:eda report       ← 실행된 노트북 결과 읽기 → dalykit/docs/
 > 색상 규칙, 폰트, 범례 설정은 `~/.claude/shared/viz/STYLE_GUIDE.md`를 Read로 읽고 따른다.
 > 차트 코드 패턴은 `~/.claude/shared/viz/charts/` 하위에서 필요한 차트 파일만 Read로 읽고 따른다.
 > 사용 가능한 차트: histogram, scatter, boxplot, heatmap, bar, line, stacked_bar, pairplot, subplot
+>
+> **countplot 필수 패턴**: `sns.countplot(data=df, x=col, hue=col, order=order, palette=colors, legend=False, ax=ax)`
+> `palette`만 전달하고 `hue` 생략 시 FutureWarning 발생 — 반드시 `hue=x변수 + legend=False` 조합 사용

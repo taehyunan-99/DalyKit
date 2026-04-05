@@ -81,6 +81,19 @@ for col in cat_cols:
     print(f"\n[{col}] nunique={df[col].nunique()}")
     print(df[col].value_counts().head(10))
 
+# 셀 7-1: 범주형 변수 시각화 (code cell)
+# ⚠️ countplot: hue=x변수 + legend=False 패턴 필수 (palette만 전달 시 FutureWarning)
+for col in cat_cols[:5]:  # 상위 5개만
+    order = df[col].value_counts().index
+    colors = ['#D9D9D9'] * len(order)
+    colors[0] = 'skyblue'  # Top 1 강조
+    fig, ax = plt.subplots(figsize=(10, 4))
+    sns.countplot(data=df, x=col, hue=col, order=order, palette=colors, legend=False, ax=ax)
+    ax.set_title(f'{col} 분포', fontdict={'fontweight': 'bold'})
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    save_fig(f'cat_{col}.png')
+
 # 셀 8: 수치형 변수 분포 시각화 (code cell)
 def save_fig(filename):
     path = os.path.join(FIGURES_DIR, filename)
