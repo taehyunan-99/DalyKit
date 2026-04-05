@@ -55,7 +55,7 @@ user_invocable: true
 
 ```
 dalykit/
-├── config/          ← domain.md, report_config.md
+├── config/          ← domain.md
 ├── data/            ← 원본 CSV + 전처리 결과 (_cleaned 접미사)
 ├── code/
 │   ├── notebooks/   ← .ipynb 노트북 (eda, clean, stat)
