@@ -39,15 +39,7 @@ dalykit:clean report       ← 실행된 노트북 결과 읽기 → dalykit/doc
 - `dalykit/docs/eda_report.md`가 있으면 Read로 읽고, 결측값·이상치·타입 이슈를 파악하여 전처리 전략에 반영
 - 없으면 `dalykit/data/` 파일을 직접 프로파일링 (dtypes, 결측값, 중복 수 확인)
 
-### 2단계: 전처리 전략 제안
-
-발견된 이슈를 기반으로 처리 방법을 텍스트로 제안 후 사용자 확인:
-- 결측값: drop vs impute (평균/중앙값/최빈값/보간)
-- 중복: 제거 여부
-- 이상치: IQR vs Z-score vs 유지
-- 타입 변환: object → datetime, numeric, category 등
-
-### 3단계: ipynb 노트북 생성
+### 2단계: ipynb 노트북 생성
 
 > `~/.claude/skills/clean/CELL_PATTERNS.md`를 Read로 읽고 셀 구조를 따른다.
 
@@ -79,5 +71,10 @@ dalykit:clean report       ← 실행된 노트북 결과 읽기 → dalykit/doc
 
 1. **주석은 한국어**: 각 처리 단계에 왜 이 방법을 선택했는지 주석으로 설명
 2. **비파괴적**: `df_clean = df.copy()`로 원본 보존
-3. **이상치**: 자동 제거하지 않고 탐지만 → 셀 출력으로 사용자에게 확인
-4. **저장 경로**: `dalykit/data/파일명_cleaned.csv`
+3. **결측값 전략**: 결측 비율 기준으로 자동 선택
+   - > 50%: 열 제거 권고 (셀 출력으로 사용자 확인)
+   - 5~50%: 그룹별 중앙값 (domain.md 타겟 기준) → fallback 단순 중앙값
+   - < 5%: 단순 중앙값/최빈값 대체
+   - 복잡한 패턴: IterativeImputer 셀 별도 제공 (주석 처리, 선택 실행)
+4. **이상치**: 탐지만 자동 실행 → 처리 옵션(IQR 제거 / 클리핑) 셀을 주석 처리로 미리 제공 → 사용자가 보고서 확인 후 주석 해제 → 노트북 재실행 → `dalykit:clean report` 재실행으로 보고서 갱신
+5. **저장 경로**: `dalykit/data/파일명_cleaned.csv`

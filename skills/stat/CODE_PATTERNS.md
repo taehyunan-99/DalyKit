@@ -400,6 +400,13 @@ results.append(analyze_correlation(df, 'X변수', 'Y변수'))
 # ... 분석 항목별 호출
 
 # ── 결과 저장 ──
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.bool_): return bool(obj)
+        if isinstance(obj, np.integer): return int(obj)
+        if isinstance(obj, np.floating): return float(obj)
+        return super().default(obj)
+
 output = {
     'data_info': {'path': DATA_PATH, 'rows': df.shape[0], 'cols': df.shape[1]},
     'alpha': 0.05,
@@ -410,6 +417,6 @@ output = {
 }
 OUTPUT_PATH = 'dalykit/code/results/stat_results.json'
 with open(OUTPUT_PATH, 'w', encoding='utf-8') as f:
-    json.dump(output, f, ensure_ascii=False, indent=2)
+    json.dump(output, f, ensure_ascii=False, indent=2, cls=NumpyEncoder)
 print(f"결과 저장: {OUTPUT_PATH}")
 ```

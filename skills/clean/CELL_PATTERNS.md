@@ -65,32 +65,99 @@ if dup_count > 0:
     print(f"중복 제거 후: {df_clean.shape}")
 
 # 셀 5: 결측값 처리 (code cell)
-# 전략은 EDA 결과 및 도메인 지식 기반으로 조정
-num_cols = df_clean.select_dtypes(include=np.number).columns
-for col in num_cols:
-    n_missing = df_clean[col].isnull().sum()
-    if n_missing > 0:
-        # 중앙값 대체 (왜곡 분포에 안전)
-        df_clean[col] = df_clean[col].fillna(df_clean[col].median())
-        print(f"{col}: {n_missing}개 결측값 → 중앙값 대체")
+# 결측 비율에 따라 전략 자동 선택:
+#   > 50%  → 열 제거 권고 (사용자 확인 후 처리)
+#   5~50%  → 그룹별 중앙값 대체 (domain.md 타겟 컬럼 기준) → fallback: 단순 중앙값
+#   < 5%   → 단순 중앙값/최빈값 대체
+#   복잡한 패턴 → IterativeImputer (회귀 대체) 별도 셀 제공
 
+from sklearn.experimental import enable_iterative_imputer  # noqa
+from sklearn.impute import IterativeImputer
+
+num_cols = df_clean.select_dtypes(include=np.number).columns
 cat_cols = df_clean.select_dtypes(include='object').columns
-for col in cat_cols:
+n_rows = len(df_clean)
+
+# 타겟 컬럼 (domain.md 기반 — 없으면 None)
+GROUP_COL = None  # domain.md에서 타겟 컬럼 확인 후 지정
+
+high_missing = []  # 제거 권고 컬럼
+for col in df_clean.columns:
     n_missing = df_clean[col].isnull().sum()
-    if n_missing > 0:
-        # 최빈값 대체
-        df_clean[col] = df_clean[col].fillna(df_clean[col].mode()[0])
-        print(f"{col}: {n_missing}개 결측값 → 최빈값 대체")
+    if n_missing == 0:
+        continue
+    ratio = n_missing / n_rows
+
+    if ratio > 0.5:
+        # 결측 50% 초과 → 제거 권고
+        high_missing.append((col, round(ratio * 100, 1)))
+
+    elif ratio >= 0.05:
+        if col in num_cols:
+            if GROUP_COL and GROUP_COL in df_clean.columns:
+                # 그룹별 중앙값 대체
+                df_clean[col] = df_clean.groupby(GROUP_COL)[col].transform(
+                    lambda x: x.fillna(x.median())
+                )
+                # 그룹 내 전체 결측 시 전체 중앙값으로 fallback
+                df_clean[col] = df_clean[col].fillna(df_clean[col].median())
+                print(f"{col}: {n_missing}개 결측값 → 그룹별 중앙값 대체")
+            else:
+                df_clean[col] = df_clean[col].fillna(df_clean[col].median())
+                print(f"{col}: {n_missing}개 결측값 → 중앙값 대체")
+        elif col in cat_cols:
+            df_clean[col] = df_clean[col].fillna(df_clean[col].mode()[0])
+            print(f"{col}: {n_missing}개 결측값 → 최빈값 대체")
+
+    else:
+        if col in num_cols:
+            df_clean[col] = df_clean[col].fillna(df_clean[col].median())
+            print(f"{col}: {n_missing}개 결측값 → 중앙값 대체 (결측 {ratio*100:.1f}%)")
+        elif col in cat_cols:
+            df_clean[col] = df_clean[col].fillna(df_clean[col].mode()[0])
+            print(f"{col}: {n_missing}개 결측값 → 최빈값 대체 (결측 {ratio*100:.1f}%)")
+
+if high_missing:
+    print("\n⚠️  결측 50% 초과 컬럼 — 제거를 권고합니다:")
+    for col, pct in high_missing:
+        print(f"  {col}: {pct}%")
+    print("  → 제거하려면: df_clean.drop(columns=[컬럼명], inplace=True)")
+
+# 셀 5-1: IterativeImputer (선택 — 복잡한 결측 패턴 시 사용) (code cell)
+# 수치형 컬럼에 회귀 기반 대체 적용. 실행 시간이 길 수 있음.
+# imputer = IterativeImputer(max_iter=10, random_state=42)
+# df_clean[num_cols] = imputer.fit_transform(df_clean[num_cols])
+# print("IterativeImputer 적용 완료")
 
 # 셀 6: 이상치 탐지 (제거 안 함 — 사용자 판단) (code cell)
 def detect_outliers_iqr(series):
     Q1, Q3 = series.quantile(0.25), series.quantile(0.75)
     IQR = Q3 - Q1
-    return int(((series < Q1 - 1.5 * IQR) | (series > Q3 + 1.5 * IQR)).sum())
+    lower, upper = Q1 - 1.5 * IQR, Q3 + 1.5 * IQR
+    count = int(((series < lower) | (series > upper)).sum())
+    return {'count': count, 'lower': round(lower, 4), 'upper': round(upper, 4)}
 
-outliers = {col: detect_outliers_iqr(df_clean[col].dropna()) for col in num_cols}
+outlier_info = {col: detect_outliers_iqr(df_clean[col].dropna()) for col in num_cols}
 print("=== 이상치 탐지 결과 (IQR 기준) ===")
-pd.Series(outliers, name='이상치 수').sort_values(ascending=False)
+result = pd.DataFrame(outlier_info).T
+result.index.name = '컬럼'
+result[result['count'] > 0].sort_values('count', ascending=False)
+
+# 셀 6-1: 이상치 처리 옵션 (선택 — 보고서 확인 후 주석 해제) (code cell)
+# 옵션 1: IQR 기준 제거
+# target_cols = ['컬럼명']  # 처리할 컬럼 지정
+# for col in target_cols:
+#     info = outlier_info[col]
+#     before = len(df_clean)
+#     df_clean = df_clean[(df_clean[col] >= info['lower']) & (df_clean[col] <= info['upper'])]
+#     print(f"{col}: {before - len(df_clean)}행 제거 ({before} → {len(df_clean)})")
+
+# 옵션 2: 상한/하한 클리핑 (행 제거 없이 경계값으로 대체)
+# target_cols = ['컬럼명']  # 처리할 컬럼 지정
+# for col in target_cols:
+#     info = outlier_info[col]
+#     df_clean[col] = df_clean[col].clip(lower=info['lower'], upper=info['upper'])
+#     print(f"{col}: 클리핑 완료 ({info['lower']} ~ {info['upper']})")
 
 # 셀 7: 타입 변환 (필요 시 수정) (code cell)
 # 예시: df_clean['날짜컬럼'] = pd.to_datetime(df_clean['날짜컬럼'])

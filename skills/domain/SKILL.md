@@ -47,8 +47,8 @@ dalykit:domain     ← domain.md 자유 입력 + CSV 참조 → 구조화 섹션
 
 1. `dalykit/config/domain.md` Read → `# 자유 입력` 섹션 추출
 2. `dalykit/data/` Glob → CSV/Excel 파일 탐색
-   - 파일 존재 시: 컬럼명, dtypes, nunique, 기초 통계 파악 (head_limit 적용)
-   - 1000행 이상 시 `.sample(1000)` 기준으로 처리
+  - 파일 존재 시: 컬럼명, dtypes, nunique, 기초 통계 파악 (head_limit 적용)
+  - 1000행 이상 시 `.sample(1000)` 기준으로 처리
 
 ### 2단계: 구조화
 

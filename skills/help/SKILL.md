@@ -23,14 +23,14 @@ user_invocable: true
   dalykit:clean              데이터 전처리
   dalykit:clean report       노트북 실행 후 전처리 보고서 생성
   dalykit:stat               통계 분석 · 가설 검정
-  dalykit:stat update        기존 분석 재실행
   dalykit:stat notebook      py → ipynb 변환
   dalykit:feature            피처 엔지니어링 — 인코딩, 스케일링, 파생 변수
-  dalykit:model              모델 학습 + 평가 + 하이퍼파라미터 튜닝
+  dalykit:feature report     노트북 실행 후 피처 보고서 생성
+  dalykit:ml                 모델 자동 선택 (3-5개 비교) + 튜닝
+  dalykit:ml LR,RF,XGB       지정 모델만 비교 + 튜닝
+  dalykit:ml tune            기존 결과 기반 튜닝 재실행
+  dalykit:ml report          결과 JSON → 보고서 + 시각화 생성
   dalykit:help               도움말
-
-에이전트:
-  data-profiler               종합 프로파일링 (Agent 도구로 호출)
 
 시작하기:
   1. dalykit:init 으로 프로젝트 구조 생성
@@ -48,8 +48,8 @@ user_invocable: true
 | eda | ipynb 생성 → 사용자 실행 → `eda report`로 보고서 | code/, docs/, figures/ |
 | clean | ipynb 생성 → 사용자 실행 → `clean report`로 보고서 | code/, data/, docs/ |
 | stat | .py → JSON → 보고서 자동 | code/, docs/ |
-| feature | ipynb 생성 → 사용자 실행 | code/, data/ |
-| model | .py → JSON → 보고서 자동 | code/, docs/ |
+| feature | ipynb 생성 → 사용자 실행 → `feature report`로 보고서 | code/, data/, docs/ |
+| model | .py → 루프 실행 → JSON 저장 → `model report`로 보고서 | code/, docs/, models/ |
 
 ## 프로젝트 구조
 

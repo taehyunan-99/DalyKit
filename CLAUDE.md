@@ -1,11 +1,11 @@
-# DalyKit - 데이터 분석 하네스 플러그인
+# DalyKit - Data Analysis Kit
 
 ## 작업 추적
 - 상세 내용: @docs/work-tracker.md
 
 ## 개요
 데이터 분석 워크플로우 자동화 플러그인.
-EDA, 전처리, 통계 분석을 스킬/에이전트로 제공하며, 모든 결과물은 `dalykit/` 폴더에 저장된다.
+EDA, 전처리, 통계 분석, 모델 학습을 스킬로 제공하며, 모든 결과물은 `dalykit/` 폴더에 저장된다.
 
 ## 프로젝트 구조
 
@@ -20,15 +20,12 @@ DalyKit/
 │   ├── clean/        ← SKILL.md, PREPROCESSING_REPORT.md, CELL_PATTERNS.md
 │   ├── stat/         ← SKILL.md (+ 참조 문서 다수)
 │   ├── feature/      ← SKILL.md, CELL_PATTERNS.md
-│   ├── model/        ← SKILL.md, MODEL_CATALOG.md, REPORT_GUIDE.md
-│   ├── report/       ← SKILL.md, REPORT_STRUCTURE.md
+│   ├── ml/           ← SKILL.md, MODEL_CATALOG.md, REPORT_GUIDE.md
 │   └── help/         ← SKILL.md (스킬 목록 + 도움말)
 ├── shared/
 │   └── viz/          ← STYLE_GUIDE.md, charts/*.md (공유 시각화 참조 문서)
 ├── templates/        ← 사용자 입력 템플릿 (프로젝트 공유 자산)
-│   └── REPORT_CONFIG_TEMPLATE.md ← dalykit:init 으로 복사
-├── agents/
-│   └── data-profiler.md
+│   └── DOMAIN_TEMPLATE.md ← dalykit:init 으로 복사
 └── scripts/
     ├── install.sh / install.ps1
     └── uninstall.sh / uninstall.ps1
@@ -38,10 +35,10 @@ DalyKit/
 
 ### 작업 환경
 - **모든 결과물**: `dalykit/` 폴더 하위에 저장 (`dalykit:init`으로 구조 생성)
-- **eda/clean**: ipynb 노트북 생성 → 사용자 직접 실행 → `eda report` / `clean report`로 보고서 생성
+- **eda/clean/feature**: ipynb 노트북 생성 → 사용자 직접 실행 → `report` 인자로 보고서 생성
 - **stat**: .py 스크립트 생성 → 실행 → JSON 저장 → 보고서 자동 생성 (Heavy-Task-Offload 패턴)
 - **stat notebook 인자**: .py → .ipynb 변환 (결과 확인용, 선택 사항)
-- **report**: 기존 보고서 종합 → 마크다운 최종 보고서 생성
+- **ml**: .py 스크립트 → 루프 실행 → JSON 저장 → `ml report`로 보고서 생성
 - **데이터 로드**: `dalykit/data/` 기준 상대경로 사용
 
 ### 코드 규칙
@@ -68,12 +65,6 @@ DalyKit/
 | `dalykit:clean` | 데이터 전처리 |
 | `dalykit:stat` | 통계 분석 |
 | `dalykit:feature` | 피처 엔지니어링 |
-| `dalykit:model` | 모델 학습 · 평가 |
-| `dalykit:report` | 최종 보고서 (마크다운) |
+| `dalykit:ml` | 모델 학습 · 평가 |
 | `dalykit:help` | 스킬 목록 + 도움말 |
-
-## 에이전트 목록
-| 이름 | 설명 |
-|------|------|
-| `data-profiler` | 종합 데이터 프로파일링 |
 

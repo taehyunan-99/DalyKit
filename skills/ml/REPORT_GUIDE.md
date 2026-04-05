@@ -1,6 +1,6 @@
 # 모델 평가 보고서 가이드
 
-`dalykit:model report` 호출 시 실행.
+`dalykit:ml report` 호출 시 실행.
 model_results.json을 분석하여 보고서를 생성한다.
 
 ## 결과 파싱 방법
@@ -57,7 +57,8 @@ model_results.json을 분석하여 보고서를 생성한다.
 ## 3. 피처 진단
 
 ### 피처 중요도
-![피처 중요도](../figures/model_feature_importance.png)
+![피처 중요도](../figures/model_feature_importance_{모델명}.png)
+<!-- 실제 파일명으로 대체: model_feature_importance_xgboost.png 등 -->
 
 | 순위 | 피처 | 중요도 |
 |------|------|--------|
@@ -78,7 +79,7 @@ model_results.json을 분석하여 보고서를 생성한다.
 | 2 | XGBoost | max_depth=5, lr=0.1 | 0.87 | +2.0% |
 | 3 | XGBoost | n_est=200, subsample=0.8 | 0.88 | +1.0% |
 
-![튜닝 이력](../figures/model_tuning_history.png)
+![튜닝 비교](../figures/model_tuning_comparison.png)
 
 ## 5. 최종 모델 상세
 
@@ -99,10 +100,9 @@ model_results.json을 분석하여 보고서를 생성한다.
 ### 학습 곡선
 ![학습 곡선](../figures/model_learning_curve.png)
 
-## 6. SHAP 해석 (선택)
+## 6. SHAP 해석
 
-> SHAP 라이브러리가 설치된 경우에만 생성.
-> 미설치 시: "SHAP 해석을 보려면 `pip install shap`을 실행하세요."
+> 항상 시도한다. 미설치 시 보고서에 "SHAP 해석을 보려면 `pip install shap` 후 `dalykit:ml report`를 재실행하세요." 한 줄만 포함하고 섹션은 유지한다.
 
 ![SHAP Summary](../figures/model_shap_summary.png)
 
@@ -133,10 +133,12 @@ model_results.json을 분석하여 보고서를 생성한다.
 
 | 파일명 | 설명 |
 |--------|------|
-| `model_feature_importance.png` | 피처 중요도 바차트 |
+| `model_feature_importance_{모델명소문자}.png` | 피처 중요도 바차트 (예: `model_feature_importance_xgboost.png`) |
 | `model_confusion_matrix.png` | 혼동 행렬 히트맵 (분류) |
 | `model_residual_plot.png` | 잔차 플롯 (회귀) |
 | `model_learning_curve.png` | 학습 곡선 |
-| `model_tuning_history.png` | 튜닝 라운드별 성능 변화 |
+| `model_tuning_comparison.png` | 튜닝 라운드별 모델 성능 비교 |
 | `model_shap_summary.png` | SHAP summary plot |
 | `model_roc_curve.png` | ROC 커브 (분류) |
+
+> 보고서에서 이미지 경로 참조 시 실제 생성된 파일명을 `dalykit/figures/`에서 확인 후 삽입한다.

@@ -1,0 +1,18 @@
+{
+    "name": "dalykit",
+    "description": "A Claude Code plugin for end-to-end data analysis workflows.",
+    "version": "0.0.1",
+    "author": {
+        "name": "taehyunan-99"
+    },
+    "homepage": "https://github.com/taehyunan-99/DalyKit",
+    "repository": "https://github.com/taehyunan-99/DalyKit",
+    "license": "MIT",
+    "keywords": [
+        "data-analysis",
+        "eda",
+        "preprocessing",
+        "statistics",
+        "machine-learning"
+    ]
+}

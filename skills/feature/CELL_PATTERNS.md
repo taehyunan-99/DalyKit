@@ -124,12 +124,21 @@ if len(num_feat_cols) >= 2:
     corr = df_feat[num_feat_cols].corr()
     mask = np.triu(np.ones_like(corr, dtype=bool), k=1)
     fig, ax = plt.subplots(figsize=(12, 10))
-    sns.heatmap(corr, annot=True, fmt='.2f', cmap='RdYlBu',
+    sns.heatmap(corr, annot=True, fmt='.2f', cmap='RdYlBu_r',
                 mask=mask, linewidths=1, linecolor='white', ax=ax)
     ax.set_title('피처 상관관계 히트맵')
     save_fig('feature_corr_heatmap.png')
 
-# 셀 10: 저장 (code cell)
+# 셀 10: 박스플롯 (code cell) — 선택적
+# matplotlib boxplot 사용 시 labels 대신 tick_labels 사용 (Matplotlib 3.9+ 변경)
+# fig, axes = plt.subplots(1, len(cols), figsize=(5*len(cols), 5))
+# for i, col in enumerate(cols):
+#     groups = [df_feat[df_feat[TARGET]==v][col].dropna() for v in sorted(df_feat[TARGET].unique())]
+#     axes[i].boxplot(groups, patch_artist=True, tick_labels=['No (0)', 'Yes (1)'])
+#     axes[i].set_title(col)
+# save_fig('feature_boxplot.png')
+
+# 셀 11: 저장 (code cell)
 output_path = os.path.join(DATA_DIR, 'df_featured.csv')
 df_feat.to_csv(output_path, index=False)
 print(f"저장 완료: {output_path}")

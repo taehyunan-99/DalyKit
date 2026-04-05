@@ -39,26 +39,19 @@ dalykit:feature report   ← 실행된 노트북 결과 읽기 → dalykit/docs/
 ### 1단계: 컨텍스트 수집 (2단계 참조)
 
 1. **1차 — 요약만 Read (view_range)**:
-   - `dalykit/docs/eda_report.md` → `## 요약` 섹션
-   - `dalykit/docs/preprocessing_report.md` → `## 요약` 섹션
-   - `dalykit/docs/stat_report.md` → `## 요약` 섹션
-   - 보고서가 없으면 해당 항목 스킵
+  - `dalykit/docs/eda_report.md` → `## 요약` 섹션
+  - `dalykit/docs/preprocessing_report.md` → `## 요약` 섹션
+  - `dalykit/docs/stat_report.md` → `## 요약` 섹션
+  - 보고서가 없으면 해당 항목 스킵
 2. **2차 — 필요 시 상세 Read**:
-   - 인코딩 대상 파악 시 → preprocessing_report.md "최종 컬럼 목록" 섹션
-   - 유의미한 변수 파악 시 → stat_report.md "가설 통합 표" 또는 "요약 테이블" 섹션
+  - 인코딩 대상 파악 시 → preprocessing_report.md "최종 컬럼 목록" 섹션
+  - 유의미한 변수 파악 시 → stat_report.md "가설 통합 표" 또는 "요약 테이블" 섹션
 3. `dalykit/config/domain.md` Read → 타겟 변수, 도메인 규칙 확인
 4. `dalykit/data/` Glob → cleaned CSV 파일 탐색
 
-### 2단계: 피처 엔지니어링 전략 제안
+### 2단계: ipynb 노트북 생성
 
-발견된 데이터 특성을 기반으로 전략을 텍스트로 제안 후 사용자 확인:
-
-- **인코딩**: Label / One-Hot / Target 인코딩 (범주형 변수별 추천)
-- **스케일링**: StandardScaler / MinMaxScaler / RobustScaler (분포 특성별 추천)
-- **파생 변수**: 비율, 구간화, 교호작용 등 (도메인 맥락 기반)
-- **피처 선택**: stat 결과 기반 비유의 변수 제거 제안, 강한 상관관계 변수 중 하나 제거 제안
-
-### 3단계: ipynb 노트북 생성
+> **출력 규칙**: 전략 제안이나 승인 요청 없이 바로 노트북을 생성한다. 전략은 노트북 셀 주석으로 확인 가능하다. 생성 완료 후 1-2줄 안내만 출력한다.
 
 > `~/.claude/skills/feature/CELL_PATTERNS.md`를 Read로 읽고 셀 구조를 따른다.
 
