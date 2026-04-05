@@ -45,16 +45,14 @@ DalyKit은 이 반복을 없앱니다.
 
 ## Installation
 
-### 플러그인 마켓플레이스 (권장)
+> **필요 조건** [Claude Code](https://claude.ai/code)
 
-<!-- TODO: 마켓플레이스 등록 후 설치 명령어 추가 -->
-
-### 로컬 설치
-
-```bash
-git clone https://github.com/taehyunan-99/DalyKit.git
-claude --plugin-dir ./DalyKit
 ```
+/plugin marketplace add taehyunan-99/DalyKit
+/plugin install dalykit@taehyunan
+```
+
+설치 후 `dalykit:init`으로 시작하세요.
 
 <div align="right"><a href="#dalykit">Top</a></div>
 

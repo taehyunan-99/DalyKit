@@ -45,16 +45,14 @@ A single command generates analysis code, summarizes results into reports, and a
 
 ## Installation
 
-### Plugin Marketplace (Recommended)
+> **Requires** [Claude Code](https://claude.ai/code)
 
-<!-- TODO: Add install command after marketplace listing -->
-
-### Local Installation
-
-```bash
-git clone https://github.com/taehyunan-99/DalyKit.git
-claude --plugin-dir ./DalyKit
 ```
+/plugin marketplace add taehyunan-99/DalyKit
+/plugin install dalykit@taehyunan
+```
+
+After installation, get started with `dalykit:init`.
 
 <div align="right"><a href="#dalykit">Top</a></div>
 
