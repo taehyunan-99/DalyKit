@@ -11,7 +11,7 @@
     "plugins": [
         {
             "name": "dalykit",
-            "source": ".",
+            "source": "./",
             "description": "A Claude Code plugin for end-to-end data analysis workflows.",
             "version": "0.0.1",
             "author": {
