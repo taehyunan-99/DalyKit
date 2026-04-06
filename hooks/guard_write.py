@@ -17,17 +17,36 @@ def get_allowed_roots(cwd: str) -> list:
     ]
 
 
-def is_allowed(file_path: str, cwd: str) -> bool:
+# dalykit/ 외부에 저장하면 안 되는 분석 산출물 확장자
+BLOCKED_EXTENSIONS_OUTSIDE_DALYKIT = {
+    ".csv", ".parquet", ".pkl", ".joblib",
+    ".ipynb", ".png", ".jpg", ".jpeg", ".svg",
+    ".json",
+}
+
+
+def is_analysis_artifact(file_path: str) -> bool:
+    """분석 산출물 파일 여부 확인"""
+    return Path(file_path).suffix.lower() in BLOCKED_EXTENSIONS_OUTSIDE_DALYKIT
+
+
+def is_inside_dalykit(file_path: str, cwd: str) -> bool:
     """파일 경로가 dalykit/ 하위인지 확인"""
+    target = Path(file_path).resolve()
+    dalykit_root = Path(cwd).resolve() / "dalykit"
     try:
-        target = Path(file_path).resolve()
-        for root in get_allowed_roots(cwd):
-            try:
-                target.relative_to(root)
-                return True
-            except ValueError:
-                continue
+        target.relative_to(dalykit_root)
+        return True
+    except ValueError:
         return False
+
+
+def is_allowed(file_path: str, cwd: str) -> bool:
+    """분석 산출물이 dalykit/ 외부에 저장되는 경우만 차단"""
+    try:
+        if not is_analysis_artifact(file_path):
+            return True  # 설정 파일 등은 기본 허용
+        return is_inside_dalykit(file_path, cwd)
     except Exception:
         # 경로 파싱 실패 시 허용 (오탐 방지)
         return True
