@@ -4,6 +4,11 @@
 <!-- 작성 후 dalykit:domain 을 실행하면 아래 구조화 정보가 자동 생성됩니다 -->
 
 
+## 실행 환경
+<!-- conda 가상환경 이름만 입력하세요 (예: myenv) -->
+<!-- 미입력 시 dalykit:init이 자동 감지합니다 -->
+- 가상환경 이름:
+
 ---
 
 # 구조화 정보
@@ -57,20 +62,6 @@
 <!-- 데이터의 알려진 한계, 주의점 등 -->
 <!-- 예: "2020년 이전 데이터는 수집 기준 변경으로 비교 시 주의" -->
 -
-
-## 실행 환경
-<!-- .py 스크립트 실행 시 사용할 Python 경로 -->
-<!-- 미지정 시 dalykit:init이 자동 감지한 경로를 아래에 채워넣습니다 -->
-<!-- 직접 수정도 가능합니다 -->
-<!--
-  예시:
-    시스템 기본:    python3
-    venv:          /home/user/venv/bin/python
-    conda:         conda run -n myenv --no-capture-output python
-    Windows conda: conda run -n myenv --no-capture-output python
-  ※ conda 사용 시 --no-capture-output 플래그 권장 (출력 인코딩 문제 방지)
--->
-- Python 경로:
 
 ## ML 목표 (선택)
 <!-- 머신러닝 모델 학습 시 참조합니다. 미입력 시 자동 감지합니다 -->

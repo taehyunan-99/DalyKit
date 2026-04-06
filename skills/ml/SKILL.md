@@ -71,7 +71,9 @@ dalykit:ml report             ← 최신 결과 JSON → 보고서 + 시각화
    - 2차: 필요 시 상세 섹션 추가 Read
 2. `dalykit/config/domain.md` Read → ML 목표 (타겟, 문제 유형, 목표 성능), 실행 환경 확인
 3. **분류/회귀 판단**: domain.md 명시 > 자동 감지 (타겟 nunique 기준)
-4. **Python 경로 결정**: domain.md "실행 환경" 참조. 미지정 시 `python3`
+4. **실행 명령 결정**: domain.md "실행 환경"의 `가상환경 이름` 참조.
+   - 이름 있음 (예: `myenv`) → `conda run -n myenv --no-capture-output python`
+   - 비어 있음 → `python3`
 
 ### 1.5단계: 데이터 규모 판단
 
@@ -256,7 +258,7 @@ dalykit:ml report             ← 최신 결과 JSON → 보고서 + 시각화
 
 1. **Heavy-Task-Offload**: .py 스크립트로 학습, 결과 JSON 저장
 2. **한국어 주석**
-3. **라이브러리**: scikit-learn, xgboost, lightgbm, joblib
+3. **라이브러리**: scikit-learn, xgboost, lightgbm, catboost, joblib
 4. **SHAP**: 항상 try/except로 시도. 미설치 시 설치 안내 출력 후 계속 진행
 5. **시각화**: matplotlib/seaborn, `dalykit/figures/`에 저장
 6. **모델 저장**: `joblib.dump(model, 'dalykit/models/{모델명}.joblib')`
@@ -272,7 +274,8 @@ dalykit:ml report             ← 최신 결과 JSON → 보고서 + 시각화
 12. **selected_models 저장**: 베이스 모델명만 (`"XGBoost"`, `"RandomForest"`). SMOTE/balanced 여부는 `"imbalance_method"` 필드로 분리.
 13. **시각화 파일명 컨벤션**: `model_feature_importance_{모델명소문자}.png` (예: `model_feature_importance_xgboost.png`), `model_tuning_comparison.png` (튜닝 비교 차트)
 14. **규모별 학습 방식**:
-    - 소규모 (n ≤ 10,000): 모든 후보 모델을 한 스크립트 내에서 순차 실행 (사실상 병렬 비교)
+    - 소규모 (n ≤ 10,000): 모든 후보 모델을 한 스크립트 내에서 순차 실행 (후보 모델 순차 비교)
+    - 중규모 (10,000 < n ≤ 100,000): 전체 데이터 사용, SVM(SVC/SVR) 제외 (학습 속도 문제)
     - 대규모 (n > 100,000): 샘플링 후 후보 비교 → 선정 모델만 전체 데이터로 단일 학습. 한 번에 1개 모델만 학습하여 메모리/시간 절약
 15. **단계별 print 출력**: 스크립트 내 주요 단계마다 진행 상황을 출력한다:
     ```python

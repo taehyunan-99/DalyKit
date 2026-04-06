@@ -40,29 +40,24 @@ mkdir -p dalykit/config dalykit/data dalykit/code/py dalykit/code/notebooks daly
 1. `~/.claude/templates/DOMAIN_TEMPLATE.md`를 Read로 읽는다
 2. 내용을 `dalykit/config/domain.md`에 Write로 저장
 
-### 3.5단계: Python 경로 자동 감지
+### 3.5단계: 가상환경 자동 감지
 
-`dalykit/config/domain.md`의 Python 경로가 비어 있으면 자동 감지를 시도한다.
+`dalykit/config/domain.md`의 `- 가상환경 이름:`이 비어 있으면 자동 감지를 시도한다.
 
-1. Bash로 감지 명령 실행:
+1. Bash로 현재 활성 conda 환경 이름 확인:
    ```bash
-   # conda 환경 확인 (활성 환경 이름 추출)
    conda info --envs 2>/dev/null | grep '\*' | awk '{print $1}' || echo "NO_CONDA"
-   # 시스템 Python 확인
-   python3 --version 2>/dev/null && echo "python3" || (python --version 2>/dev/null && echo "python" || echo "NO_PYTHON")
    ```
 
 2. 결과 해석:
-   - conda 활성 환경 감지됨 (예: myenv) → `conda run -n myenv --no-capture-output python` 형태로 기입
-   - conda 없고 python3 있음 → `python3` 기입
-   - conda 없고 python만 있음 → `python` 기입
-   - 모두 없음 → 공백 유지 (사용자가 수동으로 입력)
+   - conda 활성 환경 감지됨 (예: myenv) → `- 가상환경 이름: myenv` 기입
+   - conda 없음 → 공백 유지, 완료 메시지에 "가상환경 미감지 — 필요 시 직접 입력하세요" 안내
 
-3. `dalykit/config/domain.md`의 `- Python 경로:` 라인을 Edit 도구로 수정하여 감지 결과 기입
+3. `dalykit/config/domain.md`의 `- 가상환경 이름:` 라인을 Edit 도구로 수정하여 감지 결과 기입
 
 4. 완료 메시지에 감지 결과 포함:
    ```
-   Python 경로 자동 감지: conda run -n myenv --no-capture-output python
+   가상환경 자동 감지: myenv
    변경이 필요하면 dalykit/config/domain.md 를 편집하세요.
    ```
 

@@ -75,6 +75,13 @@ missing_df[missing_df['결측수'] > 0].sort_values('결측률(%)', ascending=Fa
 # 셀 6: 중복 행 확인 (code cell)
 print(f"중복 행 수: {df.duplicated().sum()}")
 
+# save_fig 헬퍼 함수 정의 (셀 7-1 이전에 반드시 정의)
+def save_fig(filename):
+    path = os.path.join(FIGURES_DIR, filename)
+    plt.savefig(path, dpi=150, bbox_inches='tight')
+    plt.close()
+    return path
+
 # 셀 7: 범주형 변수 분포 (code cell)
 cat_cols = df.select_dtypes(include='object').columns.tolist()
 for col in cat_cols:
@@ -102,12 +109,6 @@ for col in cat_cols[:5]:  # 상위 5개만
     save_fig(f'cat_{col}.png')
 
 # 셀 8: 수치형 변수 분포 시각화 (code cell)
-def save_fig(filename):
-    path = os.path.join(FIGURES_DIR, filename)
-    plt.savefig(path, dpi=150, bbox_inches='tight')
-    plt.close()
-    return path
-
 num_cols = df.select_dtypes(include=np.number).columns.tolist()
 for col in num_cols[:5]:  # 상위 5개만 (필요 시 조정)
     fig, ax = plt.subplots(figsize=(8, 4))

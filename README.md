@@ -5,7 +5,7 @@
 > 반복되는 분석 코드는 DalyKit에게. 당신은 인사이트에만 집중하세요.  
 > Claude Code 플러그인으로 데이터 분석 워크플로우를 가속합니다.
 
-![version](https://img.shields.io/badge/version-0.0.1-blue?style=flat)
+![version](https://img.shields.io/badge/version-0.1.0-blue?style=flat)
 ![license](https://img.shields.io/badge/license-MIT-green?style=flat)
 ![python](https://img.shields.io/badge/python-3.10%2B-yellow?style=flat&logo=python&logoColor=white)
 ![platform](https://img.shields.io/badge/platform-Claude%20Code-orange?style=flat)
@@ -138,7 +138,7 @@ dalykit/
 | 데이터 처리 | pandas 2.x, numpy 2.x |
 | 시각화 | matplotlib 3.x, seaborn 0.13.x |
 | 통계 분석 | scipy 1.x, statsmodels 0.14.x, scikit-posthocs 0.x |
-| 머신러닝 | scikit-learn 1.x, xgboost 3.x, lightgbm 4.x, joblib 1.x |
+| 머신러닝 | scikit-learn 1.x, xgboost 3.x, lightgbm 4.x, catboost 1.x, joblib 1.x |
 | 모델 해석 | shap (선택 설치) |
 
 <div align="right"><a href="#dalykit">Top</a></div>
@@ -162,6 +162,7 @@ dalykit/
 | `dalykit:ml` | 모델 자동 선택 (3-5개 비교) + 튜닝 | `models/*.joblib` |
 | `dalykit:ml LR,RF,XGB` | 지정 모델만 비교 + 튜닝 (모델명은 예시) | `models/*.joblib` |
 | `dalykit:ml tune` | 기존 결과 기반 튜닝 재실행 | `code/results/model_results.json` |
+| `dalykit:ml ensemble` | 베이스라인 상위 모델로 Voting + Stacking 앙상블 비교 | `models/*.joblib` |
 | `dalykit:ml report` | 결과 JSON → 보고서 + 시각화 생성 | `docs/model_report.md` |
 | `dalykit:help` | 도움말 | — |
 
@@ -336,10 +337,11 @@ dalykit:feature report    → docs/feature_report.md 생성
 **동작 방식**
 
 1. 이전 보고서 요약 섹션 참조 + `domain.md`에서 타겟 변수, 목표 성능 확인
-2. `dalykit/code/py/model_train.py` 생성 후 자동 실행
-3. 1회차 결과로 피처 진단 (중요도 수렴, 다중공선성, 과적합, 전체 저성능)
-4. 이상 없으면 상위 1~2개 모델 선정 → 튜닝 루프 실행 (최대 5회)
-5. 결과는 `dalykit/code/results/model_results.json` + `dalykit/models/{모델명}.joblib`으로 저장
+2. 데이터 규모 판단 후 전략 결정 (소규모 n≤10k: 전체 비교 / 중규모 n≤100k: SVM 제외 / 대규모 n>100k: 샘플링 후 선정 재학습)
+3. `dalykit/code/py/model_train.py` 생성 후 백그라운드 자동 실행
+4. 1회차 결과로 피처 진단 (중요도 수렴, 다중공선성, 과적합, 전체 저성능)
+5. 이상 없으면 상위 1~2개 모델 선정 → 튜닝 루프 실행 (최대 5회)
+6. 결과는 `dalykit/code/results/model_results.json` + `dalykit/models/{모델명}.joblib`으로 저장
 
 **튜닝 종료 조건**
 
@@ -354,6 +356,7 @@ dalykit:feature report    → docs/feature_report.md 생성
 dalykit:ml              → 자동 모델 선택 + 튜닝 루프
 dalykit:ml LR,RF,XGB    → 지정 모델만 비교 + 튜닝
 dalykit:ml tune         → 기존 결과 기반 튜닝 재실행
+dalykit:ml ensemble     → 베이스라인 상위 모델로 Voting + Stacking 앙상블 비교
 dalykit:ml report       → model_results.json → docs/model_report.md 생성
 ```
 

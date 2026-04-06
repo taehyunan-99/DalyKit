@@ -50,7 +50,7 @@ user_invocable: true
 | clean | ipynb 생성 → 사용자 실행 → `clean report`로 보고서 | code/, data/, docs/ |
 | stat | .py → JSON → 보고서 자동 | code/, docs/ |
 | feature | ipynb 생성 → 사용자 실행 → `feature report`로 보고서 | code/, data/, docs/ |
-| model | .py → 루프 실행 → JSON 저장 → `model report`로 보고서 | code/, docs/, models/ |
+| model | .py → 루프 실행 → JSON 저장 → `model report`로 보고서 | code/, docs/, models/, figures/ |
 
 ## 프로젝트 구조
 

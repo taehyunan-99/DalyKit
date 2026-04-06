@@ -5,7 +5,7 @@
 > Let DalyKit handle the repetitive analysis code. You focus on the insights.  
 > Streamline your data analysis workflow with a Claude Code plugin.
 
-![version](https://img.shields.io/badge/version-0.0.1-blue?style=flat)
+![version](https://img.shields.io/badge/version-0.1.0-blue?style=flat)
 ![license](https://img.shields.io/badge/license-MIT-green?style=flat)
 ![python](https://img.shields.io/badge/python-3.10%2B-yellow?style=flat&logo=python&logoColor=white)
 ![platform](https://img.shields.io/badge/platform-Claude%20Code-orange?style=flat)
@@ -138,7 +138,7 @@ dalykit/
 | Data processing | pandas 2.x, numpy 2.x |
 | Visualization | matplotlib 3.x, seaborn 0.13.x |
 | Statistical analysis | scipy 1.x, statsmodels 0.14.x, scikit-posthocs 0.x |
-| Machine learning | scikit-learn 1.x, xgboost 3.x, lightgbm 4.x, joblib 1.x |
+| Machine learning | scikit-learn 1.x, xgboost 3.x, lightgbm 4.x, catboost 1.x, joblib 1.x |
 | Model interpretation | shap (optional) |
 
 <div align="right"><a href="#dalykit">Top</a></div>
@@ -162,6 +162,7 @@ dalykit/
 | `dalykit:ml` | Auto model selection (3–5 models) + tuning | `models/*.joblib` |
 | `dalykit:ml LR,RF,XGB` | Compare specified models + tuning | `models/*.joblib` |
 | `dalykit:ml tune` | Re-run tuning based on existing results | `code/results/model_results.json` |
+| `dalykit:ml ensemble` | Compare Voting + Stacking ensemble with top baseline models | `models/*.joblib` |
 | `dalykit:ml report` | Generate report + visualizations from results JSON | `docs/model_report.md` |
 | `dalykit:help` | Show help | — |
 
@@ -336,10 +337,11 @@ Trains machine learning models on feature-engineered data and tunes them automat
 **How it works**
 
 1. Reference summary sections of previous reports + read `domain.md` for target variable and performance goal
-2. Generate `dalykit/code/py/model_train.py` and run it automatically
-3. After the first round, perform feature diagnostics (importance convergence, multicollinearity, overfitting, overall underperformance)
-4. If no issues, select top 1–2 models → run tuning loop (max 5 rounds)
-5. Save results to `dalykit/code/results/model_results.json` + `dalykit/models/{model_name}.joblib`
+2. Determine strategy by data size (small n≤10k: full comparison / medium n≤100k: exclude SVM / large n>100k: sample → select → retrain)
+3. Generate `dalykit/code/py/model_train.py` and run it automatically in background
+4. After the first round, perform feature diagnostics (importance convergence, multicollinearity, overfitting, overall underperformance)
+5. If no issues, select top 1–2 models → run tuning loop (max 5 rounds)
+6. Save results to `dalykit/code/results/model_results.json` + `dalykit/models/{model_name}.joblib`
 
 **Tuning stop conditions**
 
@@ -354,6 +356,7 @@ Trains machine learning models on feature-engineered data and tunes them automat
 dalykit:ml              → auto model selection + tuning loop
 dalykit:ml LR,RF,XGB   → compare specified models + tuning
 dalykit:ml tune         → re-run tuning based on existing results
+dalykit:ml ensemble     → compare Voting + Stacking ensemble with top baseline models
 dalykit:ml report       → model_results.json → docs/model_report.md
 ```
 
