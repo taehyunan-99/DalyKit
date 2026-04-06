@@ -1,5 +1,7 @@
 # DalyKit
 
+### Data Analysis Kit
+
 > Let DalyKit handle the repetitive analysis code. You focus on the insights.  
 > Streamline your data analysis workflow with a Claude Code plugin.
 

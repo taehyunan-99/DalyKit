@@ -1,5 +1,7 @@
 # DalyKit
 
+### Data Analysis Kit
+
 > 반복되는 분석 코드는 DalyKit에게. 당신은 인사이트에만 집중하세요.  
 > Claude Code 플러그인으로 데이터 분석 워크플로우를 가속합니다.
 
