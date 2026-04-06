@@ -81,6 +81,21 @@ model_results.json을 분석하여 보고서를 생성한다.
 
 ![튜닝 비교](../figures/model_tuning_comparison.png)
 
+## 4.5 앙상블 비교 (ensemble 실행 시)
+
+> `dalykit:ml ensemble` 실행 시에만 포함. 미실행 시 이 섹션은 생략한다.
+
+| 모델 | 유형 | estimators | 성능 |
+|------|------|------------|------|
+| VotingClassifier | Soft Voting | XGBoost, RandomForest | 0.89 |
+| StackingClassifier | Stacking (LR meta) | XGBoost, RandomForest | 0.90 |
+| XGBoost (개별 최고) | 단일 모델 | — | 0.88 |
+
+> 앙상블이 개별 모델보다 성능이 높으면 **볼드** 처리.
+> 앙상블 선택 시 최종 모델 상세(5번)에 앙상블 모델 정보 기재.
+
+![앙상블 비교](../figures/model_ensemble_comparison.png)
+
 ## 5. 최종 모델 상세
 
 | 항목 | 값 |
@@ -138,6 +153,7 @@ model_results.json을 분석하여 보고서를 생성한다.
 | `model_residual_plot.png` | 잔차 플롯 (회귀) |
 | `model_learning_curve.png` | 학습 곡선 |
 | `model_tuning_comparison.png` | 튜닝 라운드별 모델 성능 비교 |
+| `model_ensemble_comparison.png` | 앙상블 vs 개별 모델 성능 비교 바차트 |
 | `model_shap_summary.png` | SHAP summary plot |
 | `model_roc_curve.png` | ROC 커브 (분류) |
 

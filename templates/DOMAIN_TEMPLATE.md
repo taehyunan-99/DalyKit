@@ -60,9 +60,16 @@
 
 ## 실행 환경
 <!-- .py 스크립트 실행 시 사용할 Python 경로 -->
-<!-- 미지정 시 시스템 기본 python3을 사용합니다 -->
-<!-- 예: /home/user/venv/bin/python -->
-<!-- 예: conda run -n myenv python -->
+<!-- 미지정 시 dalykit:init이 자동 감지한 경로를 아래에 채워넣습니다 -->
+<!-- 직접 수정도 가능합니다 -->
+<!--
+  예시:
+    시스템 기본:    python3
+    venv:          /home/user/venv/bin/python
+    conda:         conda run -n myenv --no-capture-output python
+    Windows conda: conda run -n myenv --no-capture-output python
+  ※ conda 사용 시 --no-capture-output 플래그 권장 (출력 인코딩 문제 방지)
+-->
 - Python 경로:
 
 ## ML 목표 (선택)

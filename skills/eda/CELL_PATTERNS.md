@@ -82,7 +82,14 @@ for col in cat_cols:
     print(df[col].value_counts().head(10))
 
 # 셀 7-1: 범주형 변수 시각화 (code cell)
-# ⚠️ countplot: hue=x변수 + legend=False 패턴 필수 (palette만 전달 시 FutureWarning)
+# ============================================================
+# ⚠️ countplot 안티패턴 (사용 금지 — FutureWarning 발생)
+# ❌ sns.countplot(data=df, x=col, palette=colors)          ← hue 없이 palette만 전달
+# ❌ sns.countplot(data=df, x=col, hue=col, palette=colors) ← legend=False 누락
+#
+# ✅ 올바른 패턴 (반드시 이 형태 사용):
+# sns.countplot(data=df, x=col, hue=col, order=order, palette=colors, legend=False, ax=ax)
+# ============================================================
 for col in cat_cols[:5]:  # 상위 5개만
     order = df[col].value_counts().index
     colors = ['#D9D9D9'] * len(order)

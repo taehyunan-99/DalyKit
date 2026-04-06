@@ -114,6 +114,23 @@ GradientBoostingClassifier(n_estimators=100, random_state=42)
 }
 ```
 
+### CatBoostClassifier (CAT)
+```python
+# 기본값
+CatBoostClassifier(iterations=500, random_state=42, verbose=0, auto_class_weights='Balanced')
+
+# 튜닝 그리드
+{
+    'iterations': [300, 500, 1000],
+    'depth': [4, 6, 8],
+    'learning_rate': [0.01, 0.05, 0.1],
+    'l2_leaf_reg': [1, 3, 5, 7]
+}
+```
+
+> 범주형 변수를 `cat_features`로 직접 전달 — 별도 인코딩 불필요.
+> `pip install catboost` 필요. 미설치 시 try/except로 스킵.
+
 ---
 
 ## 회귀 모델
@@ -186,6 +203,14 @@ GradientBoostingRegressor(n_estimators=100, random_state=42)
 # 튜닝 그리드: 분류와 동일
 ```
 
+### CatBoostRegressor (CAT)
+```python
+# 기본값
+CatBoostRegressor(iterations=500, random_state=42, verbose=0)
+
+# 튜닝 그리드: 분류와 동일 (auto_class_weights 제외)
+```
+
 ---
 
 ## 자동 모델 선택 기본 후보
@@ -205,3 +230,39 @@ GradientBoostingRegressor(n_estimators=100, random_state=42)
 5. SVR — 커널 기반
 
 > 데이터 크기에 따라 후보 조정: n > 10,000이면 SVM 제외 (학습 느림)
+> 범주형 변수가 전체 피처의 30% 이상이면 CatBoost를 후보에 포함 (SVC/SVR 대신)
+
+---
+
+## 앙상블 모델
+
+### VotingClassifier / VotingRegressor
+```python
+# 분류: soft voting (확률 기반) 기본
+VotingClassifier(estimators=[...], voting='soft')
+
+# 회귀
+VotingRegressor(estimators=[...])
+```
+
+> estimators에 베이스라인 상위 2-3개 모델을 자동 구성한다.
+
+### StackingClassifier / StackingRegressor
+```python
+# 분류
+StackingClassifier(
+    estimators=[...],       # 베이스라인 상위 2-3개
+    final_estimator=LogisticRegression(max_iter=1000),
+    cv=5
+)
+
+# 회귀
+StackingRegressor(
+    estimators=[...],
+    final_estimator=Ridge(),
+    cv=5
+)
+```
+
+> final_estimator는 분류=LogisticRegression, 회귀=Ridge 기본.
+> 앙상블은 베이스라인 완료 후에만 구성 가능 — 단독 실행 불가.

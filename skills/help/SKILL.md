@@ -29,6 +29,7 @@ user_invocable: true
   dalykit:ml                 모델 자동 선택 (3-5개 비교) + 튜닝
   dalykit:ml LR,RF,XGB       지정 모델만 비교 + 튜닝
   dalykit:ml tune            기존 결과 기반 튜닝 재실행
+  dalykit:ml ensemble        베이스라인 상위 모델로 앙상블 비교
   dalykit:ml report          결과 JSON → 보고서 + 시각화 생성
   dalykit:help               도움말
 
