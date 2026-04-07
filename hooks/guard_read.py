@@ -51,6 +51,11 @@ def main():
     if not Path(file_path).exists():
         sys.exit(0)
 
+    # limit 파라미터가 명시된 경우 부분 읽기 → 허용
+    limit = tool_input.get("limit")
+    if limit is not None:
+        sys.exit(0)
+
     line_count = count_lines(file_path)
 
     if line_count > ROW_LIMIT:

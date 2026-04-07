@@ -5,7 +5,7 @@
 > Let DalyKit handle the repetitive analysis code. You focus on the insights.  
 > Streamline your data analysis workflow with a Claude Code plugin.
 
-![version](https://img.shields.io/badge/version-0.1.1-blue?style=flat)
+![version](https://img.shields.io/badge/version-0.1.2-blue?style=flat)
 ![license](https://img.shields.io/badge/license-MIT-green?style=flat)
 ![python](https://img.shields.io/badge/python-3.10%2B-yellow?style=flat&logo=python&logoColor=white)
 ![platform](https://img.shields.io/badge/platform-Claude%20Code-orange?style=flat)
@@ -197,7 +197,7 @@ dalykit/
 └── figures/
 
 .claude/
-├── hooks/       ← Guard Hooks (invalid write path & oversized Read blocking)
+├── hooks/       ← Guard Hooks (project-external write & oversized Read blocking)
 └── settings.json
 ```
 

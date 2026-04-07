@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 DalyKit Write Guard (PreToolUse Hook)
-Write/Edit 도구가 dalykit/ 외부에 파일을 생성/수정하려 할 때 차단한다.
+Write/Edit 도구가 프로젝트 폴더(cwd) 외부에 파일을 생성/수정하려 할 때 차단한다.
 """
 
 import json
@@ -9,16 +9,8 @@ import sys
 from pathlib import Path
 
 
-def get_allowed_roots(cwd: str) -> list:
-    """쓰기 허용 경로 목록 반환"""
-    project = Path(cwd).resolve()
-    return [
-        project / "dalykit",
-    ]
-
-
-# dalykit/ 외부에 저장하면 안 되는 분석 산출물 확장자
-BLOCKED_EXTENSIONS_OUTSIDE_DALYKIT = {
+# 프로젝트 외부에 저장하면 안 되는 분석 산출물 확장자
+BLOCKED_EXTENSIONS_OUTSIDE_PROJECT = {
     ".csv", ".parquet", ".pkl", ".joblib",
     ".ipynb", ".png", ".jpg", ".jpeg", ".svg",
     ".json",
@@ -27,28 +19,27 @@ BLOCKED_EXTENSIONS_OUTSIDE_DALYKIT = {
 
 def is_analysis_artifact(file_path: str) -> bool:
     """분석 산출물 파일 여부 확인"""
-    return Path(file_path).suffix.lower() in BLOCKED_EXTENSIONS_OUTSIDE_DALYKIT
+    return Path(file_path).suffix.lower() in BLOCKED_EXTENSIONS_OUTSIDE_PROJECT
 
 
-def is_inside_dalykit(file_path: str, cwd: str) -> bool:
-    """파일 경로가 dalykit/ 하위인지 확인"""
+def is_inside_project(file_path: str, cwd: str) -> bool:
+    """파일 경로가 프로젝트(cwd) 하위인지 확인"""
     target = Path(file_path).resolve()
-    dalykit_root = Path(cwd).resolve() / "dalykit"
+    project_root = Path(cwd).resolve()
     try:
-        target.relative_to(dalykit_root)
+        target.relative_to(project_root)
         return True
     except ValueError:
         return False
 
 
 def is_allowed(file_path: str, cwd: str) -> bool:
-    """분석 산출물이 dalykit/ 외부에 저장되는 경우만 차단"""
+    """분석 산출물이 프로젝트 외부에 저장되는 경우만 차단"""
     try:
         if not is_analysis_artifact(file_path):
-            return True  # 설정 파일 등은 기본 허용
-        return is_inside_dalykit(file_path, cwd)
+            return True
+        return is_inside_project(file_path, cwd)
     except Exception:
-        # 경로 파싱 실패 시 허용 (오탐 방지)
         return True
 
 
@@ -77,7 +68,7 @@ def main():
                 "permissionDecision": "deny",
                 "permissionDecisionReason": (
                     f"[DalyKit Guard] 쓰기 차단: '{file_path}'\n"
-                    f"분석 결과물은 반드시 dalykit/ 하위에 저장해야 합니다.\n"
+                    f"분석 결과물은 프로젝트 폴더 내에 저장해야 합니다.\n"
                     f"올바른 경로: dalykit/data/, dalykit/code/, dalykit/docs/, dalykit/figures/"
                 ),
             }
