@@ -1,7 +1,7 @@
 {
     "name": "dalykit",
     "description": "A Claude Code plugin for end-to-end data analysis workflows.",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "author": {
         "name": "taehyunan-99"
     },

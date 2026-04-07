@@ -5,7 +5,7 @@
 > 반복되는 분석 코드는 DalyKit에게. 당신은 인사이트에만 집중하세요.  
 > Claude Code 플러그인으로 데이터 분석 워크플로우를 가속합니다.
 
-![version](https://img.shields.io/badge/version-0.1.0-blue?style=flat)
+![version](https://img.shields.io/badge/version-0.1.1-blue?style=flat)
 ![license](https://img.shields.io/badge/license-MIT-green?style=flat)
 ![python](https://img.shields.io/badge/python-3.10%2B-yellow?style=flat&logo=python&logoColor=white)
 ![platform](https://img.shields.io/badge/platform-Claude%20Code-orange?style=flat)
@@ -174,13 +174,13 @@ dalykit/
 
 ### `dalykit:init` — 프로젝트 초기화
 
-분석을 시작하기 전 가장 먼저 실행하는 스킬입니다. `dalykit/` 폴더와 하위 구조를 한 번에 생성하고, 도메인 정보 입력 템플릿을 자동으로 배치합니다.
+분석을 시작하기 전 가장 먼저 실행하는 스킬입니다. `dalykit/` 폴더와 하위 구조를 한 번에 생성하고, `dalykit/config/domain.md`를 자동으로 생성합니다.
 
 **동작 방식**
 
 1. `dalykit/` 폴더가 이미 존재하면 중복 실행을 방지하고 종료
 2. `config`, `data`, `code/`, `models`, `docs`, `figures` 폴더 생성
-3. `dalykit/config/domain.md` 템플릿 배치
+3. `dalykit/config/domain.md` 생성
 4. 프로젝트 레벨 Guard Hook 설치 (잘못된 경로 쓰기 · 대용량 Read 차단)
 
 **실행 결과**

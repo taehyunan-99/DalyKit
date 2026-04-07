@@ -5,7 +5,7 @@
 > Let DalyKit handle the repetitive analysis code. You focus on the insights.  
 > Streamline your data analysis workflow with a Claude Code plugin.
 
-![version](https://img.shields.io/badge/version-0.1.0-blue?style=flat)
+![version](https://img.shields.io/badge/version-0.1.1-blue?style=flat)
 ![license](https://img.shields.io/badge/license-MIT-green?style=flat)
 ![python](https://img.shields.io/badge/python-3.10%2B-yellow?style=flat&logo=python&logoColor=white)
 ![platform](https://img.shields.io/badge/platform-Claude%20Code-orange?style=flat)
@@ -174,13 +174,13 @@ dalykit/
 
 ### `dalykit:init` — Project Initialization
 
-The first skill to run before starting any analysis. Creates the `dalykit/` folder and its full structure in one step, and automatically places the domain information input template.
+The first skill to run before starting any analysis. Creates the `dalykit/` folder and its full structure in one step, and automatically generates `dalykit/config/domain.md`.
 
 **How it works**
 
 1. Exits if `dalykit/` already exists to prevent duplicate initialization
 2. Creates `config`, `data`, `code/`, `models`, `docs`, `figures` folders
-3. Places `dalykit/config/domain.md` template
+3. Creates `dalykit/config/domain.md`
 4. Installs project-level Guard Hooks (blocks writes to wrong paths and large Read calls)
 
 **Output**

@@ -13,3 +13,21 @@
 ## 문서
 <!-- README, SKILL.md 등 문서 변경 -->
 -
+
+---
+
+## New Features
+<!-- Newly added skills, arguments, or capabilities -->
+-
+
+## Improvements
+<!-- Behavior, usability, or performance improvements to existing features -->
+-
+
+## Bug Fixes
+<!-- Errors, warnings, or incorrect behavior fixed -->
+-
+
+## Documentation
+<!-- README, SKILL.md, or other doc changes -->
+-
