@@ -121,7 +121,7 @@ dalykit/
 ├── code/
 │   ├── notebooks/   ← EDA, 전처리, 피처 노트북 (.ipynb)
 │   ├── py/          ← 통계 분석, 모델 학습 스크립트 (.py)
-│   └── results/     ← 분석 결과 (.json)
+│   └── results/     ← 분석 결과 (eda_results.json, clean_results.json, feature_results.json, stat_results.json, model_results.json)
 ├── docs/            ← 각 단계별 보고서 (.md)
 ├── figures/         ← 시각화 이미지 (.png)
 └── models/          ← 학습된 모델 파일 (.joblib)
@@ -232,14 +232,14 @@ dalykit/
 
 1. `dalykit/data/`에서 CSV 파일 탐색
 2. `domain.md`가 있으면 도메인 맥락을 반영해 노트북 구성
-3. `dalykit/code/notebooks/eda_analysis.ipynb` 생성
+3. `dalykit/code/notebooks/eda_analysis.ipynb` 생성 (마지막 셀에서 분석 결과를 `eda_results.json`으로 자동 저장)
 4. 사용자가 노트북을 직접 실행한 뒤 `dalykit:eda report`로 보고서 생성
 
 **실행 흐름**
 ```
 dalykit:eda           → eda_analysis.ipynb 생성
-  ↓ 사용자가 노트북 실행
-dalykit:eda report    → docs/eda_report.md 생성
+  ↓ 사용자가 노트북 실행 (→ code/results/eda_results.json 자동 저장)
+dalykit:eda report    → eda_results.json 읽기 → docs/eda_report.md 생성
 ```
 
 노트북 실행은 사용자가 직접 합니다. 셀 단위로 결과를 확인하고 수정할 수 있어 분석 품질을 높일 수 있습니다.
@@ -255,7 +255,7 @@ dalykit:eda report    → docs/eda_report.md 생성
 **동작 방식**
 
 1. `eda_report.md`가 있으면 결측값·이상치·타입 이슈를 파악해 전략 수립, 없으면 데이터 직접 프로파일링
-2. `dalykit/code/notebooks/clean_pipeline.ipynb` 생성
+2. `dalykit/code/notebooks/clean_pipeline.ipynb` 생성 (마지막 셀에서 전처리 결과를 `clean_results.json`으로 자동 저장)
 3. 사용자가 노트북을 직접 실행한 뒤 `dalykit:clean report`로 보고서 생성
 4. 전처리 결과는 `dalykit/data/{파일명}_cleaned.csv`로 저장
 
@@ -274,8 +274,8 @@ dalykit:eda report    → docs/eda_report.md 생성
 
 ```
 dalykit:clean            → clean_pipeline.ipynb 생성
-  ↓ 노트북 실행 (이상치 탐지 결과 확인)
-dalykit:clean report     → 보고서 확인
+  ↓ 노트북 실행 (이상치 탐지 결과 확인, → code/results/clean_results.json 자동 저장)
+dalykit:clean report     → clean_results.json 읽기 → 보고서 확인
   ↓ 노트북에서 이상치 처리 셀 주석 해제 후 재실행
 dalykit:clean report     → 보고서 갱신
 ```
@@ -315,15 +315,15 @@ dalykit:stat notebook → stat_analysis.ipynb 변환
 
 1. 이전 보고서(eda, clean, stat) 요약 섹션 참조 → 인코딩 대상, 유의미한 변수 파악
 2. `domain.md`에서 타겟 변수, 도메인 규칙 확인
-3. `dalykit/code/notebooks/feature_pipeline.ipynb` 생성
+3. `dalykit/code/notebooks/feature_pipeline.ipynb` 생성 (마지막 셀에서 피처 변환 결과를 `feature_results.json`으로 자동 저장)
 4. 사용자가 노트북을 직접 실행한 뒤 `dalykit:feature report`로 보고서 생성
 5. 피처 결과는 `dalykit/data/df_featured.csv`로 저장 (ml 스킬의 입력값)
 
 **실행 흐름**
 ```
 dalykit:feature           → feature_pipeline.ipynb 생성
-  ↓ 사용자가 노트북 실행
-dalykit:feature report    → docs/feature_report.md 생성
+  ↓ 사용자가 노트북 실행 (→ code/results/feature_results.json 자동 저장)
+dalykit:feature report    → feature_results.json 읽기 → docs/feature_report.md 생성
 ```
 
 <div align="right"><a href="#dalykit">Top</a></div>

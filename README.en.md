@@ -121,7 +121,7 @@ dalykit/
 ├── code/
 │   ├── notebooks/   ← EDA, preprocessing, feature notebooks (.ipynb)
 │   ├── py/          ← Statistical analysis, model training scripts (.py)
-│   └── results/     ← Analysis results (.json)
+│   └── results/     ← Analysis results (eda_results.json, clean_results.json, feature_results.json, stat_results.json, model_results.json)
 ├── docs/            ← Per-step reports (.md)
 ├── figures/         ← Visualization images (.png)
 └── models/          ← Trained model files (.joblib)
@@ -232,14 +232,14 @@ Automatically generates a Jupyter notebook to analyze your data's structure, dis
 
 1. Explore CSV files in `dalykit/data/`
 2. If `domain.md` is present, incorporates domain context into the notebook structure
-3. Generate `dalykit/code/notebooks/eda_analysis.ipynb`
+3. Generate `dalykit/code/notebooks/eda_analysis.ipynb` (the final cell auto-saves analysis results to `eda_results.json`)
 4. User runs the notebook manually, then calls `dalykit:eda report` to generate the report
 
 **Execution flow**
 ```
 dalykit:eda           → generates eda_analysis.ipynb
-  ↓ user runs notebook
-dalykit:eda report    → generates docs/eda_report.md
+  ↓ user runs notebook (→ code/results/eda_results.json auto-saved)
+dalykit:eda report    → reads eda_results.json → generates docs/eda_report.md
 ```
 
 You run the notebook yourself — this lets you check and adjust results cell by cell for better analysis quality.
@@ -255,7 +255,7 @@ Generates a preprocessing pipeline notebook to handle missing values, duplicates
 **How it works**
 
 1. If `eda_report.md` exists, extract missing value / outlier / type issues; otherwise profile the data directly
-2. Generate `dalykit/code/notebooks/clean_pipeline.ipynb`
+2. Generate `dalykit/code/notebooks/clean_pipeline.ipynb` (the final cell auto-saves preprocessing results to `clean_results.json`)
 3. User runs the notebook manually, then calls `dalykit:clean report` to generate the report
 4. Preprocessing result is saved as `dalykit/data/{filename}_cleaned.csv`
 
@@ -274,8 +274,8 @@ Outliers are not removed automatically. Only detection results are printed; trea
 
 ```
 dalykit:clean            → generates clean_pipeline.ipynb
-  ↓ run notebook (review outlier detection results)
-dalykit:clean report     → review report
+  ↓ run notebook (review outlier detection results, → code/results/clean_results.json auto-saved)
+dalykit:clean report     → reads clean_results.json → review report
   ↓ uncomment outlier treatment cell in notebook, re-run
 dalykit:clean report     → updated report
 ```
@@ -315,15 +315,15 @@ Generates a notebook to perform encoding, scaling, derived variable creation, an
 
 1. Reference summary sections of previous reports (eda, clean, stat) → identify encoding targets and significant variables
 2. Read `domain.md` for target variable and domain rules
-3. Generate `dalykit/code/notebooks/feature_pipeline.ipynb`
+3. Generate `dalykit/code/notebooks/feature_pipeline.ipynb` (the final cell auto-saves feature transformation results to `feature_results.json`)
 4. User runs the notebook manually, then calls `dalykit:feature report` to generate the report
 5. Feature result saved as `dalykit/data/df_featured.csv` (input for the ml skill)
 
 **Execution flow**
 ```
 dalykit:feature           → generates feature_pipeline.ipynb
-  ↓ user runs notebook
-dalykit:feature report    → generates docs/feature_report.md
+  ↓ user runs notebook (→ code/results/feature_results.json auto-saved)
+dalykit:feature report    → reads feature_results.json → generates docs/feature_report.md
 ```
 
 <div align="right"><a href="#dalykit">Top</a></div>

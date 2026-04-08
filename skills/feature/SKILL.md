@@ -31,6 +31,7 @@ dalykit:feature report   ← 실행된 노트북 결과 읽기 → dalykit/docs/
 | 입력 데이터 | `dalykit/data/*_cleaned.csv` |
 | 도메인 설정 | `dalykit/config/domain.md` |
 | 노트북 | `dalykit/code/notebooks/feature_pipeline.ipynb` |
+| JSON 결과 | `dalykit/code/results/feature_results.json` |
 | 출력 데이터 | `dalykit/data/df_featured.csv` |
 | 보고서 | `dalykit/docs/feature_report.md` |
 
@@ -67,9 +68,9 @@ dalykit:feature report   ← 실행된 노트북 결과 읽기 → dalykit/docs/
 
 > `dalykit:feature report` 호출 시 실행. 노트북을 사용자가 실행한 뒤 호출해야 한다.
 
-1. `dalykit/code/notebooks/feature_pipeline.ipynb` Read → 셀 출력(outputs) 분석
+1. `dalykit/code/results/feature_results.json` Read → 피처 변환 결과 데이터 확인
 2. `dalykit/docs/feature_report.md` Write → 보고서 생성
-3. ipynb 미존재 또는 outputs가 비어 있으면: "노트북을 먼저 실행한 뒤 다시 시도하세요." 안내 후 종료
+3. JSON 미존재 시: "노트북을 먼저 실행한 뒤 다시 시도하세요." 안내 후 종료
 
 ## 참조 문서
 

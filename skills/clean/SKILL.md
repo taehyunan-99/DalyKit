@@ -31,6 +31,7 @@ dalykit:clean report       ← 실행된 노트북 결과 읽기 → dalykit/doc
 | 원본 데이터 | `dalykit/data/` |
 | 전처리 결과 | `dalykit/data/` |
 | 노트북 | `dalykit/code/notebooks/clean_pipeline.ipynb` |
+| JSON 결과 | `dalykit/code/results/clean_results.json` |
 
 ## 워크플로우
 
@@ -55,10 +56,10 @@ dalykit:clean report       ← 실행된 노트북 결과 읽기 → dalykit/doc
 
 > `dalykit:clean report` 호출 시 실행. 노트북을 사용자가 실행한 뒤 호출해야 한다.
 
-1. `dalykit/code/notebooks/clean_pipeline.ipynb` Read → 셀 출력(outputs) 분석
+1. `dalykit/code/results/clean_results.json` Read → 전처리 결과 데이터 확인
 2. `~/.claude/skills/clean/PREPROCESSING_REPORT.md` Read → 보고서 작성 지침 확인
 3. `dalykit/docs/preprocessing_report.md` Write → 보고서 생성
-4. ipynb 미존재 또는 outputs가 비어 있으면: "노트북을 먼저 실행한 뒤 다시 시도하세요." 안내 후 종료
+4. JSON 미존재 시: "노트북을 먼저 실행한 뒤 다시 시도하세요." 안내 후 종료
 
 ## 참조 문서
 

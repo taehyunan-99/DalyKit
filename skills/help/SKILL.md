@@ -46,10 +46,10 @@ user_invocable: true
 |------|------|------|
 | init | 폴더 생성 + 템플릿 복사 | dalykit/ 구조 |
 | domain | 자유 입력 + CSV → domain.md 구조화 | config/domain.md |
-| eda | ipynb 생성 → 사용자 실행 → `eda report`로 보고서 | code/, docs/, figures/ |
-| clean | ipynb 생성 → 사용자 실행 → `clean report`로 보고서 | code/, data/, docs/ |
+| eda | ipynb 생성 → 사용자 실행 → JSON 자동 저장 → `eda report`로 보고서 | code/, docs/, figures/ |
+| clean | ipynb 생성 → 사용자 실행 → JSON 자동 저장 → `clean report`로 보고서 | code/, data/, docs/ |
 | stat | .py → JSON → 보고서 자동 | code/, docs/ |
-| feature | ipynb 생성 → 사용자 실행 → `feature report`로 보고서 | code/, data/, docs/ |
+| feature | ipynb 생성 → 사용자 실행 → JSON 자동 저장 → `feature report`로 보고서 | code/, data/, docs/ |
 | model | .py → 루프 실행 → JSON 저장 → `model report`로 보고서 | code/, docs/, models/, figures/ |
 
 ## 프로젝트 구조
@@ -59,8 +59,8 @@ dalykit/
 ├── config/          ← domain.md
 ├── data/            ← 원본 CSV + 전처리 결과 (_cleaned 접미사)
 ├── code/
-│   ├── notebooks/   ← .ipynb 노트북 (eda, clean, stat)
-│   ├── py/          ← .py 스크립트 (stat, feature, model)
+│   ├── notebooks/   ← .ipynb 노트북 (eda, clean, feature)
+│   ├── py/          ← .py 스크립트 (stat, model)
 │   └── results/     ← .json 결과
 ├── docs/            ← 보고서 (md)
 └── figures/         ← 시각화 이미지

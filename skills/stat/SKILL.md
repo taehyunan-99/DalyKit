@@ -15,7 +15,7 @@ user_invocable: true
 ## 사용법
 
 ```
-dalykit:stat             ← cleaned/ 데이터 → 통계 검정 → 보고서
+dalykit:stat             ← data/ 데이터 → 통계 검정 → 보고서
 dalykit:stat notebook    ← stat_analysis.py → ipynb 변환
 ```
 

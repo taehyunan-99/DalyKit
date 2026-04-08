@@ -31,6 +31,7 @@ dalykit:eda report       ← 실행된 노트북 결과 읽기 → dalykit/docs/
 | 데이터 | `dalykit/data/` |
 | 도메인 설정 | `dalykit/config/domain.md` |
 | 노트북 | `dalykit/code/notebooks/eda_analysis.ipynb` |
+| JSON 결과 | `dalykit/code/results/eda_results.json` |
 | 시각화 | `dalykit/figures/` |
 
 ## 워크플로우
@@ -56,10 +57,10 @@ dalykit:eda report       ← 실행된 노트북 결과 읽기 → dalykit/docs/
 
 > `dalykit:eda report` 호출 시 실행. 노트북을 사용자가 실행한 뒤 호출해야 한다.
 
-1. `dalykit/code/notebooks/eda_analysis.ipynb` Read → 셀 출력(outputs) 분석
+1. `dalykit/code/results/eda_results.json` Read → 분석 결과 데이터 확인
 2. `~/.claude/skills/eda/EDA_REPORT.md` Read → 보고서 작성 지침 확인
 3. `dalykit/docs/eda_report.md` Write → 보고서 생성
-4. ipynb 미존재 또는 outputs가 비어 있으면: "노트북을 먼저 실행한 뒤 다시 시도하세요." 안내 후 종료
+4. JSON 미존재 시: "노트북을 먼저 실행한 뒤 다시 시도하세요." 안내 후 종료
 
 ## 참조 문서
 
