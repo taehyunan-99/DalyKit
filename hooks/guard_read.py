@@ -24,11 +24,20 @@ ALLOWED_PATHS = [
     "dalykit/code/results/",
 ]
 
+ALLOWED_FILENAMES = [
+    "eda_results.json",
+    "clean_results.json",
+    "feature_results.json",
+    "model_results.json",
+]
+
 
 def is_allowed_path(file_path: str) -> bool:
     """허용된 경로 여부 확인 (결과 파일 등 직접 읽기 허용)"""
     p = Path(file_path).as_posix()
-    return any(allowed in p for allowed in ALLOWED_PATHS)
+    if any(allowed in p for allowed in ALLOWED_PATHS):
+        return True
+    return Path(file_path).name in ALLOWED_FILENAMES
 
 
 def is_data_file(file_path: str) -> bool:
