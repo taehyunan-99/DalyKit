@@ -6,14 +6,14 @@
     },
     "metadata": {
         "description": "End-to-end data analysis workflow plugin for Claude Code.",
-        "version": "0.1.0"
+        "version": "0.1.4"
     },
     "plugins": [
         {
             "name": "dalykit",
             "source": "./",
             "description": "A Claude Code plugin for end-to-end data analysis workflows.",
-            "version": "0.1.0",
+            "version": "0.1.4",
             "author": {
                 "name": "taehyunan-99",
                 "email": "withblua@gmail.com"
