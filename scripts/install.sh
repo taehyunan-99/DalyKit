@@ -43,9 +43,8 @@ mkdir -p "$CLAUDE_ROOT/templates"
 cp -r "$HARNESS_ROOT/templates/"* "$CLAUDE_ROOT/templates/"
 echo "  Templates installed"
 
-# guard_write 글로벌 설치 (guard_read는 프로젝트별 래퍼로 설치 — dalykit:init 참조)
-cp "$HARNESS_ROOT/hooks/guard_write.py" "$CLAUDE_ROOT/hooks/guard_write.py"
-echo "  Hooks installed"
+# hooks는 프로젝트별 래퍼로 설치 (dalykit:init 참조) — 글로벌 설치 없음
+echo "  Hooks: skipped (project-level only, run dalykit:init)"
 
 echo ""
 echo "=== Install Complete ==="

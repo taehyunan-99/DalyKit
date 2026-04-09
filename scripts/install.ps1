@@ -49,11 +49,8 @@ if (-not (Test-Path $templatesTarget)) { New-Item -ItemType Directory -Path $tem
 Copy-Item -Path "$templatesSource\*" -Destination $templatesTarget -Recurse -Force
 Write-Host "  Templates installed" -ForegroundColor Green
 
-# guard_write 글로벌 설치 (guard_read는 프로젝트별 래퍼로 설치 — dalykit:init 참조)
-$hooksSource = Join-Path $HarnessRoot "hooks"
-$hooksTarget = Join-Path $ClaudeRoot "hooks"
-Copy-Item -Path "$hooksSource\guard_write.py" -Destination "$hooksTarget\guard_write.py" -Force
-Write-Host "  Hooks installed" -ForegroundColor Green
+# hooks는 프로젝트별 래퍼로 설치 (dalykit:init 참조) — 글로벌 설치 없음
+Write-Host "  Hooks: skipped (project-level only, run dalykit:init)" -ForegroundColor Yellow
 
 Write-Host ""
 Write-Host "=== Install Complete ===" -ForegroundColor Cyan
