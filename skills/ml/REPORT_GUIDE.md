@@ -57,7 +57,7 @@ model_results.json을 분석하여 보고서를 생성한다.
 ## 3. 피처 진단
 
 ### 피처 중요도
-![피처 중요도](../figures/model_feature_importance_{모델명}.png)
+<img src="../figures/model_feature_importance_{모델명}.png" alt="피처 중요도" width="80%">
 <!-- 실제 파일명으로 대체: model_feature_importance_xgboost.png 등 -->
 
 | 순위 | 피처 | 중요도 |
@@ -79,7 +79,7 @@ model_results.json을 분석하여 보고서를 생성한다.
 | 2 | XGBoost | max_depth=5, lr=0.1 | 0.87 | +2.0% |
 | 3 | XGBoost | n_est=200, subsample=0.8 | 0.88 | +1.0% |
 
-![튜닝 비교](../figures/model_tuning_comparison.png)
+<img src="../figures/model_tuning_comparison.png" alt="튜닝 비교" width="80%">
 
 ## 4.5 앙상블 비교 (ensemble 실행 시)
 
@@ -94,7 +94,7 @@ model_results.json을 분석하여 보고서를 생성한다.
 > 앙상블이 개별 모델보다 성능이 높으면 **볼드** 처리.
 > 앙상블 선택 시 최종 모델 상세(5번)에 앙상블 모델 정보 기재.
 
-![앙상블 비교](../figures/model_ensemble_comparison.png)
+<img src="../figures/model_ensemble_comparison.png" alt="앙상블 비교" width="80%">
 
 ## 5. 최종 모델 상세
 
@@ -107,19 +107,19 @@ model_results.json을 분석하여 보고서를 생성한다.
 | 모델 파일 | `dalykit/models/XGBoost.joblib` |
 
 ### 혼동 행렬 (분류)
-![혼동 행렬](../figures/model_confusion_matrix.png)
+<img src="../figures/model_confusion_matrix.png" alt="혼동 행렬" width="80%">
 
 ### 잔차 플롯 (회귀)
-![잔차 플롯](../figures/model_residual_plot.png)
+<img src="../figures/model_residual_plot.png" alt="잔차 플롯" width="80%">
 
 ### 학습 곡선
-![학습 곡선](../figures/model_learning_curve.png)
+<img src="../figures/model_learning_curve.png" alt="학습 곡선" width="80%">
 
 ## 6. SHAP 해석
 
 > 항상 시도한다. 미설치 시 보고서에 "SHAP 해석을 보려면 `pip install shap` 후 `dalykit:ml report`를 재실행하세요." 한 줄만 포함하고 섹션은 유지한다.
 
-![SHAP Summary](../figures/model_shap_summary.png)
+<img src="../figures/model_shap_summary.png" alt="SHAP Summary" width="80%">
 
 ## 7. 한계점 및 추가 분석 추천
 

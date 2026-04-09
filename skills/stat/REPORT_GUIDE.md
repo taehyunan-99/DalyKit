@@ -111,12 +111,13 @@
 ```markdown
 ### 가설 1: X변수에 따른 Y변수 차이
 
-![H1 검증 시각화](../figures/stat_h1_boxplot.png)
+<img src="../figures/stat_h1_boxplot.png" alt="H1 검증 시각화" width="80%">
+
 > One-way ANOVA 결과 유의한 차이 있음 (p=0.003, η²=0.12)
 
 ### 가설 2: A와 B의 상관관계
 
-![H2 검증 시각화](../figures/stat_h2_scatter.png)
+<img src="../figures/stat_h2_scatter.png" alt="H2 검증 시각화" width="80%">
 > Pearson 상관 r=0.94 — 강한 양의 상관 (p<0.001)
 ```
 

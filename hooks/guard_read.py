@@ -20,6 +20,17 @@ def count_lines(file_path: str) -> int:
         return 0
 
 
+ALLOWED_PATHS = [
+    "dalykit/code/results/",
+]
+
+
+def is_allowed_path(file_path: str) -> bool:
+    """허용된 경로 여부 확인 (결과 파일 등 직접 읽기 허용)"""
+    p = Path(file_path).as_posix()
+    return any(allowed in p for allowed in ALLOWED_PATHS)
+
+
 def is_data_file(file_path: str) -> bool:
     """데이터 파일 여부 확인 (CSV, TSV, JSON, Excel 등)"""
     data_extensions = {".csv", ".tsv", ".json", ".jsonl", ".parquet", ".xlsx", ".xls"}
@@ -41,6 +52,10 @@ def main():
     file_path = tool_input.get("file_path", "")
 
     if not file_path:
+        sys.exit(0)
+
+    # 허용된 경로면 스킵
+    if is_allowed_path(file_path):
         sys.exit(0)
 
     # 데이터 파일이 아니면 스킵

@@ -188,12 +188,13 @@ EDA JSON 결과를 분석하여 EDA 보고서를 작성한다.
 ```markdown
 ## 5. 변수 간 관계
 
-![상관관계 히트맵](../figures/heatmap_corr.png)
+<img src="../figures/heatmap_corr.png" alt="상관관계 히트맵" width="80%">
+
 > 변수A-변수B 간 강한 양의 상관(r=0.95) 확인
 
 ## 4. 범주형 변수 분석
 
-![타겟 분포](../figures/dist_loan_status.png)
+<img src="../figures/dist_loan_status.png" alt="타겟 분포" width="80%">
 > 클래스 불균형 심각 (17.9% vs 82.1%)
 ```
 
