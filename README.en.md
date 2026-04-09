@@ -180,8 +180,8 @@ The first skill to run before starting any analysis. Creates the `dalykit/` fold
 
 1. Exits if `dalykit/` already exists to prevent duplicate initialization
 2. Creates `config`, `data`, `code/`, `models`, `docs`, `figures` folders
-3. Copies `dalykit/config/domain.md` and Guard Hooks from the plugin install path
-4. Installs project-level Guard Hooks (blocks writes to wrong paths and large Read calls)
+3. Copies `dalykit/config/domain.md` from the plugin install path
+4. Installs project-level Guard Hooks — wrapper-based design that dynamically runs the latest logic from the marketplace (auto-updates on plugin upgrade, no impact on other projects)
 
 **Output**
 ```

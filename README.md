@@ -180,8 +180,8 @@ dalykit/
 
 1. `dalykit/` 폴더가 이미 존재하면 중복 실행을 방지하고 종료
 2. `config`, `data`, `code/`, `models`, `docs`, `figures` 폴더 생성
-3. 플러그인 설치 경로에서 `dalykit/config/domain.md` 및 Guard Hook 복사
-4. 프로젝트 레벨 Guard Hook 설치 (잘못된 경로 쓰기 · 대용량 Read 차단)
+3. 플러그인 설치 경로에서 `dalykit/config/domain.md` 복사
+4. 프로젝트 레벨 Guard Hook 설치 — marketplace의 최신 로직을 동적으로 실행하는 래퍼 방식 (플러그인 업데이트 시 자동 반영, 다른 프로젝트 영향 없음)
 
 **실행 결과**
 ```
