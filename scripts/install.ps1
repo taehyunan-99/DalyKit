@@ -49,11 +49,10 @@ if (-not (Test-Path $templatesTarget)) { New-Item -ItemType Directory -Path $tem
 Copy-Item -Path "$templatesSource\*" -Destination $templatesTarget -Recurse -Force
 Write-Host "  Templates installed" -ForegroundColor Green
 
-# hook 스크립트 설치 (init 스킬이 프로젝트에 복사할 원본)
+# guard_write 글로벌 설치 (guard_read는 프로젝트별 래퍼로 설치 — dalykit:init 참조)
 $hooksSource = Join-Path $HarnessRoot "hooks"
 $hooksTarget = Join-Path $ClaudeRoot "hooks"
 Copy-Item -Path "$hooksSource\guard_write.py" -Destination "$hooksTarget\guard_write.py" -Force
-Copy-Item -Path "$hooksSource\guard_read.py" -Destination "$hooksTarget\guard_read.py" -Force
 Write-Host "  Hooks installed" -ForegroundColor Green
 
 Write-Host ""

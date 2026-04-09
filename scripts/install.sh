@@ -43,9 +43,8 @@ mkdir -p "$CLAUDE_ROOT/templates"
 cp -r "$HARNESS_ROOT/templates/"* "$CLAUDE_ROOT/templates/"
 echo "  Templates installed"
 
-# hook 스크립트 설치 (init 스킬이 프로젝트에 복사할 원본)
+# guard_write 글로벌 설치 (guard_read는 프로젝트별 래퍼로 설치 — dalykit:init 참조)
 cp "$HARNESS_ROOT/hooks/guard_write.py" "$CLAUDE_ROOT/hooks/guard_write.py"
-cp "$HARNESS_ROOT/hooks/guard_read.py" "$CLAUDE_ROOT/hooks/guard_read.py"
 echo "  Hooks installed"
 
 echo ""
