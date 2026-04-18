@@ -24,6 +24,7 @@ English | [한국어](./README.md)
 - [Tech Stack](#tech-stack)
 - [Skills](#skills)
 - [Kit Management](#kit-management)
+- [Skills in Detail](#skills-in-detail)
 - [Contact](#contact)
 
 ---
@@ -183,6 +184,36 @@ Each stage directory contains its own outputs:
 | `dalykit:kit switch k1` | Switch active kit | `config/active.json` |
 | `dalykit:progress` | Refresh progress document | `config/progress.md` |
 | `dalykit:help` | Show help | — |
+
+<div align="right"><a href="#dalykit">Top</a></div>
+
+---
+
+## Kit Management
+
+`dalykit:kit` is the key command for managing independent analysis cycles.
+
+Example:
+
+```
+dalykit:kit new feature
+```
+
+This creates a new kit, copies the prerequisite artifacts from the previous kit, and restarts from the feature stage.
+
+Benefits:
+
+- You can discard `k1` and continue independently with `k2`
+- Even if you abandon a previous kit, the new kit has its own input files to remain self-contained
+- Reports, figures, and model files all stay grouped under the same kit for easy tracking
+
+| Command | Description |
+|---------|-------------|
+| `dalykit:kit` | Show current active kit |
+| `dalykit:kit new` | Create a new kit (auto-assigns next number) |
+| `dalykit:kit new feature` | Create a new kit starting from the feature stage |
+| `dalykit:kit list` | List all kits with completed stages summary |
+| `dalykit:kit switch k2` | Switch active kit |
 
 <div align="right"><a href="#dalykit">Top</a></div>
 
@@ -418,36 +449,6 @@ If any of the following signals are detected after the first round, the process 
 | Overall underperformance | All models below baseline |
 
 If feature revision is required, return to `dalykit:feature`, update and re-run the notebook, then re-run `dalykit:ml`.
-
-<div align="right"><a href="#dalykit">Top</a></div>
-
----
-
-## Kit Management
-
-`dalykit:kit` is the key command for managing independent analysis cycles.
-
-Example:
-
-```
-dalykit:kit new feature
-```
-
-This creates a new kit, copies the prerequisite artifacts from the previous kit, and restarts from the feature stage.
-
-Benefits:
-
-- You can discard `k1` and continue independently with `k2`
-- Even if you abandon a previous kit, the new kit has its own input files to remain self-contained
-- Reports, figures, and model files all stay grouped under the same kit for easy tracking
-
-| Command | Description |
-|---------|-------------|
-| `dalykit:kit` | Show current active kit |
-| `dalykit:kit new` | Create a new kit (auto-assigns next number) |
-| `dalykit:kit new feature` | Create a new kit starting from the feature stage |
-| `dalykit:kit list` | List all kits with completed stages summary |
-| `dalykit:kit switch k2` | Switch active kit |
 
 <div align="right"><a href="#dalykit">Top</a></div>
 

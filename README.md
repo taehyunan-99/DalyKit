@@ -24,6 +24,7 @@
 - [Tech Stack](#tech-stack)
 - [Skills](#skills)
 - [Kit Management](#kit-management)
+- [Skills in Detail](#skills-in-detail)
 - [Contact](#contact)
 
 ---
@@ -183,6 +184,36 @@ dalykit/
 | `dalykit:kit switch k1` | 활성 kit 전환 | `config/active.json` |
 | `dalykit:progress` | 진행 현황 문서 갱신 | `config/progress.md` |
 | `dalykit:help` | 도움말 | — |
+
+<div align="right"><a href="#dalykit">Top</a></div>
+
+---
+
+## Kit Management
+
+`dalykit:kit`은 분석 사이클을 독립적으로 관리하는 핵심 명령입니다.
+
+예:
+
+```
+dalykit:kit new feature
+```
+
+이 명령은 새 kit을 만들고, 이전 kit의 필요한 선행 산출물을 복사한 뒤 feature 단계부터 다시 시작하게 합니다.
+
+이 구조의 장점:
+
+- `k1`이 마음에 들지 않으면 `k2`를 새로 만들어 독립적으로 시도 가능
+- 이전 kit을 버려도 새 kit이 자체 입력 파일을 가지고 있어 유지 가능
+- 보고서, figures, 모델 파일이 모두 같은 kit 아래 묶여 추적이 쉬움
+
+| 명령어 | 설명 |
+|--------|------|
+| `dalykit:kit` | 현재 활성 kit 확인 |
+| `dalykit:kit new` | 새 kit 생성 (다음 번호 자동 할당) |
+| `dalykit:kit new feature` | feature 단계부터 새 kit 생성 |
+| `dalykit:kit list` | 전체 kit 목록 및 완료 단계 요약 |
+| `dalykit:kit switch k2` | 활성 kit 전환 |
 
 <div align="right"><a href="#dalykit">Top</a></div>
 
@@ -418,36 +449,6 @@ dalykit:ml report       → model_results.json → model_report.md 생성 + prog
 | 전체 저성능 | 모든 모델이 베이스라인 미달 |
 
 피처 수정이 필요한 경우 `dalykit:feature`로 돌아가 노트북을 수정·재실행한 뒤 `dalykit:ml`을 재실행합니다.
-
-<div align="right"><a href="#dalykit">Top</a></div>
-
----
-
-## Kit Management
-
-`dalykit:kit`은 분석 사이클을 독립적으로 관리하는 핵심 명령입니다.
-
-예:
-
-```
-dalykit:kit new feature
-```
-
-이 명령은 새 kit을 만들고, 이전 kit의 필요한 선행 산출물을 복사한 뒤 feature 단계부터 다시 시작하게 합니다.
-
-이 구조의 장점:
-
-- `k1`이 마음에 들지 않으면 `k2`를 새로 만들어 독립적으로 시도 가능
-- 이전 kit을 버려도 새 kit이 자체 입력 파일을 가지고 있어 유지 가능
-- 보고서, figures, 모델 파일이 모두 같은 kit 아래 묶여 추적이 쉬움
-
-| 명령어 | 설명 |
-|--------|------|
-| `dalykit:kit` | 현재 활성 kit 확인 |
-| `dalykit:kit new` | 새 kit 생성 (다음 번호 자동 할당) |
-| `dalykit:kit new feature` | feature 단계부터 새 kit 생성 |
-| `dalykit:kit list` | 전체 kit 목록 및 완료 단계 요약 |
-| `dalykit:kit switch k2` | 활성 kit 전환 |
 
 <div align="right"><a href="#dalykit">Top</a></div>
 
