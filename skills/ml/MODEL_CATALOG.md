@@ -38,9 +38,9 @@ XGBClassifier(n_estimators=100, random_state=42, eval_metric='logloss')
 
 # 튜닝 그리드
 {
-    'n_estimators': [100, 200, 500],
+    'n_estimators': [100, 200, 500, 1000],
     'max_depth': [3, 5, 7],
-    'learning_rate': [0.01, 0.05, 0.1, 0.2],
+    'learning_rate': [0.001, 0.005, 0.01, 0.05, 0.1, 0.2],
     'subsample': [0.7, 0.8, 1.0],
     'colsample_bytree': [0.7, 0.8, 1.0]
 }
@@ -53,9 +53,9 @@ LGBMClassifier(n_estimators=100, random_state=42, verbose=-1)
 
 # 튜닝 그리드
 {
-    'n_estimators': [100, 200, 500],
+    'n_estimators': [100, 200, 500, 1000],
     'max_depth': [3, 5, 7, -1],
-    'learning_rate': [0.01, 0.05, 0.1],
+    'learning_rate': [0.001, 0.005, 0.01, 0.05, 0.1],
     'num_leaves': [15, 31, 63],
     'subsample': [0.7, 0.8, 1.0]
 }
@@ -107,9 +107,9 @@ GradientBoostingClassifier(n_estimators=100, random_state=42)
 
 # 튜닝 그리드
 {
-    'n_estimators': [100, 200, 500],
+    'n_estimators': [100, 200, 500, 1000],
     'max_depth': [3, 5, 7],
-    'learning_rate': [0.01, 0.05, 0.1],
+    'learning_rate': [0.001, 0.005, 0.01, 0.05, 0.1],
     'subsample': [0.7, 0.8, 1.0]
 }
 ```
@@ -123,7 +123,7 @@ CatBoostClassifier(iterations=500, random_state=42, verbose=0, auto_class_weight
 {
     'iterations': [300, 500, 1000],
     'depth': [4, 6, 8],
-    'learning_rate': [0.01, 0.05, 0.1],
+    'learning_rate': [0.001, 0.005, 0.01, 0.05, 0.1],
     'l2_leaf_reg': [1, 3, 5, 7]
 }
 ```

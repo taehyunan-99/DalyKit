@@ -3,92 +3,83 @@ name: feature
 description: >
   피처 엔지니어링. 전처리된 데이터에서 인코딩, 스케일링, 파생 변수 생성,
   피처 선택을 수행하는 노트북을 생성한다.
-  트리거: "dalykit:feature", "피처 엔지니어링", "feature engineering",
-  "인코딩", "스케일링", "파생 변수".
+  트리거: "dalykit:feature", "피처 엔지니어링".
 user_invocable: true
 ---
 
-# Feature Engineering (피처 엔지니어링)
+# Feature (피처 엔지니어링)
 
-> ipynb 노트북 생성 → 사용자가 직접 실행 → `dalykit:feature report`로 보고서 생성.
+> 활성 kit 기준으로 `feature/` 폴더에 노트북, 결과 JSON, featured.csv, 보고서를 저장한다.
 
 ## 사용법
 
-```
-dalykit:feature          ← cleaned 데이터 → feature_pipeline.ipynb 생성
-dalykit:feature report   ← 실행된 노트북 결과 읽기 → dalykit/docs/feature_report.md 생성
+```text
+dalykit:feature
+dalykit:feature kits/k1/clean/cleaned.csv
+dalykit:feature select
+dalykit:feature select kits/k1/feature/featured.csv
+dalykit:feature report
 ```
 
 ## 사전 조건
 
-- `dalykit/` 폴더가 존재해야 한다 (Glob으로 확인)
-- 없으면: "`dalykit:init`을 먼저 실행하세요." 안내 후 종료
+- `dalykit/config/active.json`이 있어야 한다
+- 입력 데이터가 있어야 한다
+  - 기본: `dalykit/kits/{kit}/clean/cleaned.csv`
+  - 선택: 사용자가 지정한 CSV 경로
+- 필요 시 EDA, clean, stat 보고서를 함께 참조한다
 
 ## 경로 규칙
 
 | 항목 | 경로 |
 |------|------|
-| 입력 데이터 | `dalykit/data/*_cleaned.csv` |
-| 도메인 설정 | `dalykit/config/domain.md` |
-| 노트북 | `dalykit/code/notebooks/feature_pipeline.ipynb` |
-| JSON 결과 | `dalykit/code/results/feature_results.json` |
-| 출력 데이터 | `dalykit/data/df_featured.csv` |
-| 보고서 | `dalykit/docs/feature_report.md` |
+| stage 디렉토리 | `dalykit/kits/{kit}/feature/` |
+| 노트북 | `dalykit/kits/{kit}/feature/feature_pipeline.ipynb` |
+| 결과 JSON | `dalykit/kits/{kit}/feature/feature_results.json` |
+| 결과 데이터 | `dalykit/kits/{kit}/feature/featured.csv` |
+| 선택 스크립트 | `dalykit/kits/{kit}/feature/feature_select.py` |
+| 선택 결과 JSON | `dalykit/kits/{kit}/feature/feature_select_results.json` |
+| 추천 피처 목록 | `dalykit/kits/{kit}/feature/selected_features.txt` |
+| 보고서 | `dalykit/kits/{kit}/feature/feature_report.md` |
+| 시각화 | `dalykit/kits/{kit}/feature/figures/` |
 
 ## 워크플로우
 
-### 1단계: 컨텍스트 수집 (2단계 참조)
+### `dalykit:feature`
 
-1. **1차 — 요약만 Read (view_range)**:
-  - `dalykit/docs/eda_report.md` → `## 요약` 섹션
-  - `dalykit/docs/preprocessing_report.md` → `## 요약` 섹션
-  - `dalykit/docs/stat_report.md` → `## 요약` 섹션
-  - 보고서가 없으면 해당 항목 스킵
-2. **2차 — 필요 시 상세 Read**:
-  - 인코딩 대상 파악 시 → preprocessing_report.md "최종 컬럼 목록" 섹션
-  - 유의미한 변수 파악 시 → stat_report.md "가설 통합 표" 또는 "요약 테이블" 섹션
-3. `dalykit/config/domain.md` Read → 타겟 변수, 도메인 규칙 확인
-4. `dalykit/data/` Glob → cleaned CSV 파일 탐색
+1. 활성 kit 확인
+2. 인자 없으면 현재 kit의 `clean/cleaned.csv`를 사용한다
+3. 인자 있으면 해당 CSV를 입력으로 사용하고, 입력 출처를 manifest에 기록한다
+4. 기존 EDA, clean, stat 보고서가 있으면 함께 읽는다
+5. [CELL_PATTERNS.md](CELL_PATTERNS.md)를 참조해 노트북 생성
 
-### 2단계: ipynb 노트북 생성
+### `dalykit:feature select`
 
-> **출력 규칙**: 전략 제안이나 승인 요청 없이 바로 노트북을 생성한다. 전략은 노트북 셀 주석으로 확인 가능하다. 생성 완료 후 1-2줄 안내만 출력한다.
+1. 활성 kit 확인
+2. 인자 없으면 현재 kit의 `feature/featured.csv`를 사용한다
+3. 인자 있으면 해당 CSV를 입력으로 사용하고 입력 출처를 기록한다
+4. task type과 target을 확인하고 CV 전략을 자동 선택한다
+5. 경량 모델 1개로 후보 피처 중요도를 계산한 뒤 `greedy_forward`로 조합을 비교한다
+6. `feature_select.py`, `feature_select_results.json`, `selected_features.txt`를 저장한다
+7. `featured.csv`는 자동으로 덮어쓰지 않는다
 
-> `~/.claude/skills/feature/CELL_PATTERNS.md`를 Read로 읽고 셀 구조를 따른다.
+### `dalykit:feature report`
 
-- Write 도구로 `dalykit/code/notebooks/feature_pipeline.ipynb` 생성 (nbformat 4)
-- 생성 완료 후 사용자에게 안내:
-  ```
-  feature_pipeline.ipynb 생성 완료.
-  노트북을 열어 전체 셀을 실행한 뒤 `dalykit:feature report`를 실행하세요.
-  피처 결과는 dalykit/data/df_featured.csv 에 저장됩니다.
-  ```
+1. `feature_results.json`을 읽는다
+2. `feature_select_results.json`이 있으면 함께 읽는다
+3. [REPORT_GUIDE.md](REPORT_GUIDE.md)를 참조해 보고서를 생성한다
+4. `feature_report.md`에 저장한다
+5. `active.json.stages_completed`와 `artifacts.feature_data`를 갱신한다
 
-### report 인자 워크플로우
+## 완료 기준
 
-> `dalykit:feature report` 호출 시 실행. 노트북을 사용자가 실행한 뒤 호출해야 한다.
+- `dalykit:feature`는 노트북 생성만 수행하므로 완료 단계로 기록하지 않는다
+- `dalykit:feature select`는 보조 분석이므로 완료 단계로 기록하지 않는다
+- `dalykit:feature report`까지 생성되어야 `feature` 단계 완료로 본다
 
-1. `dalykit/code/results/feature_results.json` Read → 피처 변환 결과 데이터 확인
-2. `dalykit/docs/feature_report.md` Write → 보고서 생성
-3. JSON 미존재 시: "노트북을 먼저 실행한 뒤 다시 시도하세요." 안내 후 종료
+## 규칙
 
-## 참조 문서
-
-| 파일 | 내용 |
-|------|------|
-| `CELL_PATTERNS.md` | ipynb 셀 구조 및 코드 패턴 |
-
-## 코드 생성 규칙
-
-1. **주석은 한국어**로 작성
-2. **비파괴적**: `df_feat = df.copy()`로 원본 보존
-3. **출력 제한**: `.head()`, `.describe()`, `.value_counts()` 등 요약만
-4. **폰트 설정**: Windows `Malgun Gothic`, macOS `AppleGothic` — `platform.system()`으로 분기
-5. **변수명**: 입력 데이터프레임은 `df`, 피처 결과는 `df_feat`
-6. **저장**: 마지막 셀에서 `dalykit/data/df_featured.csv`로 저장
-7. **이미지 저장**: `dalykit/figures/`에 저장 (`plt.savefig()`)
-
-## 시각화 참조
-
-> 색상 규칙, 폰트, 범례 설정은 `~/.claude/shared/viz/STYLE_GUIDE.md`를 Read로 읽고 따른다.
-> 차트 코드 패턴은 `~/.claude/shared/viz/charts/` 하위에서 필요한 차트 파일만 Read로 읽고 따른다.
+1. 결과 데이터 파일명은 항상 `featured.csv`
+2. figures는 `feature/figures/`에 저장한다
+3. 입력이 다른 kit 산출물이면 출처를 현재 kit의 `manifest.json`에 남긴다
+4. `feature select`는 추천 결과만 남기고 `featured.csv`를 자동 수정하지 않는다

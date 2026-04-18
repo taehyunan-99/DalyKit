@@ -1,87 +1,66 @@
 ---
 name: eda
 description: >
-  탐색적 데이터 분석(EDA) 자동화. dalykit/data/에서 데이터를 읽고
-  분석 노트북을 생성한다.
-  트리거: "dalykit:eda", "EDA 해줘", "데이터 탐색", "explore this data",
-  "데이터 분석 시작", "what does this data look like".
+  탐색적 데이터 분석 자동화. raw 데이터를 읽고 EDA 노트북과 결과 파일을 생성한다.
+  트리거: "dalykit:eda", "EDA 해줘", "데이터 탐색".
 user_invocable: true
 ---
 
 # EDA (탐색적 데이터 분석)
 
-> ipynb 노트북 생성 → 사용자가 직접 실행 → `dalykit:eda report`로 보고서 생성.
+> raw 데이터 기준으로 `kits/{active_kit}/eda/` 아래에 노트북, 결과 JSON, 보고서를 만든다.
 
 ## 사용법
 
-```
-dalykit:eda              ← data/에서 CSV 탐색 → eda_analysis.ipynb 생성
-dalykit:eda report       ← 실행된 노트북 결과 읽기 → dalykit/docs/eda_report.md 생성
+```text
+dalykit:eda
+dalykit:eda bank_customers.csv
+dalykit:eda report
 ```
 
 ## 사전 조건
 
-- `dalykit/` 폴더가 존재해야 한다 (Glob으로 확인)
-- 없으면: "`dalykit:init`을 먼저 실행하세요." 안내 후 종료
+- `dalykit/config/active.json`이 있어야 한다
+- `dalykit/data/raw/`에 CSV 또는 Excel 파일이 있어야 한다
+- 없으면 `dalykit:init` 또는 데이터 배치를 먼저 안내한다
 
 ## 경로 규칙
 
 | 항목 | 경로 |
 |------|------|
-| 데이터 | `dalykit/data/` |
-| 도메인 설정 | `dalykit/config/domain.md` |
-| 노트북 | `dalykit/code/notebooks/eda_analysis.ipynb` |
-| JSON 결과 | `dalykit/code/results/eda_results.json` |
-| 시각화 | `dalykit/figures/` |
+| 원본 데이터 | `dalykit/data/raw/` |
+| 활성 kit | `dalykit/config/active.json`의 `kit` |
+| stage 디렉토리 | `dalykit/kits/{kit}/eda/` |
+| 노트북 | `dalykit/kits/{kit}/eda/eda_analysis.ipynb` |
+| 결과 JSON | `dalykit/kits/{kit}/eda/eda_results.json` |
+| 보고서 | `dalykit/kits/{kit}/eda/eda_report.md` |
+| 시각화 | `dalykit/kits/{kit}/eda/figures/` |
 
 ## 워크플로우
 
-### 1단계: 데이터 파악
+### `dalykit:eda`
 
-- Glob으로 `dalykit/data/`의 CSV/Excel 파일 탐색
-- 파일 1개 → 자동 선택, 여러 개 → 사용자에게 선택 요청
-- `dalykit/config/domain.md`가 있으면 Read로 읽고 도메인 맥락 반영
+1. 활성 kit 확인
+2. 인자 없으면 `active.json.raw_data`를 우선 사용하고, 비어 있으면 `data/raw/`에서 파일을 선택
+3. 인자 있으면 해당 파일을 원본 데이터로 사용하고 `active.json.raw_data`를 갱신
+4. [CELL_PATTERNS.md](CELL_PATTERNS.md)를 참조해 노트북 생성
+5. 노트북은 실행 시 `eda_results.json`과 `figures/`를 저장하도록 구성
 
-### 2단계: ipynb 노트북 생성
+### `dalykit:eda report`
 
-> `~/.claude/skills/eda/CELL_PATTERNS.md`를 Read로 읽고 셀 구조를 따른다.
+1. `dalykit/kits/{kit}/eda/eda_results.json`을 읽는다
+2. [EDA_REPORT.md](EDA_REPORT.md)를 읽어 보고서를 생성한다
+3. `dalykit/kits/{kit}/eda/eda_report.md`에 저장한다
+4. `active.json.stages_completed`와 `artifacts.eda_results`를 갱신한다
 
-- Write 도구로 `dalykit/code/notebooks/eda_analysis.ipynb` 생성 (nbformat 4)
-- 생성 완료 후 사용자에게 안내:
-  ```
-  eda_analysis.ipynb 생성 완료.
-  노트북을 열어 전체 셀을 실행한 뒤 `dalykit:eda report`를 실행하세요.
-  ```
+## 완료 기준
 
-### report 인자 워크플로우
+- `dalykit:eda`는 노트북 생성만 수행하므로 완료 단계로 기록하지 않는다
+- `dalykit:eda report`까지 생성되어야 `eda` 단계 완료로 본다
 
-> `dalykit:eda report` 호출 시 실행. 노트북을 사용자가 실행한 뒤 호출해야 한다.
+## 규칙
 
-1. `dalykit/code/results/eda_results.json` Read → 분석 결과 데이터 확인
-2. `~/.claude/skills/eda/EDA_REPORT.md` Read → 보고서 작성 지침 확인
-3. `dalykit/docs/eda_report.md` Write → 보고서 생성
-4. JSON 미존재 시: "노트북을 먼저 실행한 뒤 다시 시도하세요." 안내 후 종료
-
-## 참조 문서
-
-| 파일 | 내용 |
-|------|------|
-| `CELL_PATTERNS.md` | ipynb 셀 구조 및 코드 패턴 |
-| `EDA_REPORT.md` | (report 스킬용) EDA 보고서 작성 지침 |
-
-## 코드 생성 규칙
-
-1. **주석은 한국어**로 작성
-2. **출력 제한**: `.head()`, `.describe()`, `.value_counts().head(10)` 등 요약만
-3. **폰트 설정**: Windows `Malgun Gothic`, macOS `AppleGothic` — `platform.system()`으로 분기
-4. **변수명**: 데이터프레임은 `df` 사용 (사용자가 다른 이름 지정 시 따름)
-5. **이미지 저장**: `dalykit/figures/` 에 저장 (`plt.savefig()`)
-
-## 시각화 참조
-
-> 색상 규칙, 폰트, 범례 설정은 `~/.claude/shared/viz/STYLE_GUIDE.md`를 Read로 읽고 따른다.
-> 차트 코드 패턴은 `~/.claude/shared/viz/charts/` 하위에서 필요한 차트 파일만 Read로 읽고 따른다.
-> 사용 가능한 차트: histogram, scatter, boxplot, heatmap, bar, line, stacked_bar, pairplot, subplot
->
-> **countplot 필수 패턴**: `sns.countplot(data=df, x=col, hue=col, order=order, palette=colors, legend=False, ax=ax)`
-> `palette`만 전달하고 `hue` 생략 시 FutureWarning 발생 — 반드시 `hue=x변수 + legend=False` 조합 사용
+1. 원본 데이터는 절대 수정하지 않는다
+2. 결과는 활성 kit 내부에만 저장한다
+3. 이미지 저장 경로는 항상 `eda/figures/`이다
+4. 보고서 생성 전 결과 JSON이 없으면 노트북을 먼저 실행하라고 안내한다

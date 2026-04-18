@@ -12,56 +12,81 @@ user_invocable: true
 
 아래 내용을 출력한다:
 
-```
-📊 DalyKit — 데이터 분석 도구 모음
+```text
+DalyKit — 데이터 분석 도구 모음
 
-사용 가능한 스킬:
-  dalykit:init               프로젝트 구조 초기화
-  dalykit:domain             도메인 정보 구조화 (자유 입력 → domain.md)
-  dalykit:eda                탐색적 데이터 분석 (EDA)
-  dalykit:eda report         노트북 실행 후 EDA 보고서 생성
+처음 시작:
+  1. dalykit:init
+  2. dalykit/data/raw/ 에 CSV 파일 배치
+  3. dalykit:next
+
+이후에는 dalykit:next가 다음 할 일을 안내합니다.
+
+기본 명령:
+  dalykit:next               다음 단계 추천
+  dalykit:eda                탐색적 데이터 분석
   dalykit:clean              데이터 전처리
-  dalykit:clean report       노트북 실행 후 전처리 보고서 생성
-  dalykit:stat               통계 분석 · 가설 검정
-  dalykit:stat notebook      py → ipynb 변환
-  dalykit:feature            피처 엔지니어링 — 인코딩, 스케일링, 파생 변수
-  dalykit:feature report     노트북 실행 후 피처 보고서 생성
-  dalykit:ml                 모델 자동 선택 (3-5개 비교) + 튜닝
-  dalykit:ml LR,RF,XGB       지정 모델만 비교 + 튜닝
-  dalykit:ml tune            기존 결과 기반 튜닝 재실행
-  dalykit:ml ensemble        베이스라인 상위 모델로 앙상블 비교
-  dalykit:ml report          결과 JSON → 보고서 + 시각화 생성
+  dalykit:stat               통계 분석
+  dalykit:feature            피처 엔지니어링
+  dalykit:ml                 모델 학습
+  dalykit:ml report          모델 보고서 + 진행 현황 갱신
   dalykit:help               도움말
 
-시작하기:
-  1. dalykit:init 으로 프로젝트 구조 생성
-  2. dalykit/data/ 에 CSV 파일 배치
-  3. (선택) dalykit:domain 으로 도메인 정보 정리
-  4. dalykit:eda → dalykit:clean → dalykit:stat
+막혔을 때:
+  dalykit:next               지금 다음에 무엇을 할지 다시 확인
+  dalykit:doctor install     의존성 설치/업데이트
+  dalykit:kit                현재 활성 kit 확인
+  dalykit:progress           progress.md 생성/갱신
+
+고급 명령 (Advanced):
+  dalykit:doctor             환경 점검
+  dalykit:domain             도메인 정보 구조화
+  dalykit:kit new            새 kit 생성
+  dalykit:kit new feature    feature 단계부터 새 kit 생성
+  dalykit:kit list           전체 kit 목록 확인
+  dalykit:kit switch k1      활성 kit 전환
+  dalykit:eda report         EDA 보고서 생성
+  dalykit:clean report       전처리 보고서 생성
+  dalykit:stat notebook      py → ipynb 변환
+  dalykit:feature select     피처 조합 비교
+  dalykit:feature report     피처 보고서 생성
+  dalykit:ml LR,RF,XGB       지정 모델만 비교 + 튜닝
+  dalykit:ml ensemble        앙상블 비교
 ```
 
 ## 실행 패턴
 
-| 스킬 | 방식 | 출력 |
-|------|------|------|
-| init | 폴더 생성 + 템플릿 복사 | dalykit/ 구조 |
-| domain | 자유 입력 + CSV → domain.md 구조화 | config/domain.md |
-| eda | ipynb 생성 → 사용자 실행 → JSON 자동 저장 → `eda report`로 보고서 | code/, docs/, figures/ |
-| clean | ipynb 생성 → 사용자 실행 → JSON 자동 저장 → `clean report`로 보고서 | code/, data/, docs/ |
-| stat | .py → JSON → 보고서 자동 | code/, docs/ |
-| feature | ipynb 생성 → 사용자 실행 → JSON 자동 저장 → `feature report`로 보고서 | code/, data/, docs/ |
-| model | .py → 루프 실행 → JSON 저장 → `model report`로 보고서 | code/, docs/, models/, figures/ |
+| 스킬 | 방식 | 주요 위치 |
+|------|------|-----------|
+| init | kit 기반 구조 생성 | `dalykit/kits/k1/` |
+| next | 현재 상태 기반 다음 단계 추천 | `dalykit/config/active.json`, `dalykit/kits/{kit}/` |
+| doctor | 환경 점검 / 의존성 설치 | `dalykit/config/requirements.txt` |
+| domain | 자유 입력 + raw 데이터 → 구조화 | `dalykit/config/domain.md` |
+| kit | 활성 kit 확인 / 생성 / 전환 | `dalykit/config/active.json`, `dalykit/kits/` |
+| progress | 전체 진행 현황 갱신 | `dalykit/config/progress.md` |
+| eda | raw 데이터 → EDA 노트북/결과/보고서 | `dalykit/kits/{kit}/eda/` |
+| clean | raw 또는 지정 데이터 → 전처리 결과 | `dalykit/kits/{kit}/clean/` |
+| stat | clean 결과 기준 통계 분석 | `dalykit/kits/{kit}/stat/` |
+| feature | clean 결과 기준 피처 엔지니어링 / 선택 | `dalykit/kits/{kit}/feature/` |
+| ml | feature 결과 기준 모델 학습 | `dalykit/kits/{kit}/model/` |
 
 ## 프로젝트 구조
 
-```
+```text
 dalykit/
-├── config/          ← domain.md
-├── data/            ← 원본 CSV + 전처리 결과 (_cleaned 접미사)
-├── code/
-│   ├── notebooks/   ← .ipynb 노트북 (eda, clean, feature)
-│   ├── py/          ← .py 스크립트 (stat, model)
-│   └── results/     ← .json 결과
-├── docs/            ← 보고서 (md)
-└── figures/         ← 시각화 이미지
+├── config/
+│   ├── domain.md
+│   ├── requirements.txt
+│   ├── active.json
+│   └── progress.md
+├── data/
+│   └── raw/
+└── kits/
+    └── k1/
+        ├── manifest.json
+        ├── eda/
+        ├── clean/
+        ├── stat/
+        ├── feature/
+        └── model/
 ```

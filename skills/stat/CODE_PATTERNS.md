@@ -318,7 +318,7 @@ def analyze_paired(df, before_var, after_var):
 
 ```python
 def save_fig(filename: str) -> str:
-    """figures/ 폴더에 저장하고 경로 반환"""
+    """stat stage 내부 figures/ 폴더에 저장하고 경로 반환"""
     os.makedirs(FIGURES_DIR, exist_ok=True)
     path = os.path.join(FIGURES_DIR, filename)
     plt.savefig(path, dpi=150, bbox_inches='tight')
@@ -415,7 +415,15 @@ output = {
                   'p_value': r['p_value'], 'conclusion': r['conclusion'],
                   'effect_size': r['effect_size']} for r in results]
 }
-OUTPUT_PATH = 'dalykit/code/results/stat_results.json'
+from datetime import datetime
+run_id = datetime.now().strftime('%Y%m%d_%H%M%S')
+ACTIVE_PATH = 'dalykit/config/active.json'
+with open(ACTIVE_PATH, 'r', encoding='utf-8') as f:
+    active = json.load(f)
+kit = active['kit']
+STAGE_DIR = f'dalykit/kits/{kit}/stat'
+OUTPUT_PATH = f'{STAGE_DIR}/stat_results.json'
+os.makedirs(STAGE_DIR, exist_ok=True)
 with open(OUTPUT_PATH, 'w', encoding='utf-8') as f:
     json.dump(output, f, ensure_ascii=False, indent=2, cls=NumpyEncoder)
 print(f"결과 저장: {OUTPUT_PATH}")

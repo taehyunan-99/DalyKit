@@ -1,53 +1,32 @@
 #!/bin/bash
-# DalyKit 설치 스크립트
-# 파일을 ~/.claude/에 복사하여 설치한다
+# DalyKit local development sync script
+# Marketplace 사용자는 이 스크립트가 아니라 /plugin marketplace install 흐름을 사용한다.
+# 이 스크립트는 로컬 개발용으로 플러그인 번들을 ~/.claude/plugins/dev/dalykit 에 동기화한다.
 
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-HARNESS_ROOT="$(dirname "$SCRIPT_DIR")"
-CLAUDE_ROOT="$HOME/.claude"
+PLUGIN_ROOT="$(dirname "$SCRIPT_DIR")"
+TARGET_ROOT="$HOME/.claude/plugins/dev/dalykit"
 
-echo "=== DalyKit Install ==="
-echo "Source: $HARNESS_ROOT"
-echo "Target: $CLAUDE_ROOT"
+echo "=== DalyKit Local Dev Sync ==="
+echo "Source: $PLUGIN_ROOT"
+echo "Target: $TARGET_ROOT"
 echo ""
 
-# 대상 디렉토리 생성
-for dir in skills shared hooks; do
-    target_dir="$CLAUDE_ROOT/$dir"
-    if [ ! -d "$target_dir" ]; then
-        mkdir -p "$target_dir"
-        echo "  Created dir: $target_dir"
+rm -rf "$TARGET_ROOT"
+mkdir -p "$TARGET_ROOT"
+
+for path in .claude-plugin shared skills templates README.md README.en.md; do
+    if [ -e "$PLUGIN_ROOT/$path" ]; then
+        cp -R "$PLUGIN_ROOT/$path" "$TARGET_ROOT/$path"
+        echo "  Synced: $path"
     fi
 done
 
-# 스킬 설치 (디렉토리 복사)
-skills=("init" "domain" "eda" "clean" "stat" "feature" "model" "help")
-for skill in "${skills[@]}"; do
-    source="$HARNESS_ROOT/skills/$skill"
-    target="$CLAUDE_ROOT/skills/$skill"
-
-    rm -rf "$target"
-    cp -r "$source" "$target"
-    echo "  Skill installed: $skill"
-done
-
-# viz 공유 참조 문서 설치 (스킬이 아닌 공유 참조 문서)
-rm -rf "$CLAUDE_ROOT/shared/viz"
-cp -r "$HARNESS_ROOT/shared/viz" "$CLAUDE_ROOT/shared/viz"
-echo "  Shared docs installed: viz"
-
-# 템플릿 설치
-mkdir -p "$CLAUDE_ROOT/templates"
-cp -r "$HARNESS_ROOT/templates/"* "$CLAUDE_ROOT/templates/"
-echo "  Templates installed"
-
-# hooks는 프로젝트별 래퍼로 설치 (dalykit:init 참조) — 글로벌 설치 없음
-echo "  Hooks: skipped (project-level only, run dalykit:init)"
-
 echo ""
-echo "=== Install Complete ==="
-echo "Skills: ${#skills[@]}, Shared: viz, templates, hooks"
+echo "=== Sync Complete ==="
+echo "Local plugin bundle: $TARGET_ROOT"
 echo ""
-echo "Usage: type 'dalykit:help' in Claude Code"
+echo "Run for local testing:"
+echo "  claude --plugin-dir \"$TARGET_ROOT\""
