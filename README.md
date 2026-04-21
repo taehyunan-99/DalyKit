@@ -5,7 +5,7 @@
 > 반복되는 분석 코드는 DalyKit에게. 당신은 인사이트에만 집중하세요.  
 > Claude Code 플러그인으로 데이터 분석 워크플로우를 가속합니다.
 
-![version](https://img.shields.io/badge/version-0.2.0-blue?style=flat)
+![version](https://img.shields.io/badge/version-0.2.1-blue?style=flat)
 ![license](https://img.shields.io/badge/license-MIT-green?style=flat)
 ![python](https://img.shields.io/badge/python-3.10%2B-yellow?style=flat&logo=python&logoColor=white)
 ![platform](https://img.shields.io/badge/platform-Claude%20Code-orange?style=flat)
@@ -300,13 +300,13 @@ dalykit/
 
 1. `dalykit/data/raw/`에서 CSV 파일 탐색
 2. `domain.md`가 있으면 도메인 맥락을 반영해 노트북 구성
-3. `kits/{kit}/eda/eda_analysis.ipynb` 생성 (마지막 셀에서 분석 결과를 `eda_results.json`으로 자동 저장)
+3. `kits/{kit}/eda/eda_analysis.ipynb` 생성 (각 분석 셀 끝에서 결과를 `eda_results.json`으로 누적 저장)
 4. 사용자가 노트북을 직접 실행한 뒤 `dalykit:eda report`로 보고서 생성
 
 **실행 흐름**
 ```
 dalykit:eda           → eda_analysis.ipynb 생성
-  ↓ 사용자가 노트북 실행 (→ eda_results.json 자동 저장)
+  ↓ 사용자가 노트북 실행 (→ eda_results.json 셀 단위 누적 저장)
 dalykit:eda report    → eda_results.json 읽기 → eda_report.md 생성
 ```
 
@@ -323,7 +323,7 @@ dalykit:eda report    → eda_results.json 읽기 → eda_report.md 생성
 **동작 방식**
 
 1. `eda_report.md`가 있으면 결측값·이상치·타입 이슈를 파악해 전략 수립, 없으면 데이터 직접 프로파일링
-2. `kits/{kit}/clean/clean_pipeline.ipynb` 생성 (마지막 셀에서 전처리 결과를 `clean_results.json`으로 자동 저장)
+2. `kits/{kit}/clean/clean_pipeline.ipynb` 생성 (주요 처리 셀 끝마다 결과를 `clean_results.json`으로 누적 저장)
 3. 사용자가 노트북을 직접 실행한 뒤 `dalykit:clean report`로 보고서 생성
 4. 전처리 결과는 `kits/{kit}/clean/cleaned.csv`로 저장
 
@@ -342,7 +342,7 @@ dalykit:eda report    → eda_results.json 읽기 → eda_report.md 생성
 
 ```
 dalykit:clean            → clean_pipeline.ipynb 생성
-  ↓ 노트북 실행 (이상치 탐지 결과 확인, → clean_results.json 자동 저장)
+  ↓ 노트북 실행 (이상치 탐지 결과 확인, → clean_results.json 셀 단위 누적 저장)
 dalykit:clean report     → clean_results.json 읽기 → 보고서 확인
   ↓ 노트북에서 이상치 처리 셀 주석 해제 후 재실행
 dalykit:clean report     → 보고서 갱신

@@ -52,6 +52,7 @@ dalykit:feature report
 3. 인자 있으면 해당 CSV를 입력으로 사용하고, 입력 출처를 manifest에 기록한다
 4. 기존 EDA, clean, stat 보고서가 있으면 함께 읽는다
 5. [CELL_PATTERNS.md](CELL_PATTERNS.md)를 참조해 노트북 생성
+6. 노트북은 인코딩·스케일링·파생 변수·피처 제거 셀 끝마다 `feature_results.json`을 중간 저장하도록 구성한다
 
 ### `dalykit:feature select`
 
@@ -83,3 +84,4 @@ dalykit:feature report
 2. figures는 `feature/figures/`에 저장한다
 3. 입력이 다른 kit 산출물이면 출처를 현재 kit의 `manifest.json`에 남긴다
 4. `feature select`는 추천 결과만 남기고 `featured.csv`를 자동 수정하지 않는다
+5. 셀 단위 저장은 `feature_results.json`을 덮어쓰는 방식으로 누적한다

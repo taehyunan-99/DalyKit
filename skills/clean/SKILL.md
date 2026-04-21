@@ -46,7 +46,8 @@ dalykit:clean report
 2. 인자 없으면 raw 데이터를 사용한다
 3. EDA 보고서가 있으면 함께 읽어 결측값·이상치·타입 이슈를 반영한다
 4. [CELL_PATTERNS.md](CELL_PATTERNS.md)를 참조해 노트북 생성
-5. 노트북은 실행 시 `clean_results.json`, `cleaned.csv`, `figures/`를 저장하도록 구성
+5. 노트북은 각 주요 처리 셀(결측값·중복·이상치·타입 변환) 끝에서 `clean_results.json`을 중간 저장하도록 구성한다
+6. 노트북은 실행 시 `clean_results.json`, `cleaned.csv`, `figures/`를 저장하도록 구성
 
 ### `dalykit:clean report`
 
@@ -66,3 +67,4 @@ dalykit:clean report
 2. 보고서 파일명은 항상 `clean_report.md`
 3. figures는 `clean/figures/`에 저장한다
 4. 결과 JSON이 없으면 보고서 생성 전에 노트북 실행을 안내한다
+5. 셀 단위 저장은 `clean_results.json`을 덮어쓰는 방식으로 누적한다

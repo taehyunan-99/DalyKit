@@ -5,7 +5,7 @@
 > Let DalyKit handle the repetitive analysis code. You focus on the insights.  
 > Streamline your data analysis workflow with a Claude Code plugin.
 
-![version](https://img.shields.io/badge/version-0.2.0-blue?style=flat)
+![version](https://img.shields.io/badge/version-0.2.1-blue?style=flat)
 ![license](https://img.shields.io/badge/license-MIT-green?style=flat)
 ![python](https://img.shields.io/badge/python-3.10%2B-yellow?style=flat&logo=python&logoColor=white)
 ![platform](https://img.shields.io/badge/platform-Claude%20Code-orange?style=flat)
@@ -300,13 +300,13 @@ Automatically generates a Jupyter notebook to analyze your data's structure, dis
 
 1. Explore CSV files in `dalykit/data/raw/`
 2. If `domain.md` is present, incorporates domain context into the notebook structure
-3. Generate `kits/{kit}/eda/eda_analysis.ipynb` (the final cell auto-saves analysis results to `eda_results.json`)
+3. Generate `kits/{kit}/eda/eda_analysis.ipynb` (results are incrementally saved to `eda_results.json` at the end of each analysis cell)
 4. User runs the notebook manually, then calls `dalykit:eda report` to generate the report
 
 **Execution flow**
 ```
 dalykit:eda           → generates eda_analysis.ipynb
-  ↓ user runs notebook (→ eda_results.json auto-saved)
+  ↓ user runs notebook (→ eda_results.json incrementally saved per cell)
 dalykit:eda report    → reads eda_results.json → generates eda_report.md
 ```
 
@@ -323,7 +323,7 @@ Generates a preprocessing pipeline notebook to handle missing values, duplicates
 **How it works**
 
 1. If `eda_report.md` exists, extract missing value / outlier / type issues; otherwise profile the data directly
-2. Generate `kits/{kit}/clean/clean_pipeline.ipynb` (the final cell auto-saves preprocessing results to `clean_results.json`)
+2. Generate `kits/{kit}/clean/clean_pipeline.ipynb` (results are incrementally saved to `clean_results.json` after each major processing cell)
 3. User runs the notebook manually, then calls `dalykit:clean report` to generate the report
 4. Preprocessing result is saved as `kits/{kit}/clean/cleaned.csv`
 
@@ -342,7 +342,7 @@ Outliers are not removed automatically. Only detection results are printed; trea
 
 ```
 dalykit:clean            → generates clean_pipeline.ipynb
-  ↓ run notebook (review outlier detection results, → clean_results.json auto-saved)
+  ↓ run notebook (review outlier detection results, → clean_results.json incrementally saved per cell)
 dalykit:clean report     → reads clean_results.json → review report
   ↓ uncomment outlier treatment cell in notebook, re-run
 dalykit:clean report     → updated report
@@ -383,14 +383,14 @@ Generates a notebook to perform encoding, scaling, derived variable creation, an
 
 1. Reference summary sections of previous reports (eda, clean, stat) → identify encoding targets and significant variables
 2. Read `domain.md` for target variable and domain rules
-3. Generate `kits/{kit}/feature/feature_pipeline.ipynb` (the final cell auto-saves feature transformation results to `feature_results.json`)
+3. Generate `kits/{kit}/feature/feature_pipeline.ipynb` (results are incrementally saved to `feature_results.json` after each major processing cell)
 4. User runs the notebook manually, then calls `dalykit:feature report` to generate the report
 5. Feature result saved as `kits/{kit}/feature/featured.csv` (input for the ml skill)
 
 **Execution flow**
 ```
 dalykit:feature           → generates feature_pipeline.ipynb
-  ↓ user runs notebook (→ feature_results.json auto-saved)
+  ↓ user runs notebook (→ feature_results.json incrementally saved per cell)
 dalykit:feature select    → Greedy Forward Selection + CV comparison on featured.csv (optional)
 dalykit:feature report    → reads feature_results.json → generates feature_report.md
 ```

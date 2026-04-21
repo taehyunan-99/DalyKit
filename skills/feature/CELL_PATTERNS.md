@@ -26,6 +26,9 @@ BASE_DIR = Path("dalykit")
 ACTIVE = json.loads((BASE_DIR / "config" / "active.json").read_text(encoding="utf-8"))
 KIT = ACTIVE["kit"]
 
+CLEAN_DIR = BASE_DIR / "kits" / KIT / "clean"
+INPUT_PATH = CLEAN_DIR / "cleaned.csv"  # 사용자가 CSV를 직접 지정했으면 해당 경로로 치환
+
 STAGE_DIR = BASE_DIR / "kits" / KIT / "feature"
 FIGURES_DIR = STAGE_DIR / "figures"
 RESULT_PATH = STAGE_DIR / "feature_results.json"
@@ -37,8 +40,46 @@ FIGURES_DIR.mkdir(parents=True, exist_ok=True)
 ```python
 def save_results(payload):
     RESULT_PATH.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+```
 
+```python
+# 최종 저장 셀
 df_feat.to_csv(OUTPUT_PATH, index=False)
+save_results(results)
+```
+
+## 셀 단위 저장 규칙
+
+피처 엔지니어링 노트북도 마지막 셀에서만 저장하지 않는다. 인코딩, 스케일링, 파생 변수 생성, 피처 제거 같은 주요 셀마다 `results`를 갱신하고 `save_results(results)`를 호출한다.
+
+```python
+# 초기화 셀 — 설정 셀 직후에 위치
+results = {
+    "metadata": {"kit": KIT, "input": str(INPUT_PATH)},
+    "steps": {},
+    "created_features": [],
+    "removed_features": [],
+}
+save_results(results)
+```
+
+```python
+# 예: 인코딩 셀
+results["steps"]["encoding"] = {"method": "label", "columns": [...]}
+save_results(results)
+```
+
+```python
+# 예: 스케일링 셀
+results["steps"]["scaling"] = {"method": "standard", "columns": [...]}
+save_results(results)
+```
+
+```python
+# 예: 파생 변수 셀
+results["created_features"].extend([...])
+results["steps"]["derived"] = {"added": [...]}
+save_results(results)
 ```
 
 ## `feature_select.py` 패턴
@@ -94,3 +135,4 @@ def save_feature_select(payload, best_features):
 2. 결과 JSON은 `feature_results.json`
 3. 시각화는 `feature/figures/`에 저장
 4. `feature select`는 별도 결과 파일만 저장하고 `featured.csv`를 덮어쓰지 않는다
+5. 주요 처리 셀 끝에서 `save_results(results)`를 호출한다
