@@ -20,11 +20,14 @@ dalykit/
 import json
 import os
 from pathlib import Path
+from io import StringIO
 
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
+import numpy as np
+import seaborn as sns
 
-BASE_DIR = Path("dalykit")
+BASE_DIR = Path("/absolute/path/to/dalykit")  # 생성 시 실제 dalykit 절대 경로로 치환
 ACTIVE_PATH = BASE_DIR / "config" / "active.json"
 ACTIVE = json.loads(ACTIVE_PATH.read_text(encoding="utf-8"))
 KIT = ACTIVE["kit"]
@@ -99,6 +102,32 @@ results = {
 save_results(results)
 ```
 
+### 고정 기초통계 셀
+
+EDA 노트북 상단에는 데이터 로드 직후 아래 셀을 반드시 포함한다.
+`info()`와 `describe(include="all")`는 컬럼/행을 생략하지 않고 전체 출력한다.
+
+```python
+df = pd.read_csv(DATA_PATH)
+pd.set_option("display.max_columns", None)
+pd.set_option("display.max_rows", None)
+pd.set_option("display.max_colwidth", None)
+pd.set_option("display.width", 0)
+
+info_buffer = StringIO()
+df.info(buf=info_buffer, verbose=True, show_counts=True)
+info_text = info_buffer.getvalue()
+display(df.describe(include="all").transpose())
+print(info_text)
+
+results["sections"]["basic_statistics"] = {
+    "shape": list(df.shape),
+    "info": info_text,
+    "describe": df.describe(include="all").astype(str).to_dict(),
+}
+save_results(results)
+```
+
 ```python
 # 예: 데이터 개요 셀
 results["sections"]["overview"] = {
@@ -122,6 +151,32 @@ results["sections"]["missing_summary"] = {
 save_results(results)
 ```
 
+### 고정 상관관계 히트맵 셀
+
+수치형 컬럼이 2개 이상이면 아래 코드맵을 그대로 사용해 `heatmap_corr.png`를 생성한다.
+
+```python
+num_cols = df.select_dtypes(include=np.number).columns
+if len(num_cols) >= 2:
+    corr = df[num_cols].corr()
+    mask = np.triu(np.ones_like(corr, dtype=bool), k=1)
+
+    fig, ax = plt.subplots(figsize=(12, 10))
+    sns.heatmap(corr, mask=mask, cmap="RdYlBu_r", annot=True, fmt=".2f",
+                annot_kws={"fontweight": "bold", "fontsize": 8},
+                linewidth=1, ax=ax)
+    ax.set_title("상관관계 히트맵", fontdict={"fontweight": "bold"})
+    plt.tight_layout()
+    figure_path = save_fig("heatmap_corr.png")
+    results["figures"].append(figure_path)
+    results["sections"]["correlation_heatmap"] = {
+        "columns": num_cols.tolist(),
+        "correlation": corr.to_dict(),
+        "figure": figure_path,
+    }
+    save_results(results)
+```
+
 ## 규칙
 
 1. 원본 데이터는 `data/raw/`에서만 읽는다
@@ -130,3 +185,5 @@ save_results(results)
 4. 그래프 생성 전 `setup_korean_font()`를 반드시 호출한다
 5. 각 분석 셀 끝에서 `save_results(results)`를 호출한다
 6. 긴 EDA 중간에 실패해도 이전 셀 결과가 `eda_results.json`에 남아야 한다
+7. 상단 기초통계 셀에서 `info()`와 `describe(include="all")` 전체 결과를 생략 없이 출력한다
+8. 상관관계 히트맵은 고정 히트맵 셀을 사용해 `heatmap_corr.png`로 저장한다

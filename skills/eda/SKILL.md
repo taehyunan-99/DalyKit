@@ -46,6 +46,8 @@ dalykit:eda report
 4. [CELL_PATTERNS.md](CELL_PATTERNS.md)를 참조해 노트북 생성
 5. 첫 코드 셀에 한글 폰트 설정을 포함한다
 6. 노트북은 각 분석 셀 끝에서 `eda_results.json`을 중간 저장하도록 구성한다 (`figures/` 포함)
+7. 데이터 로드 직후 기초통계 셀을 고정 포함해 `info()`와 `describe(include="all")`를 생략 없이 출력한다
+8. 상관관계 히트맵은 CELL_PATTERNS의 고정 코드맵을 사용해 `heatmap_corr.png`로 저장한다
 
 ### `dalykit:eda report`
 
@@ -67,3 +69,4 @@ dalykit:eda report
 4. 보고서 생성 전 결과 JSON이 없으면 노트북을 먼저 실행하라고 안내한다
 5. 그래프 한글 깨짐 방지를 위해 CELL_PATTERNS의 폰트 설정을 생략하지 않는다
 6. EDA 결과는 마지막 셀에서만 저장하지 말고 셀 단위로 누적 저장한다
+7. 기초통계와 상관관계 히트맵 고정 셀을 임의로 생략하거나 대체하지 않는다

@@ -319,11 +319,11 @@ def analyze_paired(df, before_var, after_var):
 ```python
 def save_fig(filename: str) -> str:
     """stat stage 내부 figures/ 폴더에 저장하고 경로 반환"""
-    os.makedirs(FIGURES_DIR, exist_ok=True)
-    path = os.path.join(FIGURES_DIR, filename)
+    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    path = FIGURES_DIR / filename
     plt.savefig(path, dpi=150, bbox_inches='tight')
     plt.close()
-    return path
+    return str(path)
 ```
 
 ### 검정별 시각화 패턴
@@ -380,6 +380,7 @@ save_fig(f'stat_insight_{top_var}.png')
 ```python
 """통계 분석 스크립트 — [데이터명]"""
 import os, json, sys
+from pathlib import Path
 import pandas as pd
 import numpy as np
 from scipy import stats
@@ -417,13 +418,15 @@ output = {
 }
 from datetime import datetime
 run_id = datetime.now().strftime('%Y%m%d_%H%M%S')
-ACTIVE_PATH = 'dalykit/config/active.json'
+BASE_DIR = Path('/absolute/path/to/dalykit')  # 생성 시 실제 dalykit 절대 경로로 치환
+ACTIVE_PATH = BASE_DIR / 'config' / 'active.json'
 with open(ACTIVE_PATH, 'r', encoding='utf-8') as f:
     active = json.load(f)
 kit = active['kit']
-STAGE_DIR = f'dalykit/kits/{kit}/stat'
-OUTPUT_PATH = f'{STAGE_DIR}/stat_results.json'
-os.makedirs(STAGE_DIR, exist_ok=True)
+STAGE_DIR = BASE_DIR / 'kits' / kit / 'stat'
+FIGURES_DIR = STAGE_DIR / 'figures'
+OUTPUT_PATH = STAGE_DIR / 'stat_results.json'
+STAGE_DIR.mkdir(parents=True, exist_ok=True)
 with open(OUTPUT_PATH, 'w', encoding='utf-8') as f:
     json.dump(output, f, ensure_ascii=False, indent=2, cls=NumpyEncoder)
 print(f"결과 저장: {OUTPUT_PATH}")

@@ -19,7 +19,7 @@ dalykit/
 import json
 from pathlib import Path
 
-BASE_DIR = Path("dalykit")
+BASE_DIR = Path("/absolute/path/to/dalykit")  # 생성 시 실제 dalykit 절대 경로로 치환
 ACTIVE = json.loads((BASE_DIR / "config" / "active.json").read_text(encoding="utf-8"))
 KIT = ACTIVE["kit"]
 
