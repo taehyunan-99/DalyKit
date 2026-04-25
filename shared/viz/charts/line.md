@@ -6,7 +6,6 @@ ax.plot(df['날짜변수'], df['값변수'], color='#333333', linewidth=1.5)
 ax.set_title('시계열 추이', fontdict={'fontweight': 'bold'})
 ax.set_xlabel('날짜')
 ax.set_ylabel('값')
-plt.xticks(rotation=45)
 plt.tight_layout()
 plt.show()
 ```

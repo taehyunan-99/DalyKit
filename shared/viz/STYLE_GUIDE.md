@@ -35,3 +35,4 @@ plt.rcParams['font.weight'] = 'bold'
 3. **tight_layout**: 항상 `plt.tight_layout()` 포함
 4. **대용량**: 1000행 이상 산점도는 `.sample(1000)` 또는 `alpha=0.3` 적용
 5. **범례 위치**: 범례가 필요한 차트(그룹 비교, 누적 바차트 등)에서만 `ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=5)` — 차트 하단 중앙 배치. 단일 변수 차트에서는 범례 불필요.
+6. **X축 라벨 회전 금지**: `plt.xticks(rotation=...)` 사용 금지. 라벨이 길어 겹치면 회전 대신 ① figsize 확대, ② 컬럼 분할(예: 상위 N개만, 그룹별 분리), ③ 가로 바차트(`barh`)로 해결한다. 회전된 라벨은 막대 위치와 시각적으로 어긋나 오독을 유발한다.

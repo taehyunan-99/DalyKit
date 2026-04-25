@@ -47,7 +47,7 @@ dalykit:eda report
 5. 첫 코드 셀에 한글 폰트 설정을 포함한다
 6. 노트북은 각 분석 셀 끝에서 `eda_results.json`을 중간 저장하도록 구성한다 (`figures/` 포함)
 7. 데이터 로드 직후 기초통계 셀을 고정 포함해 `info()`와 `describe(include="all")`를 생략 없이 출력한다
-8. 상관관계 히트맵은 CELL_PATTERNS의 고정 코드맵을 사용해 `heatmap_corr.png`로 저장한다
+8. 상관관계 히트맵은 CELL_PATTERNS의 고정 코드맵을 사용한다. 전체는 `heatmap_corr.png`(overview)로 항상 저장하고, 수치형 컬럼 > 30이면 그 아래에 `heatmap_corr_top.png`(상위 페어, 등장 컬럼 ≤ 30)와 `heatmap_corr_group{N}.png`(클러스터 그룹별, 그룹 멤버 ≤ 25 + 타겟 공통 추가)를 세부 뷰로 추가 저장한다
 
 ### `dalykit:eda report`
 
